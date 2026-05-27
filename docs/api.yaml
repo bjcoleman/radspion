@@ -1,0 +1,118 @@
+openapi: 3.0.3
+info:
+  title: Radspion API
+  description: |
+    V1 API for agent unlock and mission completion. Pages are server-rendered (Flask + Jinja);
+    these endpoints return JSON for modal UX. See docs/design/06-agent-experience.md.
+  version: 0.1.0
+  contact:
+    name: Moravian University CS Department
+
+tags:
+  - name: Auth
+    description: Google OAuth session (browser redirects; details TBD in implementation)
+  - name: Agent
+    description: Agent-facing JSON endpoints (session cookie required)
+
+paths:
+  /agent/api/unlock:
+    post:
+      tags: [Agent]
+      summary: Redeem an unlock code
+      description: |
+        Adds a unlock_code mission to the agent roster when valid.
+        Outcomes: success | invalid | not_cleared (see 06-agent-experience.md).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [unlock_code]
+              properties:
+                unlock_code:
+                  type: string
+      responses:
+        "200":
+          description: Outcome-specific JSON body
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnlockResponse"
+        "401":
+          description: Not signed in
+
+  /agent/api/missions/{slug}/submit:
+    post:
+      tags: [Agent]
+      summary: Submit completion code for a mission
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [completion_code]
+              properties:
+                completion_code:
+                  type: string
+      responses:
+        "200":
+          description: Outcome-specific JSON body
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubmitResponse"
+        "401":
+          description: Not signed in
+        "404":
+          description: Mission not found or not on agent roster
+
+components:
+  schemas:
+    MissionSummary:
+      type: object
+      required: [title, slug, group_name]
+      properties:
+        title:
+          type: string
+        slug:
+          type: string
+        group_name:
+          type: string
+
+    UnlockResponse:
+      type: object
+      required: [outcome]
+      properties:
+        outcome:
+          type: string
+          enum: [success, invalid, not_cleared]
+        message:
+          type: string
+          description: User-facing copy for invalid / not_cleared
+        mission:
+          $ref: "#/components/schemas/MissionSummary"
+          description: Present when outcome is success
+
+    SubmitResponse:
+      type: object
+      required: [outcome]
+      properties:
+        outcome:
+          type: string
+          enum: [success, invalid, not_yet]
+        message:
+          type: string
+          description: User-facing copy for invalid / not_yet
+        new_missions:
+          type: array
+          items:
+            $ref: "#/components/schemas/MissionSummary"
+          description: Missions that became listable after completion (may be empty)

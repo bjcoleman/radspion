@@ -1,0 +1,16 @@
+name: Unit Tests
+
+on: [push, pull_request]
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup repo and environment
+        uses: ./.github/actions/setup_venv
+
+      - name: Execute unit tests
+        run: .venv/bin/pytest

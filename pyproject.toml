@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "radspion"
+version = "0.1.0"
+description = "Secret-organization-themed mission platform for coursework"
+readme = "README.md"
+requires-python = ">=3.12"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+# Defaults are E + F only (errors + pyflakes). We enable a practical teaching set:
+# style warnings, import sort, common bugs, modern syntax, small simplifications.
+select = ["E", "W", "F", "I", "B", "UP", "SIM"]
+ignore = []
+
+[tool.ruff.lint.per-file-ignores]
+# Relax when test helpers need broad imports or fixtures.
+"tests/conftest.py" = ["E402"]
+
+[tool.ruff.format]
+quote-style = "double"

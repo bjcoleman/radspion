@@ -1,0 +1,22 @@
+[Unit]
+Description=Radspion Flask application (gunicorn)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=radspion
+Group=radspion
+WorkingDirectory=/home/radspion/radspion
+EnvironmentFile=-/home/radspion/radspion/.env
+UMask=0007
+RuntimeDirectory=radspion
+RuntimeDirectoryMode=0750
+ExecStart=/home/radspion/radspion/.venv/bin/gunicorn \
+  --chdir /home/radspion/radspion \
+  --bind unix:/run/radspion/gunicorn.sock \
+  "radspion.app:launch()"
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,21 @@
+name: Redeploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  redeploy:
+    name: Redeploy to server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Redeploy via SSH
+        env:
+          PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          HOSTNAME: ${{ secrets.DEPLOY_HOST }}
+          USER_NAME: ${{ secrets.DEPLOY_USER }}
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key "${USER_NAME}@${HOSTNAME}" '
+            cd /home/radspion/radspion
+            ./redeploy.sh
+          '

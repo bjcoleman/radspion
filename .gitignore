@@ -1,0 +1,16 @@
+.venv/
+.env
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+database/*.db
+
+# Live missions: only basic-training (and README) in git; bootstrap copies example slugs here
+content/missions/**
+!content/missions/README.md
+!content/missions/basic-training/
+!content/missions/basic-training/**
