@@ -22,4 +22,4 @@ Copied example missions under `content/missions/` are gitignored; edit sources u
 
 **UI mockups** use sample copy in `docs/ui/sample_files/` only; production content lives under `content/missions/`.
 
-When authoring lists with fenced code blocks, indent the opening ` ``` ` to align with list text (CommonMark). The app renders Brief/Debrief with **Python-Markdown** (`fenced_code`, `sane_lists`, `tables`) — see `docs/dev.md`.
+When authoring lists with fenced code blocks, indent the opening ` ``` ` to align with list text (CommonMark). The app renders Brief/Debrief with **Python-Markdown** (`fenced_code`, `sane_lists`, `tables`) — see [docs/mission-markdown.md](../docs/mission-markdown.md).

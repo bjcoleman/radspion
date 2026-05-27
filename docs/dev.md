@@ -2,7 +2,7 @@
 
 ## Overview
 
-Radspion is a Flask + SQLite application for coursework. This document covers local development, testing, static analysis, and production deployment on the **department web server** (not AWS Learner Lab / `register_ip` flow).
+Radspion is a Flask + SQLite application for coursework. This document covers local development and production deployment on the **department web server**.
 
 ### Prerequisites
 
@@ -65,58 +65,21 @@ Once application code exists:
 python -m radspion.app
 ```
 
-## Mission markdown (Brief / Debrief)
-
-The app uses **[Python-Markdown](https://python-markdown.github.io/)** (`markdown` on PyPI), not Mistune. For coursework write-ups with **fenced code blocks** (triple backticks), including blocks inside numbered or bulleted lists, enable:
-
-- `markdown.extensions.fenced_code` — ``` blocks between paragraphs
-- `markdown.extensions.sane_lists` — stable list numbering when items have multiple blocks
-- `markdown.extensions.tables` — optional pipe tables
-
-**List + code:** In CommonMark, a fenced block inside a list item must be indented to the **content column** of that item (typically four spaces past the list marker). Example:
-
-```markdown
-1. Run diagnostics:
-
-   ```bash
-   git status
-   ```
-
-2. Continue with the next step.
-```
-
-Mistune and minimal converters often break nested fences or list numbering; Python-Markdown with `sane_lists` is the recommended default for this project.
-
-## Testing
-
-Run from the project root (not from `src/`):
-
-```bash
-pytest
-```
-
-`pytest.ini` enforces **90%** coverage on the `radspion` package (`--cov-fail-under=90`). CI will fail until application code and tests exist. Use `# pragma: no cover` only sparingly and by team agreement.
-
-## Static analysis (Ruff)
-
-Ruff replaces Pylint for this project. Configuration is in `pyproject.toml` under `[tool.ruff]`.
-
-**Defaults vs our config:** Ruff’s default rule set is only `E` (pycodestyle errors) and `F` (pyflakes). That is a minimal bar. We also enable `W`, `I` (import sort), `B` (bugbear), `UP` (modern Python), and `SIM` (simplifications)—a practical set for teaching without Pylint’s per-function complexity caps.
-
-```bash
-ruff check src tests
-ruff format --check src tests   # or: ruff format src tests
-```
-
-Disable a rule locally only when necessary: `# noqa: CODE` on the line, after discussion.
-
 ## Makefile
+
+Run from the project root (not from `src/`).
 
 | Target | Action |
 |--------|--------|
-| `make` | Tests, then Ruff lint + format check |
-| `make test` | `pytest` |
-| `make style` | `ruff check` + `ruff format --check` |
+| `make` (default) | Unit tests, then Ruff lint and format check |
+| `make test` | `pytest` only |
+| `make style` | Ruff only |
+
+Before you push or open a PR, run **`make`** and fix anything that fails. CI runs the same checks.
+
+**Tests** must pass with **at least 90% line coverage** on the `radspion` package. Threshold and pytest options are in [`pytest.ini`](../pytest.ini). Use `# pragma: no cover` only sparingly and by team agreement.
+
+**Static analysis** (Ruff lint and format) must pass with no violations. Rule selection and formatting options are in [`pyproject.toml`](../pyproject.toml) under `[tool.ruff]`. Use `# noqa: CODE` on a line only sparingly and by team agreement, after discussing why the rule should not apply there.
 
 ## CI/CD (GitHub Actions)
 
@@ -128,99 +91,110 @@ Configure repository secrets for redeploy: `DEPLOY_SSH_KEY`, `DEPLOY_HOST`, `DEP
 
 ## Production (webapps)
 
-Production serves **only** `https://www.radspion.com`. Other hostnames redirect in nginx. The app runs as Unix user **`radspion`** with gunicorn on **`unix:/run/radspion/gunicorn.sock`** (no TCP port).
+Canonical URL: **`https://www.radspion.com`**. Gunicorn binds **`unix:/run/radspion/gunicorn.sock`** (see `deploy/radspion.service`). Repo on server: **`/home/radspion/radspion`**.
 
-Repo path on the server: **`/home/radspion/radspion`**.
+### Deploy user and permissions
 
-### A. One-time setup (admin with sudo)
+Create the `radspion` account, SSH access, nginx socket access, and passwordless `systemctl` for `redeploy.sh`. Run as an admin with `sudo`, except step 2 (log in as `radspion`).
 
-Run from any account that can `sudo`. Replace the example SSH public key with yours.
+**1. Create the user**
 
 ```bash
-# 1. Deploy user (set password when prompted; you can disable password login later)
 sudo adduser radspion
-
-# 2. SSH key login for radspion
-sudo install -d -m 700 -o radspion -g radspion /home/radspion/.ssh
-sudo tee /home/radspion/.ssh/authorized_keys >/dev/null <<'EOF'
-ssh-ed25519 AAAA...paste-your-public-key-here...
-EOF
-sudo chown radspion:radspion /home/radspion/.ssh/authorized_keys
-sudo chmod 600 /home/radspion/.ssh/authorized_keys
-
-# 3. Clone as radspion (GitHub deploy key or HTTPS — configure auth first)
-sudo -u radspion -i
-git clone https://github.com/YOUR_ORG/radspion.git /home/radspion/radspion
-exit
-
-# 4. Socket permissions — nginx (www-data) must be in group radspion
-cd /home/radspion/radspion
-sudo ./scripts/setup_deploy_group.sh
-
-# 5. Passwordless systemctl for redeploy.sh (optional but recommended)
-sudo cp deploy/sudoers-radspion /etc/sudoers.d/radspion
-sudo chmod 440 /etc/sudoers.d/radspion
-sudo visudo -cf /etc/sudoers.d/radspion
-
-# 6. TLS (four names, one cert; canonical first)
-sudo certbot certonly --nginx \
-  -d www.radspion.com -d radspion.com -d radspion.org -d www.radspion.org
-
-# Restore 01-block-bad-hostnames.conf to ONLY the self-signed default_server (return 444)
-# if certbot added a second server block for Radspion names.
-
-# 7. nginx vhost
-sudo cp /home/radspion/radspion/deploy/nginx/radspion.conf /etc/nginx/conf.d/radspion.conf
-sudo nginx -t && sudo systemctl reload nginx
-
-# 8. systemd unit
-sudo cp /home/radspion/radspion/deploy/radspion.service /etc/systemd/system/radspion.service
-sudo systemctl daemon-reload
-sudo systemctl enable radspion
 ```
 
-### B. App setup (as radspion)
+**2. SSH keys (as `radspion`)** — `su - radspion` or `sudo -u radspion -i`:
 
 ```bash
-sudo -u radspion -i
-cd ~/radspion
+ssh-keygen
+```
 
+**3. Socket permissions (admin)**
+
+```bash
+sudo usermod -aG radspion www-data
+```
+
+**4. Sudoers for redeploy (admin)** — install `deploy/sudoers-radspion` from this repo:
+
+```bash
+sudo cp /home/radspion/radspion/deploy/sudoers-radspion /etc/sudoers.d/radspion
+sudo chmod 440 /etc/sudoers.d/radspion
+sudo visudo -cf /etc/sudoers.d/radspion
+```
+
+### TLS certificates (one-time, admin)
+
+Issue one certificate for all four hostnames (canonical name first). DNS must already point at webapps.
+
+```bash
+sudo certbot certonly --nginx \
+  -d www.radspion.com -d radspion.com -d radspion.org -d www.radspion.org
+```
+
+### Application setup (as radspion)
+
+* Clone the repo:
+
+
+* Create venv and install libraries
+
+```bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 pip install -e .
-
-# Create .env (never commit); see Configuration table above
-$EDITOR .env
-
-./scripts/create_empty_db.sh   # production default, or bootstrap_sample_class.sh for demo
-
-sudo systemctl start radspion
-exit
 ```
 
-Example production `.env` entries: `BASE_URL=https://www.radspion.com`, OAuth client values, `JWT_SECRET`.
+* Create `~/radspion/.env` (see Configuration above). 
 
-### C. Verify
+
+* Initialize the database:
+
 
 ```bash
-curl -sI https://radspion.com/ | grep -i location
-curl -s https://www.radspion.com/
-sudo systemctl status radspion
-ls -l /run/radspion/gunicorn.sock    # group radspion, mode srw-rw----
-sudo certbot renew --dry-run
+./scripts/create_empty_db.sh
 ```
 
-### Socket permissions (how it fits together)
+  Use `./scripts/bootstrap_sample_class.sh` instead for the full example class locally.
 
-| Piece | Detail |
-|-------|--------|
-| gunicorn | Runs as `User=radspion`, `Group=radspion`; creates `/run/radspion/gunicorn.sock` |
-| `UMask=0007` | Socket is group-readable/writable, not world-accessible |
-| nginx | Runs as `www-data`; `setup_deploy_group.sh` adds `www-data` to group `radspion` |
-| nginx config | `proxy_pass http://unix:/run/radspion/gunicorn.sock:/;` |
 
-If you get **502 Bad Gateway**, check: `systemctl status radspion`, socket exists, and `groups www-data` includes `radspion`.
+### systemd (admin, after clone)
+
+Install the unit and start gunicorn before nginx serves traffic to this app
+
+```bash
+sudo cp /home/radspion/radspion/deploy/radspion.service /etc/systemd/system/radspion.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now radspion
+```
+
+Confirm the app responds on the Unix socket
+
+```bash
+curl --unix-socket /run/radspion/gunicorn.sock http://localhost/
+```
+
+
+### nginx (admin)
+
+Install the vhost and reload nginx.
+
+```bash
+sudo cp /home/radspion/radspion/deploy/nginx/radspion.conf /etc/nginx/conf.d/radspion.conf
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+Check HTTPS through nginx (from your laptop, or on webapps with loopback so SNI matches):
+
+```bash
+curl -sS https://www.radspion.com/
+# on webapps only:
+curl -sS --resolve www.radspion.com:443:127.0.0.1 https://www.radspion.com/
+```
+
+If `curl https://www.radspion.com` **hangs on webapps** but works from your laptop, that is usually a **firewall / hairpin** issue (traffic to the public IP from inside the box), not a broken app.
+
 
 ### Redeploy
 
@@ -232,17 +206,6 @@ cd /home/radspion/radspion
 ```
 
 App-only deploys do not require an nginx reload.
-
-### Layout reference
-
-| Piece | Location |
-|-------|----------|
-| Deploy user / home | `radspion` → `/home/radspion/radspion` |
-| nginx vhost (template) | `deploy/nginx/radspion.conf` |
-| systemd unit (template) | `deploy/radspion.service` |
-| sudoers fragment (template) | `deploy/sudoers-radspion` |
-| gunicorn socket | `unix:/run/radspion/gunicorn.sock` |
-| TLS files | `/etc/letsencrypt/live/www.radspion.com/` |
 
 ## UI mockups
 

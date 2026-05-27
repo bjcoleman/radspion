@@ -19,4 +19,4 @@ Read in order:
 
 **SQL:** [src/radspion/sql/schema.sql](../src/radspion/sql/schema.sql), [src/radspion/sql/seed_example_class.sql](../src/radspion/sql/seed_example_class.sql)
 
-**Development:** [dev.md](dev.md) · **API outline:** [api.yaml](api.yaml)
+**Development:** [dev.md](dev.md) · **Mission markdown:** [mission-markdown.md](mission-markdown.md) · **API outline:** [api.yaml](api.yaml)

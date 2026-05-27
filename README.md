@@ -23,7 +23,7 @@ content/missions/      Live mission Brief / Debrief (basic-training default)
 content/samples/       Sample mission packs (example class)
 deploy/                nginx vhost, systemd unit (production)
 docs/                  Design docs, API outline, UI mockups
-scripts/               DB bootstrap, deploy group setup
+scripts/               DB bootstrap scripts
 database/              SQLite file (gitignored)
 tests/                 Unit tests
 ```
