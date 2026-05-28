@@ -9,16 +9,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Redeploy via SSH (jump box)
-        env:
-          PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-          JUMP_HOST: ${{ secrets.DEPLOY_JUMP_HOST }}
-          JUMP_USER: ${{ secrets.DEPLOY_JUMP_USER }}
-          HOSTNAME: ${{ secrets.DEPLOY_HOST }}
-          USER_NAME: ${{ secrets.DEPLOY_USER }}
-        run: |
-          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          ssh -i private_key \
-            -o StrictHostKeyChecking=accept-new \
-            -J "${JUMP_USER}@${JUMP_HOST}" \
-            "${USER_NAME}@${HOSTNAME}" \
-            'cd /home/radspion/radspion && ./redeploy.sh'
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          proxy_host: ${{ secrets.DEPLOY_JUMP_HOST }}
+          proxy_username: ${{ secrets.DEPLOY_JUMP_USER }}
+          proxy_key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            set -e
+            cd /home/radspion/radspion
+            ./redeploy.sh
