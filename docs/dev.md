@@ -89,15 +89,17 @@ Before you push or open a PR, run **`make`** and fix anything that fails. CI run
 
 Configure repository secrets for redeploy (ProxyJump via jump box):
 
-| Secret | Purpose |
-|--------|---------|
-| `DEPLOY_SSH_KEY` | Private key (public key in jump user and `radspion` on webapps `authorized_keys`) |
-| `DEPLOY_JUMP_HOST` | Jump box hostname |
-| `DEPLOY_JUMP_USER` | Jump box SSH user |
-| `DEPLOY_HOST` | webapps hostname as reachable from the jump box |
-| `DEPLOY_USER` | `radspion` |
+| Secret | Example (Moravian) |
+|--------|----------------------|
+| `DEPLOY_SSH_KEY` | Full private key file
+| `DEPLOY_JUMP_USER` | user on jumpbox |
+| `DEPLOY_JUMP_HOST` | hostname of jumpbox |
+| `DEPLOY_USER` | user on server |
+| `DEPLOY_HOST` | hostname of server |
 
-The workflow SSHs to `/home/radspion/radspion` on webapps and runs `redeploy.sh`.
+
+The workflow uses [appleboy/ssh-action](https://github.com/appleboy/ssh-action) with `proxy_*` for the jump box (same key for jump and webapps).
+
 
 ## Production (webapps)
 
