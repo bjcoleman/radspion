@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy Policy — Radspion{% endblock %}
+{% block meta_description %}Privacy policy for Radspion, Moravian University's field operations platform.{% endblock %}
+{% block main_class %}page__main--content{% endblock %}
+
+{% block content %}
+  <article class="content-page">
+    <h1 class="content-page__title">Privacy Policy</h1>
+    <p><em>Last updated: May 2026</em></p>
+
+    <p>
+      Radspion is operated by Moravian University for educational coursework.
+      This policy describes what we collect when you sign in and use the site.
+    </p>
+
+    <h2>Information we collect</h2>
+    <p>
+      When you sign in with Google, we receive your Moravian Google account email
+      address, display name, and Google account identifier. We store this to
+      identify your agent profile, mission progress, and submissions.
+    </p>
+
+    <h2>How we use information</h2>
+    <p>
+      We use your account information to provide access to missions, record
+      completion, and support course instruction. We do not sell your data or use
+      it for advertising.
+    </p>
+
+    <h2>Sharing</h2>
+    <p>
+      Course instructors and operators may view roster and mission data for classes
+      you are enrolled in. We do not share your information with third parties except
+      as required to operate Google sign-in or by law.
+    </p>
+
+    <h2>Retention</h2>
+    <p>
+      Data is retained for the academic term and reasonable period afterward for
+      grading and records, then may be removed from active systems.
+    </p>
+
+    <h2>Contact</h2>
+    <p>
+      Questions about this policy may be directed to your course instructor or
+      Moravian University IT.
+    </p>
+
+    <p>
+      <a href="{{ url_for('index') }}">Return to sign-in</a>
+    </p>
+  </article>
+{% endblock %}
