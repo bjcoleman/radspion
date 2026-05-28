@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<!-- Static mission detail mockup — Alice / remote-access (active) -->
+<!-- Static mission detail mockup — submit invalid code; transmission modal outcome -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Training: Remote Access — Radspion</title>
+  <title>Training: Remote Access — Verification Failed</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/radspion.css">
 </head>
-<body class="page page--mission">
+<body class="page page--mission has-transmission-modal">
   <header class="site-header">
     <div class="site-header__brand">
       <img
@@ -124,6 +124,7 @@ cable(internic + system.gif.teraflops(barSpeakers,
             autocomplete="off"
             spellcheck="false"
             placeholder="Recovered data"
+            value="WRONG-DATA"
           >
           <button class="completion-form__submit" type="button">Submit</button>
         </form>
@@ -140,5 +141,76 @@ cable(internic + system.gif.teraflops(barSpeakers,
     </ul>
     <p class="site-footer__meta">Moravian University · Educational Use</p>
   </footer>
+
+  <div class="transmission-modal">
+    <div class="transmission-modal__backdrop"></div>
+    <section
+      class="transmission-modal__dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="transmission-heading"
+    >
+      <div class="transmission-modal__progress" id="transmission-progress">
+        <h2 id="transmission-heading" class="transmission-modal__title text-mono">Secure transmission</h2>
+        <p class="transmission-modal__step" id="transmission-step">Initializing secure transmission...</p>
+        <div class="transmission-modal__bar" aria-hidden="true">
+          <div class="transmission-modal__bar-fill" id="transmission-bar-fill"></div>
+        </div>
+      </div>
+      <div class="transmission-modal__outcome" id="transmission-outcome" hidden>
+        <h2 class="transmission-modal__title">Verification failed</h2>
+        <p class="transmission-modal__message">
+          We reviewed your transmission, and the recovered data does not match mission
+          parameters. Continue your fieldwork and submit again when you have the correct value.
+        </p>
+        <button type="button" class="transmission-modal__ok">OK</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      var progress = document.getElementById("transmission-progress");
+      var outcome = document.getElementById("transmission-outcome");
+      var stepEl = document.getElementById("transmission-step");
+      var barEl = document.getElementById("transmission-bar-fill");
+      if (!progress || !outcome || !stepEl || !barEl) return;
+
+      var prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var steps = [
+        { text: "Contacting agency relay nodes…", width: 25, delay: 500 },
+        { text: "Negotiating ephemeral tunnel…", width: 50, delay: 550 },
+        { text: "Validating agent credentials…", width: 75, delay: 550 },
+        { text: "Sealing field transmission…", width: 88, delay: 800 }
+      ];
+
+      if (prefersReducedMotion) {
+        progress.hidden = true;
+        outcome.hidden = false;
+        return;
+      }
+
+      var i = 0;
+      function runStep() {
+        if (i >= steps.length) {
+          setTimeout(function () {
+            barEl.style.width = "100%";
+            setTimeout(function () {
+              progress.hidden = true;
+              outcome.hidden = false;
+            }, 220);
+          }, 650);
+          return;
+        }
+        var step = steps[i];
+        stepEl.textContent = step.text;
+        barEl.style.width = step.width + "%";
+        i += 1;
+        setTimeout(runStep, step.delay);
+      }
+
+      setTimeout(runStep, 800);
+    })();
+  </script>
 </body>
 </html>

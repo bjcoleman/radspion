@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Completed mission — Alice / learn-the-system (seed); debrief from sample_files/debrief.md — static prototype; other completed missions would use slugs per user in production -->
+<!-- Static mission detail mockup — Alice / learn-the-system (completed) -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -12,7 +12,7 @@
 </head>
 <body class="page page--mission">
   <header class="site-header">
-    <a class="site-header__brand" href="index.html">
+    <div class="site-header__brand">
       <img
         class="site-header__mark"
         src="../../logos/radspion_mark_white.svg"
@@ -21,19 +21,19 @@
         alt=""
       >
       <span class="site-header__title">Radspion</span>
-    </a>
+    </div>
     <div class="site-header__agent">
       <span class="site-header__agent-label">Agent</span>
       <span class="site-header__agent-name">Alice</span>
       <span class="site-header__agent-email text-mono">alice@moravian.edu</span>
     </div>
-    <a class="site-header__action" href="index.html">Sign out</a>
+    <span class="site-header__action">Sign out</span>
   </header>
 
   <main class="page__main page__main--mission">
     <div class="mission-detail">
       <nav class="mission-detail__nav">
-        <a class="mission-detail__back" href="agent-dashboard-alice.html">← Mission roster</a>
+        <span class="mission-detail__back">← Mission Dashboard</span>
       </nav>
 
       <header class="mission-detail__header">
@@ -47,49 +47,47 @@
           The following data is secured in agency archives.
         </p>
         <div class="recovered-data__block">
-          <button type="button" class="copy-btn" aria-label="Copy to clipboard">
-            <svg class="copy-btn__icon" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="9" y="9" width="13" height="13" rx="2"/>
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-            </svg>
-          </button>
           <pre class="recovered-data__value text-mono">LEARN-SYSTEM-OK</pre>
         </div>
       </section>
 
       <section class="mission-detail__section" aria-labelledby="debrief-heading">
-        <h2 id="debrief-heading" class="mission-detail__section-title text-mono">Debrief</h2>
-        <article class="markdown">
-          <p>Congratulations! You found some important data.</p>
-
-          <h2>Quoque arcanis habitataque aut</h2>
-          <p>Luctus flammas mea vivunt alvo; in a dumque facibus. Sortita tenet ingenium, velatus recessit <em>cardine</em> Fames fraudes.</p>
-
-          <blockquote>
-            <p>Male virtus acerbo! Deam iam; dubitanti suas, imum sibi! Captatam toto, intonat et utque, o servare <a href="#quoque-arcanis-habitataque-aut">fugerent adempta</a>. Oris plagae est mugitus furta cunctisque amplexus. Cum <em>aere</em>, dixit, ope, crura puellari uteri quinquennia amictu recentes religione.</p>
-          </blockquote>
-
-          <p>Amores vultus deam pavidamque, cadmus! Cum est ereptamque saeva, <strong>Libys quem</strong>, sic in maiorque adversos corpus devexo et exclamat, et. Caritura fugam funduntque voces lustraverat nec modo adversaque, ne, tepidique.</p>
-
-          <ul>
-            <li>Fuit isto et</li>
-            <li>Cum que emissi Damasicthona solvunt sed curvavit</li>
-            <li>Nomine nondum ortus aures</li>
-            <li>Arcus iunctura tendentes dum haec partu quamvis</li>
-            <li>Sub curam corque</li>
-            <li>Hastilia terrae</li>
-          </ul>
-
-          <p>Reperire capacis, talia et est, crescunt, aliquid, unus, sumpto geminos medioque. Ista priori et in altera grave sidereis distulit oracula, adverti: voluisse infesto.</p>
-
-          <div class="code-block">
-            <button type="button" class="copy-btn" aria-label="Copy to clipboard">
-              <svg class="copy-btn__icon" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="9" y="9" width="13" height="13" rx="2"/>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        <details class="mission-group mission-group--collapsible" open>
+          <summary class="mission-group__summary">
+            <span class="mission-group__chevron" aria-hidden="true">
+              <svg class="mission-group__chevron-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <polyline class="mission-group__chevron-path mission-group__chevron-path--closed" points="12,6 18,12 12,18" />
+                <polyline class="mission-group__chevron-path mission-group__chevron-path--open" points="6,10 12,16 18,10" />
               </svg>
-            </button>
-            <pre><code>var component = dialog_optical_compile;
+            </span>
+            <span id="debrief-heading" class="mission-detail__section-title text-mono">Mission Debrief</span>
+          </summary>
+          <!-- Production: server-side markdown -->
+          <article class="markdown">
+            <p>Congratulations! You found some important data.</p>
+
+            <h2>Quoque arcanis habitataque aut</h2>
+            <p>Luctus flammas mea vivunt alvo; in a dumque facibus. Sortita tenet ingenium, velatus recessit <em>cardine</em> Fames fraudes.</p>
+
+            <blockquote>
+              <p>Male virtus acerbo! Deam iam; dubitanti suas, imum sibi! Captatam toto, intonat et utque, o servare <a href="#">fugerent adempta</a>. Oris plagae est mugitus furta cunctisque amplexus. Cum <em>aere</em>, dixit, ope, crura puellari uteri quinquennia amictu recentes religione.</p>
+            </blockquote>
+
+            <p>Amores vultus deam pavidamque, cadmus! Cum est ereptamque saeva, <strong>Libys quem</strong>, sic in maiorque adversos corpus devexo et exclamat, et. Caritura fugam funduntque voces lustraverat nec modo adversaque, ne, tepidique.</p>
+
+            <ul>
+              <li>Fuit isto et</li>
+              <li>Cum que emissi Damasicthona solvunt sed curvavit</li>
+              <li>Nomine nondum ortus aures</li>
+              <li>Arcus iunctura tendentes dum haec partu quamvis</li>
+              <li>Sub curam corque</li>
+              <li>Hastilia terrae</li>
+            </ul>
+
+            <p>Reperire capacis, talia et est, crescunt, aliquid, unus, sumpto geminos medioque. Ista priori et in altera grave sidereis distulit oracula, adverti: voluisse infesto.</p>
+
+            <div class="code-block">
+              <pre><code>var component = dialog_optical_compile;
 dithering -= basic_motherboard;
 if (clockCycle + batch(3)) {
     desktop_host += softwarePpm;
@@ -99,18 +97,28 @@ if (clockCycle + batch(3)) {
 var sip_right = fpu_association_balancing(modem_mirrored_analyst,
         led_screenshot.sku_and.metaOverclockingPdf(4, soft_full,
         keyProxyThumbnail) + 68);</code></pre>
-          </div>
+            </div>
 
-          <p>Rapienda aciem simul. <a href="https://jaspervdj.be/lorem-markdownum/">Et seduxit</a> simul, neci <code>sequenceIoMips</code> tamen.</p>
-        </article>
+            <p>Rapienda aciem simul. <a href="#">Et seduxit</a> simul, neci <code>sequenceIoMips</code> tamen.</p>
+          </article>
+        </details>
       </section>
 
-      <section class="mission-detail__section">
-        <details class="brief-collapse">
-          <summary class="brief-collapse__summary">Mission Brief</summary>
+      <section class="mission-detail__section" aria-labelledby="brief-heading">
+        <details class="mission-group mission-group--collapsible">
+          <summary class="mission-group__summary">
+            <span class="mission-group__chevron" aria-hidden="true">
+              <svg class="mission-group__chevron-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <polyline class="mission-group__chevron-path mission-group__chevron-path--closed" points="12,6 18,12 12,18" />
+                <polyline class="mission-group__chevron-path mission-group__chevron-path--open" points="6,10 12,16 18,10" />
+              </svg>
+            </span>
+            <span id="brief-heading" class="mission-detail__section-title text-mono">Mission Brief</span>
+          </summary>
+          <!-- Production: server-side markdown -->
           <article class="markdown">
             <h2>Overview</h2>
-            <p>Lorem ipsum dolor sit amet <em>consectetur adipiscing</em> elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In <code>id</code> cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis <code>massa</code> nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel <a href="https://jaspervdj.be/lorem-markdownum">class aptent taciti sociosqu</a>. Ad litora torquent per conubia nostra inceptos himenaeos.</p>
+            <p>Lorem ipsum dolor sit amet <em>consectetur adipiscing</em> elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In <code>id</code> cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis <code>massa</code> nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel <a href="#">class aptent taciti sociosqu</a>. Ad litora torquent per conubia nostra inceptos himenaeos.</p>
             <p><img src="https://i.ibb.co/WBBPFsw/system-arch.png" alt="system diagram" width="800" height="450"></p>
             <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.</p>
 
@@ -136,12 +144,6 @@ var sip_right = fpu_association_balancing(modem_mirrored_analyst,
             <p>Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas.</p>
 
             <div class="code-block">
-              <button type="button" class="copy-btn" aria-label="Copy to clipboard">
-                <svg class="copy-btn__icon" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="9" y="9" width="13" height="13" rx="2"/>
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                </svg>
-              </button>
               <pre><code>sampling.winsock_smtp = 3 * -4;
 sms.ideHard /= -3;
 systray += halftone_cyberspace_imap(dtdModule(wildcard, database,
@@ -173,14 +175,14 @@ cable(internic + system.gif.teraflops(barSpeakers,
     </div>
   </main>
 
-  <footer class="page__footer site-footer site-footer--compact">
+  <footer class="page__footer site-footer">
+    <p class="site-footer__about">
+      <a href="about.html">What is Radspion?</a>
+    </p>
     <ul class="site-footer__legal">
-      <li><a href="about.html">About</a></li>
-      <li><a href="privacy.html">Privacy</a></li>
-      <li><a href="terms.html">Terms</a></li>
+      <li><a href="privacy.html">Privacy Policy</a></li>
     </ul>
-    <p class="site-footer__meta">Moravian University · Educational use</p>
+    <p class="site-footer__meta">Moravian University · Educational Use</p>
   </footer>
-  <script src="js/copy.js"></script>
 </body>
 </html>

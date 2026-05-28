@@ -20,6 +20,6 @@ Each mission directory is named by **slug** and contains `brief.md` and `debrief
 
 Copied example missions under `content/missions/` are gitignored; edit sources under `content/samples/example-class/` and re-run bootstrap to refresh.
 
-**UI mockups** use sample copy in `docs/ui/sample_files/` only; production content lives under `content/missions/`.
+**UI mockups** in [`docs/ui/`](../docs/ui/) inline brief/debrief HTML for layout review; production content lives under `content/missions/`. When refreshing mockup copy, use `content/missions/<slug>/` or `content/samples/example-class/` as the source of truth.
 
 When authoring lists with fenced code blocks, indent the opening ` ``` ` to align with list text (CommonMark). The app renders Brief/Debrief with **Python-Markdown** (`fenced_code`, `sane_lists`, `tables`) — see [docs/mission-markdown.md](../docs/mission-markdown.md).

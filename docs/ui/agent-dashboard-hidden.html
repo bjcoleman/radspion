@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<!-- Static dashboard mockup — completed missions hidden (toggle off) -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mission Dashboard - Radspion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/radspion.css">
+</head>
+<body class="page page--dashboard">
+  <header class="site-header">
+    <div class="site-header__brand">
+      <img
+        class="site-header__mark"
+        src="../../logos/radspion_mark_white.svg"
+        width="36"
+        height="36"
+        alt=""
+      >
+      <span class="site-header__title">Radspion</span>
+    </div>
+    <div class="site-header__agent">
+      <span class="site-header__agent-label">Agent</span>
+      <span class="site-header__agent-name">Alice</span>
+      <span class="site-header__agent-email text-mono">alice@moravian.edu</span>
+    </div>
+    <span class="site-header__action">Sign out</span>
+  </header>
+
+  <main class="page__main page__main--dashboard">
+    <div class="dashboard">
+      <header class="dashboard__intro">
+        <h1 class="dashboard__heading">Mission Dashboard</h1>
+        <p class="dashboard__lede text-muted">
+          Missions are assigned by Command, or added when you submit an unlock code
+          that confirms you are ready.
+        </p>
+      </header>
+
+      <section class="unlock-panel dashboard__unlock" aria-label="Unlock mission">
+        <form class="unlock-form" action="#" method="post">
+          <label class="sr-only" for="unlock-code">Mission unlock code</label>
+          <input
+            class="unlock-form__input text-mono"
+            type="text"
+            id="unlock-code"
+            name="unlock_code"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Enter Mission Unlock Code"
+          >
+          <button class="unlock-form__submit" type="button">Validate</button>
+        </form>
+      </section>
+
+      <div class="dashboard__controls">
+        <label class="dashboard__toggle">
+          <input type="checkbox" class="dashboard__toggle-input">
+          <span class="dashboard__toggle-label">Show completed missions</span>
+        </label>
+      </div>
+
+      <!-- Expanded: has active missions; completed hidden -->
+      <details class="mission-group mission-group--collapsible" open>
+        <summary class="mission-group__summary">
+          <span class="mission-group__chevron" aria-hidden="true">
+            <svg class="mission-group__chevron-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <polyline class="mission-group__chevron-path mission-group__chevron-path--closed" points="12,6 18,12 12,18" />
+              <polyline class="mission-group__chevron-path mission-group__chevron-path--open" points="6,10 12,16 18,10" />
+            </svg>
+          </span>
+          <span class="mission-group__title">Clearance Level: 220.2 DevOps</span>
+          <span class="mission-group__counts text-muted">1 active · 2 completed (hidden)</span>
+        </summary>
+        <ul class="mission-list">
+          <li class="mission-list__item">
+            <div class="mission-card mission-card--active" data-slug="remote-access" data-status="active">
+              <span class="mission-card__body">
+                <span class="mission-card__title">Training: Remote Access</span>
+                <span class="mission-card__slug text-mono">remote-access</span>
+                <span class="status-badge status-badge--active">active</span>
+              </span>
+              <span class="mission-card__arrow" aria-hidden="true">→</span>
+            </div>
+          </li>
+        </ul>
+      </details>
+
+      <!-- Collapsed: only completed missions (all hidden) -->
+      <details class="mission-group mission-group--collapsible">
+        <summary class="mission-group__summary">
+          <span class="mission-group__chevron" aria-hidden="true">
+            <svg class="mission-group__chevron-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <polyline class="mission-group__chevron-path mission-group__chevron-path--closed" points="12,6 18,12 12,18" />
+              <polyline class="mission-group__chevron-path mission-group__chevron-path--open" points="6,10 12,16 18,10" />
+            </svg>
+          </span>
+          <span class="mission-group__title">Clearance Level: Orientation</span>
+          <span class="mission-group__counts text-muted">1 completed (hidden)</span>
+        </summary>
+        <ul class="mission-list">
+        </ul>
+      </details>
+    </div>
+  </main>
+
+  <footer class="page__footer site-footer">
+    <p class="site-footer__about">
+      <a href="about.html">What is Radspion?</a>
+    </p>
+    <ul class="site-footer__legal">
+      <li><a href="privacy.html">Privacy Policy</a></li>
+    </ul>
+    <p class="site-footer__meta">Moravian University · Educational Use</p>
+  </footer>
+</body>
+</html>

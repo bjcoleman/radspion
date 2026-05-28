@@ -18,7 +18,7 @@ Ordered by **dependency** — build from the top down. Each case lists **Require
 | Debrief | Only after mission `completed` |
 | Error copy (UC-020, UC-022, UC-023) | Wording TBD — you’ll review per case |
 | Web framework | **Flask + Jinja** SSR; JSON API for unlock and mission submit |
-| Brief/Debrief paths | Live missions under `content/missions/<slug>/`; example pack under `content/samples/example-class/` (bootstrap copies into live); UI mockups reuse `docs/ui/sample_files/` only |
+| Brief/Debrief paths | Live missions under `content/missions/<slug>/`; example pack under `content/samples/example-class/` (bootstrap copies into live); UI mockups in `docs/ui/` inline HTML snapshots (not separate markdown files) |
 | Operator config V1 | SQL/seed only — no in-app mission/roster editor |
 | Operator progress V1 | Read-only UI: groups → missions → roster status (`locked` / `active` / `complete`) |
 | `users.is_operator` | SQLite `INTEGER` `0`/`1` (app treats as boolean); gates operator routes |
@@ -104,7 +104,7 @@ Agent authenticates with Google; app establishes a session tied to a `users` row
 
 **Actor:** Operator  
 **Requires:** UC-002 (for example paths)  
-Operator-authored markdown at paths stored on `missions` under `content/missions/<slug>/`. The example-class bootstrap copies from `content/samples/example-class/` and loads `seed_example_class.sql`. UI mockups use a single sample brief/debrief under `docs/ui/sample_files/` — not one file per mission.
+Operator-authored markdown at paths stored on `missions` under `content/missions/<slug>/`. The example-class bootstrap copies from `content/samples/example-class/` and loads `seed_example_class.sql`. UI mockups inline representative brief/debrief in HTML (e.g. `mission-detail-active.html`, `mission-detail-completed.html`) — not one mockup file per mission.
 
 ---
 

@@ -160,6 +160,89 @@ a:hover {
   color: var(--color-text-faint);
 }
 
+.access-panel__prompt {
+  margin: 0 0 var(--space-sm);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-accent);
+}
+
+.access-panel__prompt--secondary {
+  margin-top: var(--space-md);
+}
+
+.access-panel__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.access-panel__input {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  text-align: center;
+  color: var(--color-text);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.access-panel__input::placeholder {
+  color: var(--color-text-faint);
+}
+
+.access-panel__input:focus {
+  outline: none;
+  border-color: var(--color-accent-dim);
+  box-shadow: 0 0 0 2px rgba(196, 163, 90, 0.2);
+}
+
+.access-panel__submit {
+  width: 100%;
+  padding: 0.625rem 1rem;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-bg);
+  background: var(--color-accent);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.access-panel__submit:hover {
+  background: #d4b56a;
+}
+
+.access-panel__submit:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.access-panel__hint {
+  margin: var(--space-sm) 0 0;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.access-panel__divider {
+  width: 100%;
+  height: 1px;
+  margin: var(--space-lg) 0;
+  background: var(--color-border-subtle);
+}
+
+.access-panel__subheading {
+  margin: 0 0 var(--space-sm);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+}
+
 .access-panel__domain {
   margin: var(--space-lg) 0 0;
   font-size: 0.8125rem;
@@ -210,6 +293,11 @@ a:hover {
   flex-shrink: 0;
   width: 1.125rem;
   height: 1.125rem;
+}
+
+.btn-google--agent-login {
+  max-width: none;
+  font-family: var(--font-sans);
 }
 
 /* Site footer — transparency + OAuth policy links */
@@ -367,13 +455,42 @@ a:hover {
   font-size: 1.5rem;
   font-weight: 600;
   letter-spacing: 0.04em;
+  color: var(--color-accent);
 }
 
 .dashboard__lede {
-  margin: 0;
-  max-width: 36rem;
+  margin: 0 0 var(--space-md);
   font-size: 0.9375rem;
   line-height: 1.6;
+}
+
+.dashboard__controls {
+  margin-bottom: var(--space-2xl);
+}
+
+.dashboard__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  cursor: default;
+}
+
+.dashboard__toggle-input {
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  accent-color: var(--color-accent);
+  cursor: default;
+}
+
+.dashboard__toggle-label {
+  user-select: none;
+}
+
+.dashboard__unlock {
+  margin-bottom: var(--space-lg);
 }
 
 /* Unlock code (agent dashboard) */
@@ -462,6 +579,82 @@ a:hover {
   border-top: 1px solid var(--color-border-subtle);
 }
 
+.mission-group--collapsible {
+  border-top: none;
+  padding-top: 0;
+}
+
+.mission-group--collapsible + .mission-group--collapsible {
+  margin-top: var(--space-2xl);
+  padding-top: var(--space-2xl);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.mission-group__summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-xs) var(--space-md);
+  margin-bottom: var(--space-lg);
+  padding: 0;
+  list-style: none;
+  cursor: pointer;
+}
+
+.mission-group__summary::-webkit-details-marker {
+  display: none;
+}
+
+.mission-group__chevron {
+  flex-shrink: 0;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-right: var(--space-sm);
+  color: var(--color-text-muted);
+}
+
+.mission-group__chevron-icon {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.mission-group__chevron-path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Vertex points right (closed) or down (open) */
+.mission-group__chevron-path--open {
+  display: none;
+}
+
+.mission-group--collapsible[open] > .mission-group__summary .mission-group__chevron-path--closed {
+  display: none;
+}
+
+.mission-group--collapsible[open] > .mission-group__summary .mission-group__chevron-path--open {
+  display: inline;
+}
+
+.mission-group__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--color-accent);
+}
+
+.mission-group__counts {
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+}
+
 .mission-group__header {
   margin-bottom: var(--space-lg);
 }
@@ -471,6 +664,7 @@ a:hover {
   font-size: 1.125rem;
   font-weight: 600;
   letter-spacing: 0.02em;
+  color: var(--color-accent);
 }
 
 .mission-group__meta {
@@ -479,6 +673,10 @@ a:hover {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--color-text-faint);
+}
+
+.mission-group--collapsible .mission-list {
+  margin-top: 0;
 }
 
 .mission-list {
@@ -614,6 +812,7 @@ a:hover {
   font-size: 1.5rem;
   font-weight: 600;
   letter-spacing: 0.02em;
+  color: var(--color-accent);
 }
 
 .mission-detail__meta {
@@ -710,6 +909,24 @@ a:hover {
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
+}
+
+.markdown .code-block:not(:has(.copy-btn)) pre {
+  padding-top: var(--space-md);
+}
+
+/* Collapsible Brief / Debrief (completed mission detail) */
+
+.mission-detail .mission-group--collapsible > .mission-group__summary .mission-detail__section-title {
+  margin: 0;
+}
+
+.mission-detail .mission-group--collapsible[open] > .mission-group__summary {
+  margin-bottom: var(--space-lg);
+}
+
+.mission-detail .mission-group--collapsible:not([open]) > .mission-group__summary {
+  margin-bottom: 0;
 }
 
 .markdown pre code {
@@ -825,6 +1042,7 @@ a:hover {
   font-size: 1.125rem;
   font-weight: 600;
   letter-spacing: 0.03em;
+  color: var(--color-accent);
 }
 
 .recovered-data-panel__lede {
@@ -841,7 +1059,6 @@ a:hover {
 .recovered-data__value {
   margin: 0;
   padding: var(--space-md);
-  padding-top: 2.25rem;
   overflow-x: auto;
   font-size: 0.875rem;
   line-height: 1.5;
@@ -913,7 +1130,7 @@ a:hover {
   font-size: 1.125rem;
   font-weight: 600;
   letter-spacing: 0.03em;
-  color: var(--color-text);
+  color: var(--color-accent);
 }
 
 .completion-panel__lede {
@@ -1026,7 +1243,7 @@ body.has-transmission-modal {
   font-size: 1rem;
   letter-spacing: 0.04em;
   text-transform: none;
-  color: var(--color-text);
+  color: var(--color-accent);
 }
 
 .transmission-modal__step {
