@@ -29,7 +29,7 @@ A web app where students act as **agents** in a spy-agency fiction. **Missions**
 
 - **Flask + Jinja** for server-rendered pages; JSON API for unlock and mission submit
 - SQLite 3
-- Markdown files on disk for Brief/Debrief (seed paths are placeholders; UI mockups use `docs/ui/sample_files/`)
+- Markdown files on disk for Brief/Debrief under `content/missions/<slug>/`; UI mockups in `docs/ui/` inline HTML for layout review
 
 ## Core entities
 

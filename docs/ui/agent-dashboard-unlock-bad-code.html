@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<!-- Static dashboard mockup — unlock failed (invalid code, transmission modal outcome) -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mission Dashboard - Unlock Failed</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/radspion.css">
+</head>
+<body class="page page--dashboard has-transmission-modal">
+  <header class="site-header">
+    <div class="site-header__brand">
+      <img
+        class="site-header__mark"
+        src="../../logos/radspion_mark_white.svg"
+        width="36"
+        height="36"
+        alt=""
+      >
+      <span class="site-header__title">Radspion</span>
+    </div>
+    <div class="site-header__agent">
+      <span class="site-header__agent-label">Agent</span>
+      <span class="site-header__agent-name">Alice</span>
+      <span class="site-header__agent-email text-mono">alice@moravian.edu</span>
+    </div>
+    <span class="site-header__action">Sign out</span>
+  </header>
+
+  <main class="page__main page__main--dashboard">
+    <div class="dashboard">
+      <header class="dashboard__intro">
+        <h1 class="dashboard__heading">Mission Dashboard</h1>
+        <p class="dashboard__lede text-muted">
+          Missions are assigned by Command, or added when you submit an unlock code
+          that confirms you are ready.
+        </p>
+      </header>
+
+      <section class="unlock-panel dashboard__unlock" aria-label="Unlock mission">
+        <form class="unlock-form" action="#" method="post">
+          <label class="sr-only" for="unlock-code">Mission unlock code</label>
+          <input
+            class="unlock-form__input text-mono"
+            type="text"
+            id="unlock-code"
+            name="unlock_code"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Enter Mission Unlock Code"
+            value="ZZ-INVALID"
+          >
+          <button class="unlock-form__submit" type="button">Validate</button>
+        </form>
+      </section>
+
+      <div class="dashboard__controls">
+        <label class="dashboard__toggle">
+          <input type="checkbox" class="dashboard__toggle-input" checked>
+          <span class="dashboard__toggle-label">Show completed missions</span>
+        </label>
+      </div>
+
+      <details class="mission-group mission-group--collapsible" open>
+        <summary class="mission-group__summary">
+          <span class="mission-group__chevron" aria-hidden="true">
+            <svg class="mission-group__chevron-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <polyline class="mission-group__chevron-path mission-group__chevron-path--closed" points="12,6 18,12 12,18" />
+              <polyline class="mission-group__chevron-path mission-group__chevron-path--open" points="6,10 12,16 18,10" />
+            </svg>
+          </span>
+          <span class="mission-group__title">Clearance Level: 220.2 DevOps</span>
+          <span class="mission-group__counts text-muted">1 active · 2 completed</span>
+        </summary>
+        <ul class="mission-list">
+          <li class="mission-list__item">
+            <div class="mission-card mission-card--active" data-slug="remote-access" data-status="active">
+              <span class="mission-card__body">
+                <span class="mission-card__title">Training: Remote Access</span>
+                <span class="mission-card__slug text-mono">remote-access</span>
+                <span class="status-badge status-badge--active">active</span>
+              </span>
+              <span class="mission-card__arrow" aria-hidden="true">→</span>
+            </div>
+          </li>
+          <li class="mission-list__item mission-list__item--completed">
+            <div class="mission-card mission-card--completed" data-slug="learn-the-system" data-status="completed">
+              <span class="mission-card__body">
+                <span class="mission-card__title">Training: Learn the System</span>
+                <span class="mission-card__slug text-mono">learn-the-system</span>
+                <span class="status-badge status-badge--completed">completed</span>
+              </span>
+              <span class="mission-card__arrow" aria-hidden="true">→</span>
+            </div>
+          </li>
+          <li class="mission-list__item mission-list__item--completed">
+            <div class="mission-card mission-card--completed" data-slug="read-the-manual" data-status="completed">
+              <span class="mission-card__body">
+                <span class="mission-card__title">Training: Read the Manual</span>
+                <span class="mission-card__slug text-mono">read-the-manual</span>
+                <span class="status-badge status-badge--completed">completed</span>
+              </span>
+              <span class="mission-card__arrow" aria-hidden="true">→</span>
+            </div>
+          </li>
+        </ul>
+      </details>
+
+      <details class="mission-group mission-group--collapsible">
+        <summary class="mission-group__summary">
+          <span class="mission-group__chevron" aria-hidden="true">
+            <svg class="mission-group__chevron-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <polyline class="mission-group__chevron-path mission-group__chevron-path--closed" points="12,6 18,12 12,18" />
+              <polyline class="mission-group__chevron-path mission-group__chevron-path--open" points="6,10 12,16 18,10" />
+            </svg>
+          </span>
+          <span class="mission-group__title">Clearance Level: Orientation</span>
+          <span class="mission-group__counts text-muted">1 completed</span>
+        </summary>
+        <ul class="mission-list">
+          <li class="mission-list__item mission-list__item--completed">
+            <div class="mission-card mission-card--completed" data-slug="basic-training" data-status="completed">
+              <span class="mission-card__body">
+                <span class="mission-card__title">Welcome to Radspion</span>
+                <span class="mission-card__slug text-mono">basic-training</span>
+                <span class="status-badge status-badge--completed">completed</span>
+              </span>
+              <span class="mission-card__arrow" aria-hidden="true">→</span>
+            </div>
+          </li>
+        </ul>
+      </details>
+    </div>
+  </main>
+
+  <footer class="page__footer site-footer">
+    <p class="site-footer__about">
+      <a href="about.html">What is Radspion?</a>
+    </p>
+    <ul class="site-footer__legal">
+      <li><a href="privacy.html">Privacy Policy</a></li>
+    </ul>
+    <p class="site-footer__meta">Moravian University · Educational Use</p>
+  </footer>
+
+  <div class="transmission-modal">
+    <div class="transmission-modal__backdrop"></div>
+    <section
+      class="transmission-modal__dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="unlock-heading"
+    >
+      <div class="transmission-modal__progress" id="unlock-progress">
+        <h2 id="unlock-heading" class="transmission-modal__title text-mono">Secure channel</h2>
+        <p class="transmission-modal__step" id="unlock-step">Initializing secure channel...</p>
+        <div class="transmission-modal__bar" aria-hidden="true">
+          <div class="transmission-modal__bar-fill" id="unlock-bar-fill"></div>
+        </div>
+      </div>
+      <div class="transmission-modal__outcome" id="unlock-outcome" hidden>
+        <h2 class="transmission-modal__title">Verification failed</h2>
+        <p class="transmission-modal__message">
+          We could not validate that unlock code against agency records.
+          Check the code and try again.
+        </p>
+        <button type="button" class="transmission-modal__ok">OK</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      var progress = document.getElementById("unlock-progress");
+      var outcome = document.getElementById("unlock-outcome");
+      var stepEl = document.getElementById("unlock-step");
+      var barEl = document.getElementById("unlock-bar-fill");
+      if (!progress || !outcome || !stepEl || !barEl) return;
+
+      var prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var steps = [
+        { text: "Encrypting unlock code...", width: 32, delay: 550 },
+        { text: "Checking agency records...", width: 88, delay: 800 }
+      ];
+
+      if (prefersReducedMotion) {
+        progress.hidden = true;
+        outcome.hidden = false;
+        return;
+      }
+
+      var i = 0;
+      function runStep() {
+        if (i >= steps.length) {
+          setTimeout(function () {
+            barEl.style.width = "100%";
+            setTimeout(function () {
+              progress.hidden = true;
+              outcome.hidden = false;
+            }, 220);
+          }, 650);
+          return;
+        }
+        var step = steps[i];
+        stepEl.textContent = step.text;
+        barEl.style.width = step.width + "%";
+        i += 1;
+        setTimeout(runStep, step.delay);
+      }
+
+      setTimeout(runStep, 800);
+    })();
+  </script>
+</body>
+</html>
