@@ -17,7 +17,8 @@ jobs:
           USER_NAME: ${{ secrets.DEPLOY_USER }}
         run: |
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          ssh -i private_key -o StrictHostKeyChecking=no \
+          ssh -i private_key \
+            -o StrictHostKeyChecking=accept-new \
             -J "${JUMP_USER}@${JUMP_HOST}" \
             "${USER_NAME}@${HOSTNAME}" \
             'cd /home/radspion/radspion && ./redeploy.sh'
