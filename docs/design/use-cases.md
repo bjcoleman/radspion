@@ -8,8 +8,10 @@ Ordered by **dependency** — build from the top down. Each case lists **Require
 
 | Topic | Decision |
 |-------|----------|
-| Who can sign in | Any `@moravian.edu` Google account |
-| New agents | Auto-create `users` row; add to **Orientation** `group_members` |
+| Who can sign in | Google OAuth; **new** agents need a valid `registration_access_codes` row first |
+| New agents | Valid registration code → OAuth → auto-create `users` row; add to **Orientation** `group_members` |
+| Returning agents | Google OAuth only (existing `users` row) |
+| Registration codes | Flat list in SQL; case-sensitive after trim; not stored on `users`; independent rotation per code |
 | Campus vs class | **Orientation** group missions for all signed-in agents; class missions need roster row |
 | Welcome | Seed includes `basic-training` in **Orientation** |
 | Code vs automatic listing | A mission never mixes **`unlock_code`** with **`mission_list_requires`**; sample uses one code-only mission (`global-hidden`) |
@@ -79,20 +81,29 @@ Create group, roster, missions, unlock/list/complete constraints, and optional s
 
 ## Authentication
 
-### UC-006 — Sign in with Google OAuth
+### UC-006 — Validate registration access code (new agents)
+
+**Actor:** Agent (prospective)  
+**Requires:** UC-004  
+Agent submits a registration access code on the landing page. App trims whitespace and checks `registration_access_codes` (case-sensitive). On success, mark the browser session cleared for signup OAuth; on failure, show invalid-code UI. Returning agents skip this step (UC-006b).
+
+---
+
+### UC-006b — Sign in with Google OAuth
 
 **Actor:** Agent  
-**Requires:** UC-004  
-Agent authenticates with Google; app establishes a session tied to a `users` row.
+**Requires:** UC-004; UC-006 for first-time signup  
+Agent authenticates with Google (any Google account); app establishes a session tied to a `users` row.
 
 ---
 
 ### UC-007 — Resolve or provision agent from OAuth
 
 **Actor:** System  
-**Requires:** UC-006  
-- Reject sign-in if Google email is not `@moravian.edu`.  
-- If no `users` row: create one from OAuth profile (`email`, `google_subject_id`, `display_name`).  
+**Requires:** UC-006b  
+- If `users` row exists for `google_subject_id` or email → attach session (no registration code).  
+- If no `users` row → require UC-006 session clearance; else reject provisioning.  
+- Create user from OAuth profile (`email`, `google_subject_id`, `display_name`).  
 - Ensure `group_members` row for **Orientation**.  
 - Run mission-status sync (UC-012) before showing the dashboard.
 
@@ -111,7 +122,7 @@ Operator-authored markdown at paths stored on `missions` under `content/missions
 ### UC-009 — Render Mission Brief
 
 **Actor:** Agent  
-**Requires:** UC-006, UC-008  
+**Requires:** UC-006b, UC-008  
 Agent can view the Brief for a mission they are allowed to see (see UC-012, UC-013).
 
 ---

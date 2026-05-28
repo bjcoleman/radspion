@@ -8,7 +8,7 @@ A web app where students act as **agents** in a spy-agency fiction. **Missions**
 
 | In scope | Out of scope (post-V1) |
 |----------|------------------------------------------|
-| Google OAuth (`@moravian.edu`); auto-join **Orientation** | Faculty self-service wizard |
+| Google OAuth (any account); registration code on first signup; auto-join **Orientation** | Faculty self-service wizard |
 | SQLite data model below | Story templates / publish pipeline |
 | Campus-wide **groups** (e.g. **Orientation**) + class **groups** (roster) | Audit log, timestamps |
 | Mission Brief / Debrief (markdown paths) | Per-agent keyed codes |
@@ -21,8 +21,9 @@ A web app where students act as **agents** in a spy-agency fiction. **Missions**
 
 ## Access
 
-- Any agent with a **`@moravian.edu`** Google account may sign in.
-- First sign-in creates a `users` row and adds them to **Orientation** (non–CS students can do orientation missions only).
+- **New agents:** valid `registration_access_codes` row, then Google OAuth (any Google account). First sign-in creates a `users` row and adds them to **Orientation**.
+- **Returning agents:** Google OAuth only (no registration code).
+- Class missions still require `group_members` roster rows; registration codes do not grant class access.
 - Seed welcome mission: `basic-training` (“Welcome to Radspion”).
 
 ## Stack

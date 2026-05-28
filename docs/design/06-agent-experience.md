@@ -2,7 +2,8 @@
 
 ## Sign-in
 
-- Google OAuth; email must be `@moravian.edu`.
+- **New agents:** submit a registration access code (trim whitespace; match is case-sensitive), then Google OAuth (any Google account).
+- **Returning agents:** Google OAuth only.
 - First sign-in creates the agent and adds them to **Orientation** (campus-wide group).
 - After login (and immediately when roster membership changes), the app **syncs** `agent_mission_status` so the mission list is current. A listable `open` mission without an `active` row is a system error.
 

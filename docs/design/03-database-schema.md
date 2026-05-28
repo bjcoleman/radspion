@@ -2,7 +2,7 @@
 
 **Engine:** SQLite 3  
 **DDL:** [`src/radspion/sql/schema.sql`](../../src/radspion/sql/schema.sql)  
-**Seed:** [`src/radspion/sql/seed_example_class.sql`](../../src/radspion/sql/seed_example_class.sql)
+**Seed:** [`seed_orientation.sql`](../../src/radspion/sql/seed_orientation.sql), [`seed_registration_access_codes.sql`](../../src/radspion/sql/seed_registration_access_codes.sql), [`seed_example_class.sql`](../../src/radspion/sql/seed_example_class.sql)
 
 Enable foreign keys on each connection: `PRAGMA foreign_keys = ON;` (included at the top of the SQL files).
 
@@ -26,6 +26,14 @@ SQLite has no separate enum types. Allowed values are enforced on the column:
 | `google_subject_id` | `TEXT` | NOT NULL, UNIQUE |
 | `display_name` | `TEXT` | NOT NULL |
 | `is_operator` | `INTEGER` | NOT NULL, DEFAULT `0`, CHECK `IN (0, 1)` |
+
+### `registration_access_codes`
+
+| Column | Type | Constraints |
+|--------|------|-------------|
+| `code` | `TEXT` | PK |
+
+Signup gate only: a new agent must submit a valid row before first Google OAuth creates a `users` row. **Not** tied to groups or missions; class content still uses `group_members`. Trim whitespace on input; comparison is **case-sensitive**. Returning agents (existing `users` row) sign in with Google only. Seed: [`seed_registration_access_codes.sql`](../../src/radspion/sql/seed_registration_access_codes.sql).
 
 ### `groups`
 

@@ -1,6 +1,6 @@
 # Radspion
 
-Secret-organization-themed mission platform for coursework. Agents in **groups** complete **missions** using unlock codes, prerequisites, Mission Briefs, and Debriefs. Operators configure classes via SQL seed; agents sign in with Google (`@moravian.edu`).
+Secret-organization-themed mission platform for coursework. Agents in **groups** complete **missions** using unlock codes, prerequisites, Mission Briefs, and Debriefs. Operators configure classes via SQL seed; new agents need a registration access code, then Google OAuth (any account); returning agents use Google only.
 
 ## Documentation
 

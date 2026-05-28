@@ -5,7 +5,7 @@ SQLite. **Groups** are rosters. **Missions** belong to one group. **Constraints*
 ## Groups
 
 - `groups` + `group_members`
-- Every signed-in `@moravian.edu` agent is in the campus-wide group (seed: **Orientation**; auto on first OAuth)
+- Every signed-in agent is in the campus-wide group (seed: **Orientation**; auto on first OAuth)
 - Class missions use `missions.group_id` = class group; agents need an explicit `group_members` row
 - SQL roster changes: always add **Orientation** + class group; sync runs immediately (see [07-operator-setup.md](07-operator-setup.md))
 

@@ -21,6 +21,13 @@ CREATE TABLE users (
     is_operator         INTEGER NOT NULL DEFAULT 0 CHECK (is_operator IN (0, 1))
 );
 
+-- Signup gate: valid code required before first Google OAuth (any Google account).
+-- Compare trimmed input to stored code; matching is case-sensitive.
+-- Rotate or revoke by UPDATE/DELETE; not tied to groups or missions.
+CREATE TABLE registration_access_codes (
+    code    TEXT NOT NULL PRIMARY KEY
+);
+
 -- ---------------------------------------------------------------------------
 -- Groups (roster only)
 -- ---------------------------------------------------------------------------
