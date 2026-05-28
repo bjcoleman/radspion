@@ -4,6 +4,20 @@ V1: you configure the system directly with **SQL** (schema + seed scripts). A re
 
 Set `users.is_operator = 1` for your account (SQLite stores booleans as integers).
 
+## Registration access codes
+
+Rows in `registration_access_codes` gate **new account creation** only. Use separate codes per audience so you can rotate one without changing the others (e.g. CS recruitment, DevOps class, external invite). Comparison is **case-sensitive** after trimming whitespace.
+
+```sql
+-- Add or rotate a code
+INSERT INTO registration_access_codes (code) VALUES ('your-secret-code');
+
+-- Revoke a code (blocks new signups with that code; existing users unaffected)
+DELETE FROM registration_access_codes WHERE code = 'old-code';
+```
+
+Default seed placeholders: [`seed_registration_access_codes.sql`](../../src/radspion/sql/seed_registration_access_codes.sql). Replace `CHANGE-ME-*` before production.
+
 ## Configure a class
 
 1. Create `groups` row and `group_members` for agents (every class member must also be in **Orientation**)  
