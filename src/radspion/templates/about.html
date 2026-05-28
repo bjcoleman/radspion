@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}What is Radspion?{% endblock %}
+{% block meta_description %}Radspion — field exercises for Moravian computer science courses, framed as agency missions.{% endblock %}
+{% block main_class %}page__main--content{% endblock %}
+
+{% block content %}
+  <article class="content-page">
+    <h1 class="content-page__title">What is Radspion?</h1>
+    <p>
+      Radspion is a Moravian University course platform for computer science field
+      exercises. Missions, unlock codes, and briefings are framed as agency operations
+      for authorized <strong>@moravian.edu</strong> students.
+    </p>
+    <p>
+      <a href="{{ url_for('index') }}">Return to sign-in</a>
+    </p>
+  </article>
+{% endblock %}

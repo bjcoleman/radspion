@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="96 96 208 208">
+  <rect x="96" y="96" width="208" height="208" fill="white"/>
+
+  <!-- OUTER LAYER — square corners, 0° -->
+  <g transform="rotate(0, 200, 200)" opacity="0.9" stroke="#1a1a1a" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <polyline points="175,120 120,120 120,175"/>
+    <polyline points="225,120 280,120 280,175"/>
+    <polyline points="225,280 280,280 280,225"/>
+    <polyline points="175,280 120,280 120,225"/>
+  </g>
+
+  <!-- MIDDLE LAYER — 22.5° -->
+  <g transform="rotate(22.5, 200, 200)" opacity="0.7" stroke="#1a1a1a" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <polyline points="179,147 147,147 147,179"/>
+    <polyline points="221,147 253,147 253,179"/>
+    <polyline points="221,253 253,253 253,221"/>
+    <polyline points="179,253 147,253 147,221"/>
+  </g>
+
+  <!-- INNER LAYER — 45° -->
+  <g transform="rotate(45, 200, 200)" opacity="0.55" stroke="#1a1a1a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <polyline points="186,165 165,165 165,186"/>
+    <polyline points="214,165 235,165 235,186"/>
+    <polyline points="214,235 235,235 235,214"/>
+    <polyline points="186,235 165,235 165,214"/>
+  </g>
+
+  <!-- INNERMOST LAYER — 67.5° -->
+  <g transform="rotate(67.5, 200, 200)" opacity="0.4" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <polyline points="192,181 181,181 181,192"/>
+    <polyline points="208,181 219,181 219,192"/>
+    <polyline points="208,219 219,219 219,208"/>
+    <polyline points="192,219 181,219 181,208"/>
+  </g>
+
+  <circle cx="200" cy="200" r="4" fill="#1a1a1a" opacity="0.4"/>
+</svg>

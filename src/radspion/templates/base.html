@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="{% block meta_description %}Radspion — Moravian University field operations platform for authorized agents.{% endblock %}">
+  <title>{% block title %}Radspion{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/radspion.css') }}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="page {% block body_class %}{% endblock %}">
+  <main class="page__main {% block main_class %}{% endblock %}">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="page__footer site-footer">
+    <p class="site-footer__about">
+      <a href="{{ url_for('about') }}">What is Radspion?</a>
+    </p>
+    <ul class="site-footer__legal">
+      <li><a href="{{ url_for('privacy') }}">Privacy Policy</a></li>
+    </ul>
+    <p class="site-footer__meta">Moravian University · Educational use</p>
+  </footer>
+</body>
+</html>

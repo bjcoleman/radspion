@@ -1,6 +1,6 @@
 """Flask application entry point."""
 
-from flask import Flask
+from flask import Flask, render_template
 
 
 def create_app() -> Flask:
@@ -8,8 +8,16 @@ def create_app() -> Flask:
     app = Flask(__name__)
 
     @app.get("/")
-    def hello_world() -> str:
-        return "Hello, World!"
+    def index():
+        return render_template("index.html")
+
+    @app.get("/about")
+    def about():
+        return render_template("about.html")
+
+    @app.get("/privacy")
+    def privacy():
+        return render_template("privacy.html")
 
     return app
 
