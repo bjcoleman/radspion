@@ -87,7 +87,17 @@ Before you push or open a PR, run **`make`** and fix anything that fails. CI run
 - **Static Analysis** — Ruff lint and format check (separate workflow for clearer failure reports)
 - **Redeploy** — manual `workflow_dispatch`; SSH to the department server and run `redeploy.sh`
 
-Configure repository secrets for redeploy: `DEPLOY_SSH_KEY`, `DEPLOY_HOST`, `DEPLOY_USER` (`radspion`). The workflow SSHs to `/home/radspion/radspion` and runs `redeploy.sh`.
+Configure repository secrets for redeploy (ProxyJump via jump box):
+
+| Secret | Purpose |
+|--------|---------|
+| `DEPLOY_SSH_KEY` | Private key (public key in jump user and `radspion` on webapps `authorized_keys`) |
+| `DEPLOY_JUMP_HOST` | Jump box hostname |
+| `DEPLOY_JUMP_USER` | Jump box SSH user |
+| `DEPLOY_HOST` | webapps hostname as reachable from the jump box |
+| `DEPLOY_USER` | `radspion` |
+
+The workflow SSHs to `/home/radspion/radspion` on webapps and runs `redeploy.sh`.
 
 ## Production (webapps)
 
