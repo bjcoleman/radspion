@@ -29,8 +29,8 @@ Create `.env` in the project root. **Never commit** this file.
 | `BASE_URL` | App base URL (`http://localhost:8000` in dev; `https://www.radspion.com` in prod) |
 | `GOOGLE_CLIENT_ID` | OAuth client ID |
 | `GOOGLE_CLIENT_SECRET` | OAuth client secret |
-| `JWT_SECRET` | Session/token signing (`python3 -c "import secrets; print(secrets.token_urlsafe(32))"`) |
-| `DATABASE_PATH` | Optional; default `database/radspion.db` when implemented |
+| `SECRET_KEY` | Flask session signing (**required**; app exits at startup if unset). Generate with `python3 -c "import secrets; print(secrets.token_urlsafe(32))"` |
+| `DATABASE_PATH` | Optional; default `database/radspion.db` |
 
 ## Local setup
 
@@ -55,7 +55,21 @@ pip install -e .
 ./scripts/bootstrap_sample_class.sh
 ```
 
-SQL: `schema.sql`, `seed_orientation.sql`, `seed_example_class.sql`. Sample Brief/Debrief sources: `content/samples/example-class/`.
+SQL: `schema.sql`, `seed_orientation.sql`, `seed_registration_access_codes.sql`, `seed_example_class.sql`. Sample Brief/Debrief sources: `content/samples/example-class/`.
+
+### Application layout
+
+Flat modules under `src/radspion/` (similar to [cost_sharing](https://github.com/MoravianUniversity/cost_sharing)):
+
+| Module | Role |
+|--------|------|
+| `config.py` | Load `SECRET_KEY`, `DATABASE_PATH`; fail fast if required values missing |
+| `database.py` | `DatabaseError`, `DatabaseRadspionStorage` |
+| `radspion.py` | Business logic (`Radspion` class) |
+| `app.py` | `launch()` loads `.env`, then config → DB → storage → `Radspion` → `create_app()` |
+| `web/main.py` | Flask blueprint for public pages |
+
+`launch()` prints configuration/database errors to stderr and exits with code 1. Tests call `load_config(testing=True)` and `create_app(config, Radspion(InMemoryRadspionStorage(...)))` so no real database is required.
 
 ### Running the app
 

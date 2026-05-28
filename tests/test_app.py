@@ -1,15 +1,4 @@
-"""Tests for the Flask application."""
-
-import pytest
-
-from radspion.app import create_app, launch
-
-
-@pytest.fixture
-def client():
-    app = create_app()
-    app.config["TESTING"] = True
-    return app.test_client()
+"""Tests for HTTP routes."""
 
 
 def test_index(client):
@@ -39,8 +28,3 @@ def test_privacy(client):
     assert "Privacy Policy" in html
     assert "Google" in html
     assert 'href="/privacy"' in html
-
-
-def test_launch_returns_flask_app():
-    app = launch()
-    assert app.name == "radspion.app"
