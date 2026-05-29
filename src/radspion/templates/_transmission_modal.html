@@ -1,0 +1,23 @@
+{# Shared secure-channel modal — driven by static/js/transmission-modal.js #}
+<div class="transmission-modal" data-transmission-modal hidden>
+  <div class="transmission-modal__backdrop"></div>
+  <section
+    class="transmission-modal__dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="transmission-heading"
+  >
+    <div class="transmission-modal__progress" data-transmission-progress>
+      <h2 id="transmission-heading" class="transmission-modal__title text-mono" data-transmission-heading>
+        Secure channel
+      </h2>
+      <p class="transmission-modal__step" data-transmission-step aria-live="polite">
+        Initiating secure connection…
+      </p>
+      <div class="transmission-modal__bar" aria-hidden="true">
+        <div class="transmission-modal__bar-fill" data-transmission-bar-fill></div>
+      </div>
+    </div>
+    <div class="transmission-modal__outcome" data-transmission-outcome hidden></div>
+  </section>
+</div>

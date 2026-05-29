@@ -19,7 +19,7 @@ Ordered by **dependency** — build from the top down. Each case lists **Require
 | `agent_mission_status` | Keep table **in sync at all times** (login + unlock + complete + roster changes); dashboard reads this table |
 | Debrief | Only after mission `completed` |
 | Error copy (UC-020, UC-022, UC-023) | Wording TBD — you’ll review per case |
-| Web framework | **Flask + Jinja** SSR; JSON API for unlock and mission submit |
+| Web framework | **Flask + Jinja** SSR; JSON API at `/api/access`, `/api/unlock`, `/api/missions/<slug>/submit` |
 | Brief/Debrief paths | Live missions under `content/missions/<slug>/`; example pack under `content/samples/example-class/` (bootstrap copies into live); UI mockups in `docs/ui/` inline HTML snapshots (not separate markdown files) |
 | Operator config V1 | SQL/seed only — no in-app mission/roster editor |
 | Operator progress V1 | Read-only UI: groups → missions → roster status (`locked` / `active` / `complete`) |
@@ -57,7 +57,7 @@ Load [`src/radspion/sql/seed_example_class.sql`](../../src/radspion/sql/seed_exa
 
 **Actor:** Developer  
 **Requires:** UC-001  
-Application stack connects to the Radspion SQLite database (`PRAGMA foreign_keys = ON` on each connection) using **Flask + Jinja** for pages and JSON endpoints for unlock/submit ([06-agent-experience.md](06-agent-experience.md)).
+Application stack connects to the Radspion SQLite database (`PRAGMA foreign_keys = ON` on each connection) using **Flask + Jinja** for pages and JSON endpoints under `/api/` ([api.yaml](../api.yaml), [06-agent-experience.md](06-agent-experience.md)).
 
 ---
 
@@ -85,7 +85,7 @@ Create group, roster, missions, unlock/list/complete constraints, and optional s
 
 **Actor:** Agent (prospective)  
 **Requires:** UC-004  
-Agent submits a registration access code on the landing page. App trims whitespace and checks `registration_access_codes` (case-sensitive). On success, mark the browser session cleared for signup OAuth; on failure, show invalid-code UI. Returning agents skip this step (UC-006b).
+Agent submits a registration access code on the landing page (`POST /api/access`). App trims whitespace and checks `registration_access_codes` (case-sensitive). On success, mark the browser session cleared for signup OAuth; on failure, show invalid-code UI. Returning agents skip this step (UC-006b).
 
 ---
 

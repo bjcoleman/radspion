@@ -8,6 +8,7 @@ from flask import Flask
 from radspion.config import Config, ConfigurationError, load_config
 from radspion.database import DatabaseError, DatabaseRadspionStorage
 from radspion.radspion import Radspion
+from radspion.web.api import api_bp
 from radspion.web.main import main_bp
 
 
@@ -20,6 +21,7 @@ def create_app(*, config: Config, radspion: Radspion) -> Flask:
     app.extensions["radspion"] = radspion
 
     app.register_blueprint(main_bp)
+    app.register_blueprint(api_bp)
     return app
 
 

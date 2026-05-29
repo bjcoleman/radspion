@@ -36,11 +36,28 @@ A mission is added to the roster either by **redeeming an unlock code** (`unlock
 
 ## Interactive actions (hybrid SSR + JSON)
 
-Pages are **Flask + Jinja** (dashboard, mission detail). Unlock and field submission use the **same session** but return **JSON** so the browser can run the secure-channel modal (progress animation) and render outcome-specific copy without a full page reload.
+Pages are **Flask + Jinja** (dashboard, mission detail). Code validation, unlock, and field submission call the **JSON API** under `/api/` with the same session cookie (except access, which is pre-signup) so the browser can run the secure-channel modal (progress animation) and render outcome-specific copy without a full page reload.
 
-Static mockups in `docs/ui/` **hard-code** modal outcomes (no `fetch`); production will call the endpoints below.
+Canonical request/response shapes: [`docs/api.yaml`](../api.yaml). Static mockups in `docs/ui/` **hard-code** modal outcomes (no `fetch`); production uses `RadspionTransmission.transmit()` against these endpoints.
 
-### `POST /agent/api/unlock`
+Business failures return **HTTP 200** with an `outcome` field (invalid code, not cleared, not yet) so the modal always completes its animation before showing the result.
+
+### `POST /api/access`
+
+**Auth:** none (prospective agent on landing page).
+
+**Request:** `{ "access_code": "..." }`
+
+**Response:**
+
+| `outcome` | When | Response body |
+|-----------|------|----------------|
+| `success` | Row in `registration_access_codes` | Session flag set for signup OAuth (UC-006); modal → Continue with Google |
+| `invalid` | Code not found | Optional `message` — generic only |
+
+### `POST /api/unlock`
+
+**Auth:** signed-in agent (session cookie).
 
 **Request:** `{ "unlock_code": "..." }`
 
@@ -49,24 +66,32 @@ Static mockups in `docs/ui/` **hard-code** modal outcomes (no `fetch`); producti
 | `outcome` | When | Response body |
 |-----------|------|----------------|
 | `success` | Valid code for a mission in the agent’s group; status row created | `mission`: `{ "title", "slug", "group_name" }` — show in modal; roster updates on OK |
-| `invalid` | Code not found | Generic message only (no mission hints — UC-020) |
-| `not_cleared` | Code exists but agent not in mission’s group | Stealth-style generic message |
+| `invalid` | Code not found | Optional `message` — no mission hints (UC-020) |
+| `not_cleared` | Code exists but agent not in mission’s group | Stealth-style optional `message` |
 
-### `POST /agent/api/missions/<slug>/submit`
+**HTTP 401** when not signed in.
 
-**Request:** `{ "completion_code": "..." }` (current mission from URL/context)
+### `POST /api/missions/<slug>/submit`
+
+**Auth:** signed-in agent (session cookie).
+
+**Path:** mission `slug` (e.g. `read-the-manual`).
+
+**Request:** `{ "completion_code": "..." }`
 
 **Response:**
 
 | `outcome` | When | Response body |
 |-----------|------|----------------|
 | `success` | Code matches; complete prereqs met; mission marked completed | `new_missions`: array of `{ "title", "slug", "group_name" }` for missions that became listable (may be **empty**) |
-| `invalid` | Code wrong | Generic “not recognized” message |
-| `not_yet` | Complete prereqs not met | Stealth-style generic message |
+| `invalid` | Code wrong | Optional generic `message` |
+| `not_yet` | Complete prereqs not met | Stealth-style optional `message` |
+
+**HTTP 401** when not signed in. **HTTP 404** when the slug is unknown or the mission is not on the agent’s roster.
 
 **Success UX fork:**
 
 - `new_missions` **empty** — congratulate; **OK** → mission detail **completed** view (debrief).
-- `new_missions` **non-empty** — congratulate; list each new mission (title, slug, clearance level); **OK** → same completed view (agent reads debrief; new missions appear on roster after sync).
+- `new_missions` **non-empty** — congratulate; list each new mission (title, slug, group name); **OK** → same completed view (agent reads debrief; new missions appear on roster after sync).
 
 Unlock success always includes the **one** unlocked mission in `mission`. Completion success may surface **zero or more** newly listable missions after sync (missions that use `requires_complete` and whose list prerequisites were just satisfied).
