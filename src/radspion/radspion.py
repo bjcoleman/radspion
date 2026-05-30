@@ -1,0 +1,64 @@
+"""Application (business) layer for Radspion."""
+
+from radspion.oauth_types import GoogleProfile, SignupNotAllowedError
+from radspion.user import User
+
+
+class Radspion:
+    """Business logic; uses a storage implementation for persistence."""
+
+    def __init__(self, storage) -> None:
+        self._storage = storage
+
+    def validate_registration_code(self, raw_code: str) -> bool:
+        """
+        Validate a registration access code.
+
+        Trims whitespace; comparison is case-sensitive.
+        """
+        code = raw_code.strip()
+        if not code:
+            return False
+        return self._storage.registration_code_exists(code)
+
+    def get_user(self, user_id: int) -> User | None:
+        """Load a user by primary key."""
+        return self._storage.find_user_by_id(user_id)
+
+    def sign_in_with_google(
+        self,
+        profile: GoogleProfile,
+        *,
+        registration_cleared: bool,
+    ) -> User:
+        """
+        Resolve an existing user or provision a new agent after Google OAuth.
+
+        Existing users are matched by google_subject_id, then email.
+        New users require registration_cleared.
+        """
+        user = self._storage.find_user_by_google_subject_id(profile.google_subject_id)
+        if user is None:
+            user = self._storage.find_user_by_email(profile.email)
+        if user is not None:
+            self.sync_mission_status(user.id)
+            return user
+
+        if not registration_cleared:
+            raise SignupNotAllowedError()
+
+        user = self._storage.create_user(
+            email=profile.email,
+            google_subject_id=profile.google_subject_id,
+            display_name=profile.display_name,
+        )
+        orientation_group_id = self._storage.get_orientation_group_id()
+        if orientation_group_id is None:
+            raise RuntimeError("Orientation group is not configured")
+        self._storage.add_group_member(user.id, orientation_group_id)
+        self.sync_mission_status(user.id)
+        return user
+
+    def sync_mission_status(self, user_id: int) -> None:
+        """Keep agent_mission_status in sync for listable missions (UC-012)."""
+        _ = user_id

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<!-- Manual demo for production transmission-modal.js (open in browser). -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Transmission modal demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/radspion.css">
+  <style>
+    .demo {
+      max-width: 28rem;
+      margin: 3rem auto;
+      padding: 0 1rem;
+      font-family: var(--font-sans);
+      color: var(--color-text);
+    }
+    .demo h1 { font-size: 1.25rem; margin-bottom: 0.5rem; }
+    .demo p { color: var(--color-text-muted); font-size: 0.9375rem; line-height: 1.5; }
+    .demo__actions { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1.5rem; }
+    .demo__actions button {
+      padding: 0.5rem 1rem;
+      font: inherit;
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-border);
+      background: var(--color-bg-panel);
+      color: var(--color-text);
+    }
+    .demo__actions button:hover { border-color: var(--color-accent-dim); }
+  </style>
+</head>
+<body class="page page--landing">
+  <main class="page__main">
+    <div class="demo">
+      <h1>Transmission modal</h1>
+      <p>
+        Exercises <code>static/js/transmission-modal.js</code> (~3s progress with jitter).
+        Toggle <strong>Reduce motion</strong> in OS settings to skip the animation.
+      </p>
+      <div class="demo__actions">
+        <button type="button" id="demo-access-ok">Access code · success (fast POST)</button>
+        <button type="button" id="demo-access-fail">Access code · failure (fast POST)</button>
+        <button type="button" id="demo-unlock-ok">Unlock code · success (slow POST)</button>
+        <button type="button" id="demo-completion-ok">Completion data · success</button>
+      </div>
+    </div>
+  </main>
+
+  <div class="transmission-modal" data-transmission-modal hidden>
+    <div class="transmission-modal__backdrop"></div>
+    <section class="transmission-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="transmission-heading">
+      <div class="transmission-modal__progress" data-transmission-progress>
+        <h2 id="transmission-heading" class="transmission-modal__title text-mono" data-transmission-heading>Secure channel</h2>
+        <p class="transmission-modal__step" data-transmission-step aria-live="polite">Initiating secure connection…</p>
+        <div class="transmission-modal__bar" aria-hidden="true">
+          <div class="transmission-modal__bar-fill" data-transmission-bar-fill></div>
+        </div>
+      </div>
+      <div class="transmission-modal__outcome" data-transmission-outcome hidden></div>
+    </section>
+  </div>
+
+  <script src="../../src/radspion/static/js/transmission-modal.js"></script>
+  <script>
+    (function () {
+      var P = window.RadspionTransmission.PRESET;
+
+      function renderAccessSuccess(data, el) {
+        el.innerHTML =
+          '<h2 class="transmission-modal__title">Clearance confirmed</h2>' +
+          '<p class="transmission-modal__message">Access code accepted. Continue with Google to verify your identity.</p>' +
+          '<button type="button" class="transmission-modal__ok">OK</button>';
+      }
+
+      function renderAccessFail(data, el) {
+        el.innerHTML =
+          '<h2 class="transmission-modal__title">Validation failed</h2>' +
+          '<p class="transmission-modal__message">We could not validate that access code against agency records.</p>' +
+          '<button type="button" class="transmission-modal__ok">OK</button>';
+      }
+
+      function renderUnlockSuccess(data, el) {
+        el.innerHTML =
+          '<h2 class="transmission-modal__title">Verification succeeded</h2>' +
+          '<p class="transmission-modal__message">The following mission was added to your dashboard:</p>' +
+          '<p class="transmission-modal__message"><strong>' + data.missionTitle + '</strong></p>' +
+          '<button type="button" class="transmission-modal__ok">OK</button>';
+      }
+
+      function renderCompletionSuccess(data, el) {
+        el.innerHTML =
+          '<h2 class="transmission-modal__title">Transmission accepted</h2>' +
+          '<p class="transmission-modal__message">Lab verification confirmed your field data. This mission is now marked as completed.</p>' +
+          '<button type="button" class="transmission-modal__ok">OK</button>';
+      }
+
+      function transmit(preset, request, renderOutcome) {
+        window.RadspionTransmission.transmit({ preset: preset, request: request, renderOutcome: renderOutcome });
+      }
+
+      document.getElementById("demo-access-ok").addEventListener("click", function () {
+        transmit(P.ACCESS_CODE, function () {
+          return new Promise(function (r) { setTimeout(function () { r({ ok: true }); }, 120); });
+        }, renderAccessSuccess);
+      });
+
+      document.getElementById("demo-access-fail").addEventListener("click", function () {
+        transmit(P.ACCESS_CODE, function () {
+          return new Promise(function (r) { setTimeout(function () { r({ ok: false }); }, 80); });
+        }, renderAccessFail);
+      });
+
+      document.getElementById("demo-unlock-ok").addEventListener("click", function () {
+        transmit(P.UNLOCK_CODE, function () {
+          return new Promise(function (r) {
+            setTimeout(function () { r({ missionTitle: "Training: Identify the Traitor" }); }, 4000);
+          });
+        }, renderUnlockSuccess);
+      });
+
+      document.getElementById("demo-completion-ok").addEventListener("click", function () {
+        transmit(P.COMPLETION_DATA, function () {
+          return new Promise(function (r) { setTimeout(function () { r({ ok: true }); }, 200); });
+        }, renderCompletionSuccess);
+      });
+    })();
+  </script>
+</body>
+</html>

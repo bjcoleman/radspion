@@ -9,7 +9,7 @@ Secret-organization-themed mission platform for coursework. Agents in **groups**
 | Design overview and reading order | [docs/README.md](docs/README.md) |
 | Use cases (build backlog) | [docs/design/use-cases.md](docs/design/use-cases.md) |
 | Agent UI rules + JSON endpoints | [docs/design/06-agent-experience.md](docs/design/06-agent-experience.md) |
-| OpenAPI outline (unlock / submit) | [docs/api.yaml](docs/api.yaml) |
+| JSON API (`/api/access`, `/api/unlock`, mission submit) | [docs/api.yaml](docs/api.yaml) |
 | UI mockups (not production JS) | [docs/ui/README.md](docs/ui/README.md) |
 | Dev setup, testing, Ruff, deploy | [docs/dev.md](docs/dev.md) |
 | Operator SQL workflow | [docs/design/07-operator-setup.md](docs/design/07-operator-setup.md) |

@@ -8,7 +8,7 @@ Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snaps
 
 **Sample data alignment:** Six missions — **Orientation** (`basic-training`, `global-hidden` code-only), **DevOps** (`read-the-manual`, `learn-the-system` open starters; **`remote-access`** lists after LMS; **`identify-the-traitor`** finale). Adding a mission to the roster uses either a redeemable **`unlock_code`** or automatic **`requires_complete`** listing — never both (see seed + use cases).
 
-**Mock vs production:** Modal outcome pages hard-code copy and animation; no `fetch`. Production will call `POST /agent/api/unlock` and `POST /agent/api/missions/<slug>/submit` and render the same UI from JSON. API `outcome` values: unlock — `success`, `invalid`, `not_cleared`; submit — `success`, `invalid`, `not_yet`. Submit **success-unlocks** simulates `success` with a non-empty `new_missions` array.
+**Mock vs production:** Modal outcome pages hard-code copy and animation; no `fetch`. Production will call `POST /api/access`, `POST /api/unlock`, and `POST /api/missions/<slug>/submit` per [`api.yaml`](../api.yaml). API `outcome` values: access — `success`, `invalid`; unlock — `success`, `invalid`, `not_cleared`; submit — `success`, `invalid`, `not_yet`. Submit **success-unlocks** simulates `success` with a non-empty `new_missions` array.
 
 ---
 
@@ -68,6 +68,7 @@ Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snaps
 |------|---------|
 | [css/radspion.css](css/radspion.css) | Theme, layout, modals, `.outcome-missions` list |
 | [COLOR_USAGE.md](COLOR_USAGE.md) | Color roles for mockups |
+| [transmission-modal-demo.html](transmission-modal-demo.html) | Browser demo for production `transmission-modal.js` |
 
 ---
 

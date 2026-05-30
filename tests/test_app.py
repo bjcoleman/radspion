@@ -1,15 +1,4 @@
-"""Tests for the Flask application."""
-
-import pytest
-
-from radspion.app import create_app, launch
-
-
-@pytest.fixture
-def client():
-    app = create_app()
-    app.config["TESTING"] = True
-    return app.test_client()
+"""Tests for HTTP routes."""
 
 
 def test_index(client):
@@ -17,10 +6,16 @@ def test_index(client):
     assert response.status_code == 200
     html = response.data.decode()
     assert "Radspion" in html
-    assert "Sign in with Google" in html
-    assert "@moravian.edu" in html
+    assert "New Agents" in html
+    assert 'name="access_code"' in html
+    assert "Validate" in html
+    assert "Secure Login" in html
+    assert "@moravian.edu" not in html
     assert 'href="/about"' in html
     assert 'href="/privacy"' in html
+    assert "transmission-modal.js" in html
+    assert "landing-access.js" in html
+    assert "data-transmission-modal" in html
 
 
 def test_about(client):
@@ -39,8 +34,3 @@ def test_privacy(client):
     assert "Privacy Policy" in html
     assert "Google" in html
     assert 'href="/privacy"' in html
-
-
-def test_launch_returns_flask_app():
-    app = launch()
-    assert app.name == "radspion.app"

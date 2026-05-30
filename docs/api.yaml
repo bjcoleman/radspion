@@ -1,81 +1,192 @@
 openapi: 3.0.3
 info:
   title: Radspion API
-  description: |
-    V1 API for agent unlock and mission completion. Pages are server-rendered (Flask + Jinja);
-    these endpoints return JSON for modal UX. See docs/design/06-agent-experience.md.
+  description: JSON endpoints under `/api/`.
   version: 0.1.0
   contact:
     name: Moravian University CS Department
 
 tags:
-  - name: Auth
-    description: Google OAuth session (browser redirects; details TBD in implementation)
+  - name: Registration
+    description: No session required
   - name: Agent
-    description: Agent-facing JSON endpoints (session cookie required)
+    description: Session cookie required
 
 paths:
-  /agent/api/unlock:
+  /api/access:
     post:
-      tags: [Agent]
-      summary: Redeem an unlock code
+      tags: [Registration]
+      summary: Validate registration access code
       description: |
-        Adds a unlock_code mission to the agent roster when valid.
-        Outcomes: success | invalid | not_cleared (see 06-agent-experience.md).
+        Trims leading and trailing whitespace from `access_code`. Comparison is case-sensitive.
+
+        When `outcome` is `success`, the server stores session state that permits account
+        creation on the next sign-in.
+      operationId: validateAccess
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              required: [unlock_code]
-              properties:
-                unlock_code:
-                  type: string
+              $ref: "#/components/schemas/AccessRequest"
       responses:
         "200":
-          description: Outcome-specific JSON body
+          description: Validation result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccessResponse"
+              examples:
+                success:
+                  value:
+                    outcome: success
+                invalid:
+                  value:
+                    outcome: invalid
+                    message: We could not validate that access code against agency records.
+        "400":
+          description: Missing or empty `access_code`
+
+  /api/unlock:
+    post:
+      tags: [Agent]
+      summary: Redeem mission unlock code
+      description: |
+        Trims leading and trailing whitespace from `unlock_code`. Comparison is case-sensitive.
+
+        When `outcome` is `success`, the mission is added to the signed-in agent's roster and
+        `mission` describes it.
+      operationId: redeemUnlock
+      security:
+        - sessionCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UnlockRequest"
+      responses:
+        "200":
+          description: Redemption result
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/UnlockResponse"
+              examples:
+                success:
+                  value:
+                    outcome: success
+                    mission:
+                      title: Welcome to Radspion
+                      slug: basic-training
+                      group_name: Orientation
+                invalid:
+                  value:
+                    outcome: invalid
+                    message: We could not validate that unlock code against agency records.
+                not_cleared:
+                  value:
+                    outcome: not_cleared
+                    message: You do not have clearance for this mission.
+        "400":
+          description: Missing or empty `unlock_code`
         "401":
           description: Not signed in
 
-  /agent/api/missions/{slug}/submit:
+  /api/missions/{slug}/submit:
     post:
       tags: [Agent]
-      summary: Submit completion code for a mission
+      summary: Submit mission completion code
+      description: |
+        Trims leading and trailing whitespace from `completion_code`. Comparison is
+        case-sensitive.
+
+        When `outcome` is `success`, the mission identified by `slug` is marked completed for
+        the signed-in agent. `new_missions` lists missions that became available afterward
+        (may be empty).
+      operationId: submitMission
+      security:
+        - sessionCookie: []
       parameters:
         - name: slug
           in: path
           required: true
           schema:
             type: string
+            pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              required: [completion_code]
-              properties:
-                completion_code:
-                  type: string
+              $ref: "#/components/schemas/SubmitRequest"
       responses:
         "200":
-          description: Outcome-specific JSON body
+          description: Submission result
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/SubmitResponse"
+              examples:
+                success:
+                  value:
+                    outcome: success
+                    new_missions: []
+                success_with_listings:
+                  value:
+                    outcome: success
+                    new_missions:
+                      - title: "Training: Identify the Traitor"
+                        slug: identify-the-traitor
+                        group_name: "220.2 DevOps"
+                invalid:
+                  value:
+                    outcome: invalid
+                    message: We reviewed your transmission, and the recovered data does not match mission requirements.
+                not_yet:
+                  value:
+                    outcome: not_yet
+                    message: Transmission received. Verification is still pending.
+        "400":
+          description: Missing or empty `completion_code`
         "401":
           description: Not signed in
         "404":
-          description: Mission not found or not on agent roster
+          description: Unknown `slug`, or mission not on the agent's roster
 
 components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: session
+      description: Signed session cookie
+
   schemas:
+    AccessRequest:
+      type: object
+      required: [access_code]
+      properties:
+        access_code:
+          type: string
+
+    AccessResponse:
+      type: object
+      required: [outcome]
+      properties:
+        outcome:
+          type: string
+          enum: [success, invalid]
+        message:
+          type: string
+
+    UnlockRequest:
+      type: object
+      required: [unlock_code]
+      properties:
+        unlock_code:
+          type: string
+
     MissionSummary:
       type: object
       required: [title, slug, group_name]
@@ -96,10 +207,15 @@ components:
           enum: [success, invalid, not_cleared]
         message:
           type: string
-          description: User-facing copy for invalid / not_cleared
         mission:
           $ref: "#/components/schemas/MissionSummary"
-          description: Present when outcome is success
+
+    SubmitRequest:
+      type: object
+      required: [completion_code]
+      properties:
+        completion_code:
+          type: string
 
     SubmitResponse:
       type: object
@@ -110,9 +226,7 @@ components:
           enum: [success, invalid, not_yet]
         message:
           type: string
-          description: User-facing copy for invalid / not_yet
         new_missions:
           type: array
           items:
             $ref: "#/components/schemas/MissionSummary"
-          description: Missions that became listable after completion (may be empty)
