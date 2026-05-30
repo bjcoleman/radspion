@@ -34,6 +34,9 @@ def test_launch_exits_when_secret_key_missing(monkeypatch, capsys):
 
 def test_launch_exits_when_database_missing(monkeypatch, capsys, tmp_path):
     monkeypatch.setenv("SECRET_KEY", "test-launch-secret")
+    monkeypatch.setenv("BASE_URL", "http://localhost:8000")
+    monkeypatch.setenv("GOOGLE_CLIENT_ID", "test-client-id")
+    monkeypatch.setenv("GOOGLE_CLIENT_SECRET", "test-client-secret")
     missing = tmp_path / "missing" / "radspion.db"
     monkeypatch.setenv("DATABASE_PATH", str(missing))
 
