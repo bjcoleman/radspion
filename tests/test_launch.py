@@ -8,6 +8,9 @@ from radspion.app import launch
 def test_launch_returns_flask_app_with_radspion(monkeypatch, tmp_path):
     db_path = tmp_path / "radspion.db"
     monkeypatch.setenv("SECRET_KEY", "test-launch-secret")
+    monkeypatch.setenv("BASE_URL", "http://localhost:8000")
+    monkeypatch.setenv("GOOGLE_CLIENT_ID", "test-client-id")
+    monkeypatch.setenv("GOOGLE_CLIENT_SECRET", "test-client-secret")
     monkeypatch.setenv("DATABASE_PATH", str(db_path))
     db_path.touch()
 
@@ -15,6 +18,7 @@ def test_launch_returns_flask_app_with_radspion(monkeypatch, tmp_path):
 
     assert app.name == "radspion.app"
     assert "radspion" in app.extensions
+    assert "oauth" in app.extensions
 
 
 def test_launch_exits_when_secret_key_missing(monkeypatch, capsys):

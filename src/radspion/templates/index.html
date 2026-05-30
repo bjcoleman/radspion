@@ -38,13 +38,16 @@
       <div class="access-panel__divider" aria-hidden="true"></div>
 
       <p class="access-panel__prompt access-panel__prompt--secondary">Returning Agents</p>
-      <a href="#" class="btn-google btn-google--agent-login">Secure Login</a>
+      <a href="{{ url_for('auth.google_login') }}" class="btn-google btn-google--agent-login">Secure Login</a>
     </section>
   </div>
 {% endblock %}
 
 {% block extra_body %}
   {% include "_transmission_modal.html" %}
+  <script>
+    window.RADSPION_AUTH_GOOGLE_URL = {{ url_for('auth.google_login') | tojson }};
+  </script>
   <script src="{{ url_for('static', filename='js/transmission-modal.js') }}"></script>
   <script src="{{ url_for('static', filename='js/landing-access.js') }}"></script>
 {% endblock %}

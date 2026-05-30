@@ -1,6 +1,7 @@
 """Tests for POST /api/access."""
 
-from radspion.web.api import INVALID_ACCESS_MESSAGE, SESSION_REGISTRATION_CLEARED
+from radspion.web.api import INVALID_ACCESS_MESSAGE
+from radspion.web.session_keys import SESSION_REGISTRATION_CLEARED
 from tests.fakes.storage import InMemoryRadspionStorage
 
 
@@ -8,10 +9,11 @@ def _client_with_codes(codes: set[str]):
     from radspion.app import create_app
     from radspion.config import load_config
     from radspion.radspion import Radspion
+    from tests.fakes.google_oauth import FakeGoogleOAuth
 
     config = load_config(testing=True)
     radspion = Radspion(InMemoryRadspionStorage(codes))
-    return create_app(config=config, radspion=radspion).test_client()
+    return create_app(config=config, radspion=radspion, oauth=FakeGoogleOAuth()).test_client()
 
 
 def test_access_success_sets_session():

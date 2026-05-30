@@ -533,6 +533,31 @@ a:hover {
   outline-offset: 2px;
 }
 
+.flash-messages {
+  max-width: 28rem;
+  margin: var(--space-md) auto 0;
+  padding: 0 var(--space-md);
+}
+
+.flash-message {
+  margin: 0;
+  padding: var(--space-sm) var(--space-md);
+  font-size: 0.875rem;
+  border-radius: var(--radius-sm);
+}
+
+.flash-message--error {
+  color: var(--color-danger);
+  background: rgba(196, 92, 92, 0.1);
+  border: 1px solid rgba(196, 92, 92, 0.35);
+}
+
+.flash-message--info {
+  color: var(--color-text-muted);
+  background: var(--color-bg-panel);
+  border: 1px solid var(--color-border-subtle);
+}
+
 .flash-error {
   margin: var(--space-md) 0 0;
   padding: var(--space-sm) var(--space-md);

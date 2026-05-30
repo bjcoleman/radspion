@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Mission Dashboard — Radspion{% endblock %}
+
+{% block content %}
+  <div class="landing">
+    <h1 class="landing__title">Mission Dashboard</h1>
+    <p class="landing__briefing">
+      Signed in as <strong>{{ user.display_name }}</strong> ({{ user.email }}).
+    </p>
+    <form action="{{ url_for('auth.logout') }}" method="post">
+      <button type="submit" class="access-panel__submit">Sign out</button>
+    </form>
+  </div>
+{% endblock %}

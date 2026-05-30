@@ -21,7 +21,9 @@
       '<p class="transmission-modal__message">' +
       "Access code accepted. Continue with Google to verify your identity." +
       "</p>" +
-      '<a href="#" class="btn-google btn-google--agent-login">' +
+      '<a href="' +
+      (window.RADSPION_AUTH_GOOGLE_URL || "/auth/google") +
+      '" class="btn-google btn-google--agent-login">' +
       GOOGLE_ICON_SVG +
       "Continue with Google</a>";
   }
@@ -38,6 +40,7 @@
   function postAccess(accessCode) {
     return fetch("/api/access", {
       method: "POST",
+      credentials: "same-origin",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ access_code: accessCode }),
     }).then(function (response) {

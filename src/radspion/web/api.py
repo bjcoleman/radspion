@@ -2,13 +2,11 @@
 
 from flask import Blueprint, current_app, jsonify, request, session
 
+from radspion.web.session_keys import SESSION_REGISTRATION_CLEARED
+
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
-SESSION_REGISTRATION_CLEARED = "registration_access_cleared"
-
-INVALID_ACCESS_MESSAGE = (
-    "We could not validate that access code against agency records."
-)
+INVALID_ACCESS_MESSAGE = "We could not validate that access code against agency records."
 
 
 @api_bp.post("/access")

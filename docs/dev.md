@@ -15,9 +15,9 @@ Radspion is a Flask + SQLite application for coursework. This document covers lo
 
 1. Create a project in [Google Cloud Console](https://console.cloud.google.com/) with your `@moravian.edu` account.
 2. Configure the **OAuth consent screen** (Internal audience for Moravian).
-3. Create a **Web application** OAuth client with authorized origins and redirect URIs for:
-   - Local dev: `http://localhost:8000/` (trailing slash required)
-   - Production: `https://www.radspion.com` only (apex and `.org` redirect in nginx)
+3. Create a **Web application** OAuth client with:
+   - **Authorized JavaScript origins:** `http://localhost:8000`, `https://www.radspion.com` (no trailing slash)
+   - **Authorized redirect URIs:** `http://localhost:8000/auth/google/callback`, `https://www.radspion.com/auth/google/callback`
 4. Save **Client ID** and **Client secret** (secret is shown only once).
 
 ## Configuration (`.env`)
