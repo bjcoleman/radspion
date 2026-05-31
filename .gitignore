@@ -8,6 +8,7 @@ __pycache__/
 htmlcov/
 .coverage
 database/*.db
+.DS_Store
 
 # Live missions: only basic-training (and README) in git; bootstrap copies example slugs here
 content/missions/**

@@ -41,4 +41,3 @@ sqlite3 "$DB_PATH" < "$REGISTRATION_CODES_SEED"
 
 echo "Created database at $DB_PATH (Orientation + basic-training + registration codes)."
 echo "Replace CHANGE-ME-* codes in registration_access_codes before inviting agents."
-echo "For the full example class, run: ./scripts/bootstrap_sample_class.sh"
