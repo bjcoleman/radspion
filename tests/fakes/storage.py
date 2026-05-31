@@ -2,12 +2,9 @@
 
 from radspion.user import User
 
-ORIENTATION_GROUP_ID = 1
-ORIENTATION_GROUP_NAME = "Orientation"
-
 
 class InMemoryRadspionStorage:
-    """In-memory users, groups, and registration codes."""
+    """In-memory users and registration codes."""
 
     def __init__(
         self,
@@ -17,7 +14,6 @@ class InMemoryRadspionStorage:
         self._registration_codes = set(registration_codes or ())
         self._users: dict[int, User] = {}
         self._next_user_id = 1
-        self._group_members: set[tuple[int, int]] = set()
         for user in users or ():
             self._users[user.id] = user
             self._next_user_id = max(self._next_user_id, user.id + 1)
@@ -59,12 +55,3 @@ class InMemoryRadspionStorage:
         )
         self._users[user_id] = user
         return user
-
-    def get_orientation_group_id(self) -> int | None:
-        return ORIENTATION_GROUP_ID
-
-    def add_group_member(self, user_id: int, group_id: int) -> None:
-        self._group_members.add((user_id, group_id))
-
-    def user_in_group(self, user_id: int, group_id: int) -> bool:
-        return (user_id, group_id) in self._group_members

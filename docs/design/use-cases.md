@@ -1,6 +1,6 @@
 # Use cases (V1)
 
-Ordered by **dependency** — build from the top down. Each case lists **Requires** (other UC ids that must work first). Agent scenarios at the end assume the example seed ([04-example-data-walkthrough.md](04-example-data-walkthrough.md), [`src/radspion/sql/seed_example_class.sql`](../../src/radspion/sql/seed_example_class.sql)).
+Ordered by **dependency** — build from the top down. Each case lists **Requires** (other UC ids that must work first). Agent scenarios at the end assume the example seed once updated in **radspion-missions** ([04-example-data-walkthrough.md](04-example-data-walkthrough.md), [`example-class/seed_example_class.sql`](../../../radspion-missions/example-class/seed_example_class.sql) — **pending rework**).
 
 **Reference agents:** Alice, Bob, Charlie, Diana — [05-example-class.md](05-example-class.md). Mission names are **slugs** everywhere (e.g. `read-the-manual`, not numeric ids).
 
@@ -9,29 +9,28 @@ Ordered by **dependency** — build from the top down. Each case lists **Require
 | Topic | Decision |
 |-------|----------|
 | Who can sign in | Google OAuth; **new** agents need a valid `registration_access_codes` row first |
-| New agents | Valid registration code → OAuth → auto-create `users` row; add to **Orientation** `group_members` |
+| New agents | Valid registration code → OAuth → auto-create `users` row |
 | Returning agents | Google OAuth only (existing `users` row) |
 | Registration codes | Flat list in SQL; case-sensitive after trim; not stored on `users`; independent rotation per code |
-| Campus vs class | **Orientation** group missions for all signed-in agents; class missions need roster row |
-| Welcome | Seed includes `basic-training` in **Orientation** |
-| Code vs automatic listing | A mission never mixes **`unlock_code`** with **`mission_list_requires`**; sample uses one code-only mission (`global-hidden`) |
-| Mission list UX | After login, dashboard shows all missions the agent should have (group + rules + progress) |
-| `agent_mission_status` | Keep table **in sync at all times** (login + unlock + complete + roster changes); dashboard reads this table |
+| Story arcs | `groups` organize missions on the dashboard; **do not** gate access |
+| Mission visibility | `access_rule` + `mission_unlock_codes` + `mission_list_requires` |
+| Welcome | Seed includes `basic-training` (`open`) in **Orientation** arc |
+| Code vs automatic listing | A mission never mixes **`unlock_code`** with **`mission_list_requires`** |
+| Mission list UX | Dashboard shows missions with `agent_mission_status` rows, grouped by story arc |
+| `agent_mission_status` | Keep table **in sync at all times** (login + unlock + complete); dashboard reads this table |
 | Debrief | Only after mission `completed` |
-| Error copy (UC-020, UC-022, UC-023) | Wording TBD — you’ll review per case |
+| Error copy (UC-020, UC-022) | Wording TBD — you’ll review per case |
 | Web framework | **Flask + Jinja** SSR; JSON API at `/api/access`, `/api/unlock`, `/api/missions/<slug>/submit` |
-| Brief/Debrief paths | Live missions under `content/missions/<slug>/`; example pack under `content/samples/example-class/` (bootstrap copies into live); UI mockups in `docs/ui/` inline HTML snapshots (not separate markdown files) |
-| Operator config V1 | SQL/seed only — no in-app mission/roster editor |
-| Operator progress V1 | Read-only UI: groups → missions → roster status (`locked` / `active` / `complete`) |
-| `users.is_operator` | SQLite `INTEGER` `0`/`1` (app treats as boolean); gates operator routes |
-| Sync timing | **Immediate** on `group_members` insert, login, unlock, complete — never deferred |
-| Operator “locked” | Roster member, no `agent_mission_status` row (not unlocked / not listable yet) |
-| Operator group list | All groups; **Orientation** (campus-wide) section at the **bottom** |
-| Roster via SQL | New class member → add to **Orientation** + class group; run sync (CLI helpers later) |
+| Brief/Debrief paths | Live missions under `content/missions/<slug>/`; packs in **radspion-missions** |
+| Operator config V1 | SQL/seed only — no in-app mission editor |
+| Operator progress V1 | Read-only UI: story arcs → missions → agent status |
+| `users.is_operator` | SQLite `INTEGER` `0`/`1`; gates operator routes |
+| Sync timing | **Immediate** on login, unlock, complete — never deferred |
+| Operator arc list | All groups; **Orientation** section at the **bottom** |
 
-**Sync invariant:** If an agent is in a group and a mission is listable (`open`, or `requires_complete` with prereqs met), an `active` row **must** exist. Missing row in that case is a **bug**, not a UI edge case.
+**Sync invariant:** If a mission is listable (`open`, or `requires_complete` with prereqs met), an `active` row **must** exist for that agent. Missing row in that case is a **bug**, not a UI edge case.
 
-**Why eager sync?** Dashboard and operator views read `agent_mission_status` directly. `unlock_code` missions intentionally have **no row** until redeem — operator sees that as **locked**.
+**Why eager sync?** Dashboard and operator views read `agent_mission_status` directly. `unlock_code` missions intentionally have **no row** until redeem.
 
 ---
 
@@ -49,7 +48,7 @@ Apply [`src/radspion/sql/schema.sql`](../../src/radspion/sql/schema.sql) so all 
 
 **Actor:** Operator (dev)  
 **Requires:** UC-001  
-Load [`src/radspion/sql/seed_example_class.sql`](../../src/radspion/sql/seed_example_class.sql) for **Orientation** + 220.2 DevOps groups, **six missions**, constraints, and sample `agent_mission_status` rows.
+Load example-class seed from **radspion-missions** for Orientation + 220.2 DevOps arcs, missions, constraints, and sample progress rows. **Pending pack rework** to match current schema.
 
 ---
 
@@ -65,17 +64,17 @@ Application stack connects to the Radspion SQLite database (`PRAGMA foreign_keys
 
 **Actor:** Developer  
 **Requires:** UC-003  
-Models (or equivalent data layer) for `users` (including `is_operator`), `groups`, `group_members`, `missions`, constraint tables, and `agent_mission_status` with the same semantics as [03-database-schema.md](03-database-schema.md).
+Models (or equivalent data layer) for `users` (including `is_operator`), `groups`, `missions`, constraint tables, and `agent_mission_status` with the same semantics as [03-database-schema.md](03-database-schema.md).
 
 ---
 
 ## Operator configuration (V1, no admin UI)
 
-### UC-005 — Configure a class via SQL
+### UC-005 — Configure a story arc via SQL
 
 **Actor:** Operator  
 **Requires:** UC-001  
-Create group, roster, missions, unlock/list/complete constraints, and optional seed progress per [07-operator-setup.md](07-operator-setup.md). When adding a student to a class group, also add them to **Orientation** and ensure status sync runs (UC-012). No in-app wizard in V1.
+Create group (arc), missions, unlock/list constraints, and optional seed progress per [07-operator-setup.md](07-operator-setup.md). No in-app wizard in V1.
 
 ---
 
@@ -104,7 +103,6 @@ Agent authenticates with Google (any Google account); app establishes a session 
 - If `users` row exists for `google_subject_id` or email → attach session (no registration code).  
 - If no `users` row → require UC-006 session clearance; else reject provisioning.  
 - Create user from OAuth profile (`email`, `google_subject_id`, `display_name`).  
-- Ensure `group_members` row for **Orientation**.  
 - Run mission-status sync (UC-012) before showing the dashboard.
 
 ---
@@ -115,7 +113,7 @@ Agent authenticates with Google (any Google account); app establishes a session 
 
 **Actor:** Operator  
 **Requires:** UC-002 (for example paths)  
-Operator-authored markdown at paths stored on `missions` under `content/missions/<slug>/`. The example-class bootstrap copies from `content/samples/example-class/` and loads `seed_example_class.sql`. UI mockups inline representative brief/debrief in HTML (e.g. `mission-detail-active.html`, `mission-detail-completed.html`) — not one mockup file per mission.
+Operator-authored markdown at paths stored on `missions` under `content/missions/<slug>/`. Mission packs live in **radspion-missions**. UI mockups inline representative brief/debrief in HTML — not one mockup file per mission.
 
 ---
 
@@ -137,11 +135,11 @@ Agent can view the Debrief only when `agent_mission_status.status = completed` f
 
 ## Listing and visibility
 
-### UC-011 — Missions scoped to agent groups
+### UC-011 — Evaluate mission listability
 
 **Actor:** System  
 **Requires:** UC-007  
-Only missions where the agent has `group_members` for `missions.group_id` are considered (e.g. Diana has no 220.2 DevOps missions).
+For each mission, determine listability from `access_rule`, unlock redemption, and `mission_list_requires` — independent of group membership. Non-listable missions are hidden from the agent dashboard.
 
 ---
 
@@ -149,18 +147,17 @@ Only missions where the agent has `group_members` for `missions.group_id` are co
 
 **Actor:** System  
 **Requires:** UC-011  
-Keep status rows aligned with listing rules for all of the agent’s groups. Run **immediately** when:
+Keep status rows aligned with listing rules. Run **immediately** when:
 
-- Agent added to a group (`group_members` insert)
 - Agent signs in (UC-007)
 - Unlock redeemed (UC-019)
 - Mission completed (UC-024)
 
 | `access_rule` | Sync behavior |
 |---------------|---------------|
-| `open` | `active` row if in group and not yet `completed` — **required**; absence is an error |
+| `open` | `active` row if not yet `completed` — **required**; absence is an error |
 | `requires_complete` | `active` row when all `mission_list_requires` are `completed` |
-| `unlock_code` | **No row** until redeem (UC-019) — not an error; operator reports as **locked** |
+| `unlock_code` | **No row** until redeem (UC-019) |
 
 Do not remove rows for completed missions.
 
@@ -170,7 +167,7 @@ Do not remove rows for completed missions.
 
 **Actor:** Agent  
 **Requires:** UC-012  
-After login (post-sync), dashboard lists all `agent_mission_status` rows for missions in the agent’s groups (`active` or `completed`). This is the full set of missions available to work on or review.
+After login (post-sync), dashboard lists all `agent_mission_status` rows (`active` or `completed`), grouped by story arc (`groups`). Toggle to show/hide completed missions.
 
 ---
 
@@ -178,7 +175,7 @@ After login (post-sync), dashboard lists all `agent_mission_status` rows for mis
 
 **Actor:** Agent  
 **Requires:** UC-013  
-For `access_rule = unlock_code`, create `active` status when the agent submits the correct `mission_unlock_codes.unlock_code` (e.g. global-hidden / mission 2).
+For `access_rule = unlock_code`, create `active` status when the agent submits the correct `mission_unlock_codes.unlock_code` (e.g. global-hidden).
 
 ---
 
@@ -214,7 +211,7 @@ After `completed`, agent sees the stored `completion_code` value for that missio
 
 **Actor:** Agent  
 **Requires:** UC-014  
-Valid unlock code for a mission in the agent’s group → mission appears on list (`active`). Example: `UNLOCK-BLINDFOLD` for global-hidden.
+Valid unlock code → mission appears on list (`active`). Example: `UNLOCK-BLINDFOLD` for global-hidden.
 
 ---
 
@@ -228,28 +225,19 @@ Invalid unlock code → clear error without revealing mission existence or codes
 
 ## Completion
 
-### UC-021 — Complete mission (no complete prerequisites)
+### UC-021 — Complete mission
 
 **Actor:** Agent  
 **Requires:** UC-016, UC-017  
-Agent submits correct `completion_code` for a mission with no `mission_complete_requires` → `status = completed`. Examples: basic-training; **read-the-manual** once listed.
+Agent submits correct `completion_code` while mission is `active` → `status = completed`. Examples: basic-training; any listed mission with matching code.
 
 ---
 
-### UC-022 — Reject completion when complete prerequisites not met (stealth)
+### UC-022 — Reject wrong completion code
 
 **Actor:** Agent  
 **Requires:** UC-021  
-If any `mission_complete_requires` target is not `completed`, reject with a **generic** “not yet” message; inputs stay enabled ([06-agent-experience.md](06-agent-experience.md)).  
-Example: Charlie has **remote-access** `active` (listed after learn-the-system) but cannot complete it until **read-the-manual** is `completed` (`mission_complete_requires` on mission 5).
-
----
-
-### UC-023 — Reject wrong completion code
-
-**Actor:** Agent  
-**Requires:** UC-021  
-Wrong code → “not recognized” (distinct from stealth prereq failure). *(Wording TBD.)*
+Wrong code → “not recognized”. *(Wording TBD.)*
 
 ---
 
@@ -265,27 +253,27 @@ When a mission becomes `completed`, run UC-012 so any newly listable `requires_c
 
 **Actor:** System  
 **Requires:** UC-013, UC-024  
-For `access_rule = requires_complete`, mission appears on the dashboard when all `mission_list_requires` targets are `completed` (e.g. **remote-access** after learn-the-system; **identify-the-traitor** after read-the-manual and remote-access). Same mechanism as UC-024; listed here as the agent-visible outcome.
+For `access_rule = requires_complete`, mission appears on the dashboard when all `mission_list_requires` targets are `completed`. Same mechanism as UC-024; listed here as the agent-visible outcome.
 
 ---
 
 ## Canonical agent scenarios (acceptance)
 
-These validate the full stack against seed data. Mission ids/slugs follow [04-example-data-walkthrough.md](04-example-data-walkthrough.md).
+These validate the full stack against seed data once **radspion-missions** example-class seed is updated. See [05-example-class.md](05-example-class.md).
 
 ### UC-025 — Diana: orientation only
 
 **Actor:** Diana  
 **Requires:** UC-013, UC-011  
-Sees basic-training (`active`); does not see 220.2 DevOps missions (not in group 2).
+Sees `basic-training` (`active` or `completed`); does not see DevOps arc missions (arc not entered).
 
 ---
 
-### UC-026 — Alice: 220.2 DevOps progress from seed
+### UC-026 — Alice: DevOps progress
 
 **Actor:** Alice  
 **Requires:** UC-013, UC-018  
-Class list includes read-the-manual and learn-the-system `completed`, **remote-access** `active`; **identify-the-traitor** not listed (remote-access not finished). **global-hidden** not listed until unlocked.
+DevOps list per updated seed; **global-hidden** not listed until unlocked.
 
 ---
 
@@ -297,27 +285,19 @@ Submit `UNLOCK-BLINDFOLD` → global-hidden appears `active`.
 
 ---
 
-### UC-028 — Alice: Complete remote-access after read-the-manual
+### UC-028 — Alice: Complete remote-access
 
 **Actor:** Alice  
-**Requires:** UC-021, UC-022  
-Can complete **remote-access** because **read-the-manual** is already `completed` (`mission_complete_requires` on mission 5).
-
----
-
-### UC-029 — Charlie: Stealth block on remote-access
-
-**Actor:** Charlie  
-**Requires:** UC-022  
-Has **remote-access** on list (`active`, listed via learn-the-system) but submission fails with generic “not yet” until **read-the-manual** is `completed`.
-
----
-
-### UC-030 — Charlie: Complete read-the-manual when allowed
-
-**Actor:** Charlie  
 **Requires:** UC-021  
-Can complete **read-the-manual** (no mission_complete_requires targeting mission 3).
+Can complete **remote-access** when listed and code matches (no separate completion prereqs).
+
+---
+
+### UC-029 — Charlie: Partial DevOps progress
+
+**Actor:** Charlie  
+**Requires:** UC-013, UC-021  
+Listed missions can be completed with correct code; unlisted missions remain hidden.
 
 ---
 
@@ -325,7 +305,7 @@ Can complete **read-the-manual** (no mission_complete_requires targeting mission
 
 **Actor:** Bob  
 **Requires:** UC-013, UC-018  
-All six missions `completed`; can view all captured completion codes including orientation and DevOps finale (`identify-the-traitor` / TRAITOR-IDENTIFIED-OK).
+All missions `completed`; can view all captured completion codes.
 
 ---
 
@@ -333,7 +313,7 @@ All six missions `completed`; can view all captured completion codes including o
 
 **Actor:** Agent (e.g. Bob path)  
 **Requires:** UC-015, UC-024  
-**identify-the-traitor** appears on the roster only when **read-the-manual** and **remote-access** are both `completed` (`mission_list_requires` on mission 6). No `mission_complete_requires` on that mission — agents cannot see it until those prerequisites are done.
+**identify-the-traitor** appears when **read-the-manual** and **remote-access** are both `completed` (`mission_list_requires`).
 
 ---
 
@@ -345,27 +325,25 @@ Operator-facing status is **derived** for display (not stored):
 |---------|---------|
 | **complete** | `agent_mission_status.status = completed` |
 | **active** | `agent_mission_status.status = active` |
-| **locked** | Agent in mission’s group roster, **no status row** (e.g. `unlock_code` not redeemed, or `requires_complete` list prereqs not met) |
-
-Roster = `group_members` for `missions.group_id`. Example: Diana appears on **Orientation** missions; she does **not** appear on 220.2 DevOps mission rosters.
+| **not started** | No status row for this mission |
 
 ### UC-033 — Operator access (`is_operator`)
 
 **Actor:** Operator  
 **Requires:** UC-007  
-Only `users.is_operator = 1` may access operator routes (SQLite; ORM may expose this as boolean). Same Google OAuth as agents; enforce on every operator request. *(Preferred: land on operator home after login — not critical.)*
+Only `users.is_operator = 1` may access operator routes. Same Google OAuth as agents.
 
 ---
 
-### UC-034 — Operator: list groups
+### UC-034 — Operator: list story arcs
 
 **Actor:** Operator  
 **Requires:** UC-033  
-Show all groups. List **class groups first**; **Orientation** group **last** (bottom of page).
+Show all groups. List **Orientation** **last** (bottom of page).
 
 ---
 
-### UC-035 — Operator: list missions for a group
+### UC-035 — Operator: list missions for an arc
 
 **Actor:** Operator  
 **Requires:** UC-034  
@@ -373,23 +351,22 @@ For a selected group, list all missions (`missions.group_id`).
 
 ---
 
-### UC-036 — Operator: mission roster status grid
+### UC-036 — Operator: mission progress grid
 
 **Actor:** Operator  
 **Requires:** UC-035, UC-012  
-For a selected mission, list every agent in that mission’s group roster with status **locked**, **active**, or **complete** (table above).  
-Examples from seed: Alice **locked** on global-hidden (no row); Charlie **locked** on identify-the-traitor (no row); Bob **complete** on identify-the-traitor.
+For a selected mission, list agents with status on missions in that arc (or all users for global `open` missions — implementation TBD).
 
 ---
 
-### UC-037 — Diana: operator sees orientation only
+### UC-037 — Diana: operator sees orientation progress only
 
 **Actor:** Operator  
 **Requires:** UC-036  
-On 220.2 DevOps missions, Diana is **not** in the roster. On **Orientation** missions (e.g. basic-training), Diana appears with the same locked/active/complete rules as other orientation members.
+Diana has no DevOps status rows until she enters that arc.
 
 ---
 
 ## Out of scope for this list (V1)
 
-Per [01-overview.md](01-overview.md) out-of-scope list: faculty wizard, story templates, audit log, per-agent keyed codes, in-app operator **configuration** (roster/mission editor), operator CLI helpers (later).
+Per [01-overview.md](01-overview.md): faculty wizard, story templates, audit log, per-agent keyed codes, in-app operator **configuration**, operator CLI helpers (later).

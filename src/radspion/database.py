@@ -93,23 +93,3 @@ class DatabaseRadspionStorage:
         except sqlite3.Error as exc:
             raise DatabaseError(f"Database error creating user: {exc}") from exc
         return self._row_to_user(row)
-
-    def get_orientation_group_id(self) -> int | None:
-        try:
-            row = self._conn.execute(
-                "SELECT id FROM groups WHERE name = ?",
-                ("Orientation",),
-            ).fetchone()
-        except sqlite3.Error as exc:
-            raise DatabaseError(f"Database error loading Orientation group: {exc}") from exc
-        return row["id"] if row else None
-
-    def add_group_member(self, user_id: int, group_id: int) -> None:
-        try:
-            self._conn.execute(
-                "INSERT OR IGNORE INTO group_members (user_id, group_id) VALUES (?, ?)",
-                (user_id, group_id),
-            )
-            self._conn.commit()
-        except sqlite3.Error as exc:
-            raise DatabaseError(f"Database error adding group member: {exc}") from exc

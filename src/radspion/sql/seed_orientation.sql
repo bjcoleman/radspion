@@ -1,4 +1,4 @@
--- Default system seed: Orientation group + basic-training (open mission for all new agents).
+-- Default system seed: Orientation story arc + basic-training (open mission for all signed-in agents).
 -- Prerequisite: src/radspion/sql/schema.sql
 
 PRAGMA foreign_keys = ON;

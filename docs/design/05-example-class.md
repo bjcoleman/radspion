@@ -1,34 +1,44 @@
 # Example seed (220.2 DevOps)
 
-**Orientation** missions use `group_id = 1`. **220.2 DevOps** missions use `group_id = 2`. Always refer to missions by **slug** (not numeric ids).
+> **Pending missions-pack rework.** Acceptance scenarios below reflect the **target** model. The seed in [`radspion-missions/example-class/seed_example_class.sql`](../../../radspion-missions/example-class/seed_example_class.sql) is outdated (rosters, `mission_complete_requires`).
 
-Details: [04-example-data-walkthrough.md](04-example-data-walkthrough.md). SQL: [`src/radspion/sql/seed_example_class.sql`](../../src/radspion/sql/seed_example_class.sql).
+**Orientation** missions use the Orientation story arc. **220.2 DevOps** missions use the DevOps arc. Always refer to missions by **slug** (not numeric ids).
 
-## Cast
+Details: [04-example-data-walkthrough.md](04-example-data-walkthrough.md).
 
-| Agent | Orientation | 220.2 DevOps |
-|-------|-------------|--------------|
-| Alice, Bob, Charlie | member | member |
-| Diana | member | — |
+## Cast (target)
 
-## Seed states
+Four sample agents for acceptance tests once the seed is updated:
 
-| Agent | 220.2 DevOps | Orientation |
-|-------|--------------|-------------|
-| Alice | read-the-manual, learn-the-system ✓; remote-access active | basic-training ✓ |
-| Bob | all four class missions ✓ | basic-training, global-hidden ✓ |
-| Charlie | learn-the-system ✓; read-the-manual + remote-access active | basic-training active |
-| Diana | — | basic-training active |
+| Agent | Role in scenarios |
+|-------|-------------------|
+| Alice | Mid-progress DevOps; orientation complete |
+| Bob | All missions complete |
+| Charlie | Partial DevOps progress |
+| Diana | Orientation only (has not entered DevOps arc) |
 
-## Per-mission config
+Diana does not see DevOps missions because she has not redeemed the arc entry code (or satisfied list prereqs) — not because of roster membership.
 
-| slug | group | access_rule | List after completing… | Complete only after… |
-|------|-------|-------------|------------------------|-------------------------|
-| basic-training | Orientation | open | — | — |
-| global-hidden | Orientation | unlock_code | redeem code (only code-based mission in sample) | — |
-| read-the-manual | 220.2 DevOps | open | — | — |
-| learn-the-system | 220.2 DevOps | open | — | — |
-| remote-access | 220.2 DevOps | requires_complete | learn-the-system | read-the-manual |
-| identify-the-traitor | 220.2 DevOps | requires_complete | read-the-manual **and** remote-access | — (not listable until both are `completed`) |
+## Intended acceptance scenarios
 
-A mission never combines **`unlock_code`** with **`mission_list_requires`** (code unlock vs. automatic listing are mutually exclusive).
+| Agent | Expected behavior (target model) |
+|-------|----------------------------------|
+| Diana | Sees `basic-training` only; no DevOps missions until arc entry |
+| Alice | DevOps progress per seed; `global-hidden` after unlock code |
+| Bob | All missions `completed` |
+| Charlie | Partial list; can complete any listed mission with correct code (no stealth submit gates) |
+
+## Per-mission config (target)
+
+| slug | arc | access_rule | List after completing… |
+|------|-----|-------------|------------------------|
+| basic-training | Orientation | open | — |
+| global-hidden | Orientation | unlock_code | redeem code |
+| read-the-manual | 220.2 DevOps | unlock_code * | redeem arc entry code * |
+| learn-the-system | 220.2 DevOps | requires_complete * | TBD in pack rework |
+| remote-access | 220.2 DevOps | requires_complete | TBD (`mission_list_requires`) |
+| identify-the-traitor | 220.2 DevOps | requires_complete | read-the-manual **and** remote-access |
+
+\* Exact access rules and list graph pending **radspion-missions** rework.
+
+A mission never combines **`unlock_code`** with **`mission_list_requires`**.

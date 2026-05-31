@@ -54,7 +54,7 @@ paths:
       description: |
         Trims leading and trailing whitespace from `unlock_code`. Comparison is case-sensitive.
 
-        When `outcome` is `success`, the mission is added to the signed-in agent's roster and
+        When `outcome` is `success`, the mission is added to the signed-in agent's mission list and
         `mission` describes it.
       operationId: redeemUnlock
       security:
@@ -84,10 +84,6 @@ paths:
                   value:
                     outcome: invalid
                     message: We could not validate that unlock code against agency records.
-                not_cleared:
-                  value:
-                    outcome: not_cleared
-                    message: You do not have clearance for this mission.
         "400":
           description: Missing or empty `unlock_code`
         "401":
@@ -143,16 +139,12 @@ paths:
                   value:
                     outcome: invalid
                     message: We reviewed your transmission, and the recovered data does not match mission requirements.
-                not_yet:
-                  value:
-                    outcome: not_yet
-                    message: Transmission received. Verification is still pending.
         "400":
           description: Missing or empty `completion_code`
         "401":
           description: Not signed in
         "404":
-          description: Unknown `slug`, or mission not on the agent's roster
+          description: Unknown `slug`, or mission not on the agent's mission list
 
 components:
   securitySchemes:
@@ -204,7 +196,7 @@ components:
       properties:
         outcome:
           type: string
-          enum: [success, invalid, not_cleared]
+          enum: [success, invalid]
         message:
           type: string
         mission:
@@ -223,7 +215,7 @@ components:
       properties:
         outcome:
           type: string
-          enum: [success, invalid, not_yet]
+          enum: [success, invalid]
         message:
           type: string
         new_missions:

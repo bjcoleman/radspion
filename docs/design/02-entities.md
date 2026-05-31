@@ -1,13 +1,12 @@
 # Data model
 
-SQLite. **Groups** are rosters. **Missions** belong to one group. **Constraints** are keyed by `mission_id`.
+SQLite. **Groups** are story arcs (organization for the dashboard and operator views). **Missions** belong to one group. **Constraints** are keyed by `mission_id`. Mission availability is controlled by `access_rule` and constraint tables — not group membership.
 
 ## Groups
 
-- `groups` + `group_members`
-- Every signed-in agent is in the campus-wide group (seed: **Orientation**; auto on first OAuth)
-- Class missions use `missions.group_id` = class group; agents need an explicit `group_members` row
-- SQL roster changes: always add **Orientation** + class group; sync runs immediately (see [07-operator-setup.md](07-operator-setup.md))
+- `groups` — named story arcs (e.g. **Orientation**, **Last Transmission**, **220.2 DevOps**)
+- `missions.group_id` — which arc a mission belongs to (UI sections, operator reports)
+- Groups do **not** gate access; any signed-in agent is evaluated against each mission’s `access_rule`
 
 ## Missions
 
@@ -16,7 +15,7 @@ SQLite. **Groups** are rosters. **Missions** belong to one group. **Constraints*
 | `slug` | Stable internal id |
 | `title` | Agent-visible name |
 | `brief_path`, `debrief_path` | Mission Brief / Debrief markdown |
-| `group_id` | Which group owns this mission |
+| `group_id` | Story arc for dashboard grouping |
 | `access_rule` | How the mission gets on the agent’s list |
 | `completion_code` | Secret to mark completed |
 
@@ -26,29 +25,20 @@ A mission is surfaced by **unlock code** or **automatic listing after completion
 
 | Value | Listed when |
 |-------|-------------|
-| `open` | Agent is in the group (`active` status row when synced) |
+| `open` | Any signed-in agent (sync creates `active` row) |
 | `unlock_code` | Agent redeems `mission_unlock_codes` |
-| `requires_complete` | Agent completed all `mission_list_requires` missions (automatic unlock after other missions) |
+| `requires_complete` | Agent completed all `mission_list_requires` missions |
 
 ## Constraint tables
 
 ### `mission_unlock_codes` (1:1)
 
-`unlock_code` text when `access_rule = unlock_code`. V1 excludes **submission** prerequisites on redeemable missions (`mission_complete_requires` with this mission as `mission_id`): a code-unlocked mission is not also gated by “complete other missions first.” Codes are mutually exclusive with automatic listing (**`mission_list_requires`**).
+`unlock_code` text when `access_rule = unlock_code`. Codes are mutually exclusive with automatic listing (**`mission_list_requires`**).
 
 ### `mission_list_requires` (1:many)
 
 Must **complete** `required_mission_id` before this mission is **listed**.  
-Used with `requires_complete`. Required missions should share the same `group_id`.
-
-### `mission_complete_requires` (1:many)
-
-Must **complete** required missions before **submitting** `completion_code`.  
-Stealth enforcement: generic “not yet” in UI; inputs stay enabled.
-
-Multiple rows = **all** required (AND).
-
-Omit when **`mission_list_requires`** already requires the same missions to be `completed` before the mission is visible (sample: **identify-the-traitor**).
+Used with `requires_complete`. Prereqs may span story arcs if you design them that way; in-arc chains are the common case.
 
 ## Users
 
@@ -60,38 +50,35 @@ Omit when **`mission_list_requires`** already requires the same missions to be `
 **`agent_mission_status`**: `(user_id, mission_id, status)` — `active` | `completed`.
 
 - Completed missions may display `missions.completion_code`; never expose it for `active` missions
-- Agent must be in the mission’s group
-- **No row** means not listable yet (`unlock_code` not redeemed, or list prereqs not met). Operator UI labels this **locked**. For listable `open` missions, a missing row is a **sync error**.
+- **No row** means not listable yet (`unlock_code` not redeemed, or list prereqs not met). Missions that are not listable are **hidden** from the agent dashboard — not shown as locked placeholders
+- For listable `open` missions, a missing row is a **sync error**
 
 ## Operator progress (V1, read-only)
 
-For each mission, show each agent in that mission’s **group roster** with:
+Organize by story arc (`groups` → `missions`). For each mission, show agents who have **any** `agent_mission_status` row on missions in that arc, or all signed-in users for globally `open` missions (TBD in UI implementation).
 
 | Label | Rule |
 |-------|------|
 | complete | status row `completed` |
 | active | status row `active` |
-| locked | roster member, no status row |
+| not started | signed-in user, no status row on this mission |
 
 ## Runtime (summary)
 
-Keep **`agent_mission_status` current immediately** when roster membership changes, on login, and after unlock/complete — agent dashboard and operator grids read this table.
+Keep **`agent_mission_status` current immediately** on login, unlock, and complete — agent dashboard and operator views read this table.
 
-1. Agent in group → eligible for that group’s missions  
-2. **List:** per `access_rule` + list requires → ensure `active` row exists when listable  
-3. **Complete:** complete requires → match `completion_code` → `completed`  
+1. Signed-in agent  
+2. **List:** per `access_rule` + `mission_list_requires` → ensure `active` row exists when listable  
+3. **Complete:** mission is `active` and input matches `completion_code` → `completed`  
 4. On complete → sync: create `active` rows for missions whose `mission_list_requires` are now satisfied  
 
 ## Diagram
 
 ```mermaid
 erDiagram
-    users ||--o{ group_members : member_of
-    groups ||--o{ group_members : has
-    groups ||--o{ missions : owns
+    groups ||--o{ missions : contains
     missions ||--o| mission_unlock_codes : optional_unlock
     missions ||--o{ mission_list_requires : lists_after
-    missions ||--o{ mission_complete_requires : completes_after
     users ||--o{ agent_mission_status : progress
     missions ||--o{ agent_mission_status : on
 ```
