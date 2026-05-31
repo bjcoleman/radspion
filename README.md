@@ -1,6 +1,6 @@
 # Radspion
 
-Secret-organization-themed mission platform for coursework. Agents in **groups** complete **missions** using unlock codes, prerequisites, Mission Briefs, and Debriefs. Operators configure classes via SQL seed; new agents need a registration access code, then Google OAuth (any account); returning agents use Google only.
+Secret-organization-themed mission platform for coursework. Agents complete **missions** in story **arcs** using unlock codes, prerequisites, Mission Briefs, and Debriefs. Operators configure missions via SQL seed; new agents need a registration access code, then Google OAuth (any account); returning agents use Google only.
 
 ## Documentation
 
@@ -18,24 +18,27 @@ Secret-organization-themed mission platform for coursework. Agents in **groups**
 
 ```
 src/radspion/          Application package
-src/radspion/sql/      Schema and example seed
+src/radspion/sql/      Schema and orientation seed
 content/missions/      Live mission Brief / Debrief (basic-training default)
-content/samples/       Sample mission packs (example class)
 deploy/                nginx vhost, systemd unit (production)
 docs/                  Design docs, API outline, UI mockups
-scripts/               DB bootstrap scripts
+scripts/               DB bootstrap (create_empty_db.sh)
 database/              SQLite file (gitignored)
 tests/                 Unit tests
 ```
+
+Mission packs (content + SQL seeds) live in the sibling **radspion-missions** repo.
 
 ## Quick start (development)
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt && pip install -e .
-./scripts/bootstrap_sample_class.sh
+./scripts/create_empty_db.sh
 make
 ```
+
+For the example class pack (after seed rework): see **radspion-missions** `example-class/bootstrap_sample_class.sh`.
 
 See [docs/dev.md](docs/dev.md) for OAuth, CI, and deployment.
 

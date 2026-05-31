@@ -4,7 +4,7 @@ import pytest
 
 from radspion.oauth_types import GoogleProfile, SignupNotAllowedError
 from radspion.radspion import Radspion
-from tests.fakes.storage import ORIENTATION_GROUP_ID, InMemoryRadspionStorage
+from tests.fakes.storage import InMemoryRadspionStorage
 
 
 def _profile(**overrides):
@@ -58,7 +58,7 @@ def test_sign_in_provisions_new_user_when_registration_cleared():
     user = app.sign_in_with_google(_profile(), registration_cleared=True)
 
     assert user.email == "new@example.com"
-    assert storage.user_in_group(user.id, ORIENTATION_GROUP_ID)
+    assert storage.find_user_by_id(user.id) is not None
 
 
 def test_sign_in_rejects_new_user_without_registration_cleared():
@@ -67,16 +67,3 @@ def test_sign_in_rejects_new_user_without_registration_cleared():
 
     with pytest.raises(SignupNotAllowedError):
         app.sign_in_with_google(_profile(), registration_cleared=False)
-
-
-def test_sign_in_raises_when_orientation_group_missing():
-    storage = InMemoryRadspionStorage()
-
-    def no_orientation():
-        return None
-
-    storage.get_orientation_group_id = no_orientation  # type: ignore[method-assign]
-    app = Radspion(storage)
-
-    with pytest.raises(RuntimeError, match="Orientation group"):
-        app.sign_in_with_google(_profile(), registration_cleared=True)

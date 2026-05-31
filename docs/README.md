@@ -1,6 +1,6 @@
 # Radspion documentation
 
-Secret-organization-themed mission platform for coursework. Students (**agents**) in **groups** complete **missions** using unlock and completion codes, **Mission Briefs**, and **Debriefs**.
+Secret-organization-themed mission platform for coursework. Students (**agents**) complete **missions** in story **arcs** using unlock and completion codes, **Mission Briefs**, and **Debriefs**.
 
 ## Start here (for development)
 
@@ -9,7 +9,7 @@ Read in order:
 1. [design/01-overview.md](design/01-overview.md) — product scope and V1 goals  
 2. [design/02-entities.md](design/02-entities.md) — data model (conceptual)  
 3. [design/03-database-schema.md](design/03-database-schema.md) — tables (SQLite)  
-4. [design/04-example-data-walkthrough.md](design/04-example-data-walkthrough.md) — canonical example in SQL rows  
+4. [design/04-example-data-walkthrough.md](design/04-example-data-walkthrough.md) — example pack in SQL (pending seed rework)  
 5. [design/05-example-class.md](design/05-example-class.md) — example class cheat sheet  
 6. [design/06-agent-experience.md](design/06-agent-experience.md) — agent UI rules  
 7. [design/07-operator-setup.md](design/07-operator-setup.md) — how you configure data today  
@@ -17,6 +17,8 @@ Read in order:
 
 **UI mockups:** [ui/README.md](ui/README.md) — static HTML/CSS prototypes (build before Jinja templates)
 
-**SQL:** [src/radspion/sql/schema.sql](../src/radspion/sql/schema.sql), [src/radspion/sql/seed_example_class.sql](../src/radspion/sql/seed_example_class.sql)
+**SQL (infrastructure):** [src/radspion/sql/schema.sql](../src/radspion/sql/schema.sql), [seed_orientation.sql](../src/radspion/sql/seed_orientation.sql)
 
-**Development:** [dev.md](dev.md) · **Mission markdown:** [mission-markdown.md](mission-markdown.md) · **JSON API (OpenAPI):** [api.yaml](api.yaml) — `POST /api/access`, `/api/unlock`, `/api/missions/{slug}/submit`
+**Mission packs:** sibling repo [radspion-missions](../radspion-missions/) (example-class seed pending rework)
+
+**Development:** [dev.md](dev.md) · **Mission markdown:** [mission-markdown.md](mission-markdown.md) · **JSON API (OpenAPI):** [api.yaml](api.yaml)

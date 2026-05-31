@@ -1,14 +1,14 @@
 # Radspion UI mockups (V1)
 
-Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snapshot—no backend. Modal animations use **inline scripts** on dedicated outcome pages; production will use server-rendered pages plus `fetch` to the JSON API ([06-agent-experience.md](../design/06-agent-experience.md), [api.yaml](../api.yaml)). Use the [example class seed](../../src/radspion/sql/seed_example_class.sql) personas and states from [design docs](../design/).
+Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snapshot—no backend. Modal animations use **inline scripts** on dedicated outcome pages; production will use server-rendered pages plus `fetch` to the JSON API ([06-agent-experience.md](../design/06-agent-experience.md), [api.yaml](../api.yaml)). Personas and seed states: [design docs](../design/) (example-class seed in **radspion-missions** — pending rework).
 
 **Design reference:** [06-agent-experience.md](../design/06-agent-experience.md) (includes hybrid JSON endpoints) · [use-cases.md](../design/use-cases.md) · [05-example-class.md](../design/05-example-class.md) · [COLOR_USAGE.md](COLOR_USAGE.md)
 
 **Assets:** shared styles in [`css/radspion.css`](css/radspion.css); logos in [`logos/`](../../logos/). Mission brief and debrief copy is **inlined in HTML** on mission detail mockups (production loads markdown from `content/missions/`).
 
-**Sample data alignment:** Six missions — **Orientation** (`basic-training`, `global-hidden` code-only), **DevOps** (`read-the-manual`, `learn-the-system` open starters; **`remote-access`** lists after LMS; **`identify-the-traitor`** finale). Adding a mission to the roster uses either a redeemable **`unlock_code`** or automatic **`requires_complete`** listing — never both (see seed + use cases).
+**Sample data alignment:** Story arcs **Orientation** and **DevOps**; missions use **`unlock_code`** or **`requires_complete`** listing — never both on one mission.
 
-**Mock vs production:** Modal outcome pages hard-code copy and animation; no `fetch`. Production will call `POST /api/access`, `POST /api/unlock`, and `POST /api/missions/<slug>/submit` per [`api.yaml`](../api.yaml). API `outcome` values: access — `success`, `invalid`; unlock — `success`, `invalid`, `not_cleared`; submit — `success`, `invalid`, `not_yet`. Submit **success-unlocks** simulates `success` with a non-empty `new_missions` array.
+**Mock vs production:** Modal outcome pages hard-code copy and animation; no `fetch`. Production will call `POST /api/access`, `POST /api/unlock`, and `POST /api/missions/<slug>/submit` per [`api.yaml`](../api.yaml). API `outcome` values: access — `success`, `invalid`; unlock — `success`, `invalid`; submit — `success`, `invalid`. Submit **success-unlocks** simulates `success` with a non-empty `new_missions` array.
 
 ---
 
@@ -36,10 +36,9 @@ Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snaps
 | File | Status | Persona / state | Use cases |
 |------|--------|-----------------|-----------|
 | [agent-dashboard.html](agent-dashboard.html) | done | Alice; completed missions visible; DevOps expanded | UC-013, UC-019, UC-026 |
-| [agent-dashboard-hidden.html](agent-dashboard-hidden.html) | done | Same roster; **Show completed missions** off | UC-013 |
+| [agent-dashboard-hidden.html](agent-dashboard-hidden.html) | done | Same list; **Show completed missions** off | UC-013 |
 | [agent-dashboard-unlock-success.html](agent-dashboard-unlock-success.html) | done | Unlock success modal | UC-020, UC-027 |
 | [agent-dashboard-unlock-bad-code.html](agent-dashboard-unlock-bad-code.html) | done | Unlock invalid modal | UC-020 |
-| [agent-dashboard-unlock-wrong-clearance.html](agent-dashboard-unlock-wrong-clearance.html) | done | Unlock not-cleared modal | UC-020 |
 
 ### Mission detail
 
@@ -47,10 +46,9 @@ Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snaps
 |------|--------|-----------------|-----------|
 | [mission-detail-active.html](mission-detail-active.html) | done | **Alice / remote-access** active: Brief, Recovered Data | UC-009, UC-016, UC-017 |
 | [mission-detail-completed.html](mission-detail-completed.html) | done | **Alice / learn-the-system** completed; collapsible Mission Debrief + Mission Brief | UC-010, UC-018, UC-021 |
-| [mission-detail-submit-success.html](mission-detail-submit-success.html) | done | Submit success (no new missions) | UC-021, UC-022 |
-| [mission-detail-submit-success-unlocks.html](mission-detail-submit-success-unlocks.html) | done | Submit success + **identify-the-traitor** listed | UC-021, UC-022, UC-029 |
+| [mission-detail-submit-success.html](mission-detail-submit-success.html) | done | Submit success (no new missions) | UC-021 |
+| [mission-detail-submit-success-unlocks.html](mission-detail-submit-success-unlocks.html) | done | Submit success + **identify-the-traitor** listed | UC-021, UC-032 |
 | [mission-detail-submit-invalid.html](mission-detail-submit-invalid.html) | done | Submit invalid code | UC-022 |
-| [mission-detail-submit-not-yet.html](mission-detail-submit-not-yet.html) | done | Submit blocked (stealth / not yet) | UC-023 |
 
 ### Operator (read-only)
 
@@ -85,7 +83,7 @@ Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snaps
 ## Per-page checklist
 
 ### Agent dashboard
-- Clearance sections with collapsible groups; toggle for completed missions.
+- Story-arc sections with collapsible groups; toggle for completed missions.
 - Unlock code field → open `agent-dashboard-unlock-*.html` for each outcome.
 
 ### Mission detail (active)

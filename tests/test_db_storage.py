@@ -61,16 +61,6 @@ def test_closed_connection_raises_database_error_for_all_queries(tmp_path: Path)
                 display_name TEXT NOT NULL,
                 is_operator INTEGER NOT NULL DEFAULT 0
             );
-            CREATE TABLE groups (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL UNIQUE
-            );
-            CREATE TABLE group_members (
-                user_id INTEGER NOT NULL,
-                group_id INTEGER NOT NULL,
-                PRIMARY KEY (user_id, group_id)
-            );
-            INSERT INTO groups (id, name) VALUES (1, 'Orientation');
             """
         )
         conn.commit()
@@ -91,8 +81,6 @@ def test_closed_connection_raises_database_error_for_all_queries(tmp_path: Path)
             ),
             "creating user",
         ),
-        (lambda: storage.get_orientation_group_id(), "Orientation group"),
-        (lambda: storage.add_group_member(1, 1), "group member"),
     ]
 
     for operation, message_fragment in operations:

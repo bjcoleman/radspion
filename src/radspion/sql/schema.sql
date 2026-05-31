@@ -3,7 +3,6 @@
 --
 -- Listing rule (V1): each mission exposes exactly one of open | unlock_code | requires_complete.
 -- Never combine redeemable unlock codes (mission_unlock_codes) with automatic listing (mission_list_requires).
--- Unlock-code missions omit mission_list_requires; V1/sample also omit mission_complete_requires as the dependent mission_id.
 
 PRAGMA foreign_keys = ON;
 
@@ -29,7 +28,7 @@ CREATE TABLE registration_access_codes (
 );
 
 -- ---------------------------------------------------------------------------
--- Groups (roster only)
+-- Groups (story arcs — organization only, not access control)
 -- ---------------------------------------------------------------------------
 
 CREATE TABLE groups (
@@ -37,14 +36,8 @@ CREATE TABLE groups (
     name    TEXT NOT NULL UNIQUE
 );
 
-CREATE TABLE group_members (
-    group_id    INTEGER NOT NULL REFERENCES groups (id) ON DELETE CASCADE,
-    user_id     INTEGER NOT NULL REFERENCES users (id) ON DELETE CASCADE,
-    PRIMARY KEY (group_id, user_id)
-);
-
 -- ---------------------------------------------------------------------------
--- Missions (one group per mission)
+-- Missions (one story-arc group per mission)
 -- ---------------------------------------------------------------------------
 
 CREATE TABLE missions (
@@ -68,14 +61,6 @@ CREATE TABLE mission_unlock_codes (
 
 -- Listing: mission appears after required missions are completed
 CREATE TABLE mission_list_requires (
-    mission_id              INTEGER NOT NULL REFERENCES missions (id) ON DELETE CASCADE,
-    required_mission_id     INTEGER NOT NULL REFERENCES missions (id) ON DELETE CASCADE,
-    PRIMARY KEY (mission_id, required_mission_id),
-    CHECK (mission_id <> required_mission_id)
-);
-
--- Completion: submit completion_code only after required missions are completed
-CREATE TABLE mission_complete_requires (
     mission_id              INTEGER NOT NULL REFERENCES missions (id) ON DELETE CASCADE,
     required_mission_id     INTEGER NOT NULL REFERENCES missions (id) ON DELETE CASCADE,
     PRIMARY KEY (mission_id, required_mission_id),

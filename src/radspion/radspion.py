@@ -52,10 +52,6 @@ class Radspion:
             google_subject_id=profile.google_subject_id,
             display_name=profile.display_name,
         )
-        orientation_group_id = self._storage.get_orientation_group_id()
-        if orientation_group_id is None:
-            raise RuntimeError("Orientation group is not configured")
-        self._storage.add_group_member(user.id, orientation_group_id)
         self.sync_mission_status(user.id)
         return user
 

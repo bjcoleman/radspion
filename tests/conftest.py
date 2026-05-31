@@ -6,7 +6,7 @@ from radspion.app import create_app
 from radspion.config import load_config
 from radspion.radspion import Radspion
 from tests.fakes.google_oauth import FakeGoogleOAuth
-from tests.fakes.storage import ORIENTATION_GROUP_ID, InMemoryRadspionStorage
+from tests.fakes.storage import InMemoryRadspionStorage
 
 
 @pytest.fixture
@@ -48,7 +48,6 @@ def existing_user(storage):
         google_subject_id="google-alice",
         display_name="Alice",
     )
-    storage.add_group_member(user.id, ORIENTATION_GROUP_ID)
     return user
 
 
