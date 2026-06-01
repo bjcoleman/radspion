@@ -1,6 +1,7 @@
 """Application (business) layer for Radspion."""
 
-from radspion.missions import DashboardGroup, DashboardMission, UnlockRedeemResult
+from radspion.markdown_render import render_mission_markdown
+from radspion.missions import DashboardGroup, DashboardMission, MissionDetail, UnlockRedeemResult
 from radspion.oauth_types import GoogleProfile, SignupNotAllowedError
 from radspion.user import User
 
@@ -67,6 +68,20 @@ class Radspion:
     def find_listed_mission(self, user_id: int, slug: str) -> DashboardMission | None:
         """One mission on the agent's list, or None."""
         return self._storage.find_listed_mission(user_id, slug)
+
+    def get_mission_detail(self, user_id: int, slug: str) -> MissionDetail | None:
+        """Mission detail for a listed mission, or None (UC-016 / UC-017)."""
+        content = self._storage.get_listed_mission_content(user_id, slug)
+        if content is None:
+            return None
+        return MissionDetail(
+            slug=content.slug,
+            title=content.title,
+            status=content.status,
+            brief_html=render_mission_markdown(content.brief_markdown),
+            debrief_html=render_mission_markdown(content.debrief_markdown),
+            recovered_code=content.completion_code,
+        )
 
     def redeem_unlock_code(self, user_id: int, raw_code: str) -> UnlockRedeemResult:
         """

@@ -1,6 +1,8 @@
-"""Mission dashboard view models."""
+"""Mission dashboard and detail view models."""
 
 from dataclasses import dataclass, field
+
+from markupsafe import Markup
 
 
 @dataclass(frozen=True)
@@ -37,6 +39,30 @@ class UnlockRedeemResult:
         elif self.outcome == "already_done":
             data["new_missions"] = []
         return data
+
+
+@dataclass(frozen=True)
+class ListedMissionContent:
+    """Listed mission prose and status from storage (before HTML render)."""
+
+    slug: str
+    title: str
+    status: str
+    brief_markdown: str
+    debrief_markdown: str
+    completion_code: str | None = None
+
+
+@dataclass(frozen=True)
+class MissionDetail:
+    """Mission detail page (UC-016)."""
+
+    slug: str
+    title: str
+    status: str
+    brief_html: Markup
+    debrief_html: Markup
+    recovered_code: str | None = None
 
 
 @dataclass(frozen=True)
