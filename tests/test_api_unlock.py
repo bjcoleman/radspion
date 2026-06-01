@@ -85,6 +85,20 @@ def test_unlock_rejects_empty_code(storyline_db: Path):
     assert response.status_code == 400
 
 
+def test_unlock_rejects_non_json_body(storyline_db: Path):
+    client = _client_for_db(storyline_db)
+    with client.session_transaction() as sess:
+        sess[SESSION_USER_ID] = SAMPLE_AGENTS["diana"]["id"]
+
+    response = client.post(
+        "/api/unlock",
+        data="not json",
+        content_type="application/json",
+    )
+    assert response.status_code == 400
+    assert response.get_json() == {"error": "missing unlock_code"}
+
+
 def test_unlock_requires_sign_in(storyline_db: Path):
     client = _client_for_db(storyline_db)
 
