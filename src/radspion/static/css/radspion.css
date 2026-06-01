@@ -1357,6 +1357,18 @@ body.has-transmission-modal {
   color: var(--color-text-muted);
 }
 
+.transmission-modal__mission-list {
+  margin: 0 0 var(--space-md);
+  padding-left: 1.25rem;
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--color-text-muted);
+}
+
+.transmission-modal__mission-list li + li {
+  margin-top: var(--space-xs);
+}
+
 .outcome-missions {
   margin: 0 0 var(--space-lg);
   padding: 0;

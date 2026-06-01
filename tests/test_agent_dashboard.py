@@ -95,3 +95,32 @@ def test_mission_detail_404_when_not_listed(testing_storyline_db: Path):
 
     response = client.get("/agent/missions/es-alpha")
     assert response.status_code == 404
+
+
+def test_dashboard_includes_unlock_form_and_transmission_modal(testing_storyline_db: Path):
+    client = _client_for_db(testing_storyline_db)
+    with client.session_transaction() as sess:
+        sess[SESSION_USER_ID] = SAMPLE_AGENTS["diana"]["id"]
+
+    body = client.get("/agent/dashboard").data.decode()
+
+    assert 'name="unlock_code"' in body
+    assert "disabled" not in body.split("unlock-form")[1].split("</form>")[0]
+    assert "data-transmission-modal" in body
+    assert "dashboard-unlock.js" in body
+    assert "transmission-modal.js" in body
+
+
+def test_unlock_then_dashboard_lists_storyline_missions(testing_storyline_db: Path):
+    client = _client_for_db(testing_storyline_db)
+    with client.session_transaction() as sess:
+        sess[SESSION_USER_ID] = SAMPLE_AGENTS["diana"]["id"]
+
+    unlock = client.post("/api/unlock", json={"unlock_code": "EXAMPLE UNLOCK"})
+    assert unlock.status_code == 200
+    assert unlock.get_json()["outcome"] == "success"
+
+    body = client.get("/agent/dashboard").data.decode()
+    assert "es-alpha" in body
+    assert "es-beta" in body
+    assert "Testing Storyline" in body
