@@ -6,6 +6,8 @@ from pathlib import Path
 import pytest
 
 from radspion.database import DatabaseError, DatabaseRadspionStorage
+from radspion.radspion import Radspion
+from tests.helpers import load_orientation_database
 
 _VALID_CODE = "TEST-CODE-ONE"
 _OTHER_CODE = "TEST-CODE-TWO"
@@ -37,6 +39,37 @@ def test_registration_code_exists_false_for_unknown(database_path: Path):
     assert storage.registration_code_exists("not-a-real-code") is False
 
 
+@pytest.fixture
+def orientation_database_path(tmp_path: Path) -> Path:
+    path = tmp_path / "orientation.db"
+    load_orientation_database(path)
+    return path
+
+
+def test_agent_has_listed_mission_true_when_on_dashboard(orientation_database_path: Path):
+    storage = DatabaseRadspionStorage(orientation_database_path)
+    user = storage.create_user(
+        email="agent@example.com",
+        google_subject_id="sub-1",
+        display_name="Agent",
+    )
+    Radspion(storage).sync_mission_status(user.id)
+
+    assert storage.agent_has_listed_mission(user.id, "basic-training") is True
+
+
+def test_agent_has_listed_mission_false_when_not_listed(orientation_database_path: Path):
+    storage = DatabaseRadspionStorage(orientation_database_path)
+    user = storage.create_user(
+        email="agent@example.com",
+        google_subject_id="sub-1",
+        display_name="Agent",
+    )
+    Radspion(storage).sync_mission_status(user.id)
+
+    assert storage.agent_has_listed_mission(user.id, "es-alpha") is False
+
+
 def test_registration_code_exists_raises_database_error_when_table_missing(tmp_path: Path):
     path = tmp_path / "empty.db"
     path.touch()
@@ -45,6 +78,35 @@ def test_registration_code_exists_raises_database_error_when_table_missing(tmp_p
 
     with pytest.raises(DatabaseError, match="Database error checking registration code"):
         storage.registration_code_exists(_VALID_CODE)
+
+
+@pytest.mark.parametrize(
+    ("operation", "message_fragment"),
+    [
+        (lambda storage: storage.sync_mission_status(1), "syncing mission status"),
+        (lambda storage: storage.get_agent_dashboard(1), "loading agent dashboard"),
+        (
+            lambda storage: storage.agent_has_listed_mission(1, "basic-training"),
+            "checking mission list",
+        ),
+        (
+            lambda storage: storage.find_listed_mission(1, "basic-training"),
+            "loading mission",
+        ),
+    ],
+)
+def test_mission_queries_raise_database_error_when_tables_missing(
+    tmp_path: Path,
+    operation,
+    message_fragment: str,
+):
+    path = tmp_path / "empty.db"
+    path.touch()
+
+    storage = DatabaseRadspionStorage(path)
+
+    with pytest.raises(DatabaseError, match=message_fragment):
+        operation(storage)
 
 
 def test_closed_connection_raises_database_error_for_all_queries(tmp_path: Path):
@@ -81,6 +143,13 @@ def test_closed_connection_raises_database_error_for_all_queries(tmp_path: Path)
             ),
             "creating user",
         ),
+        (lambda: storage.sync_mission_status(1), "syncing mission status"),
+        (lambda: storage.get_agent_dashboard(1), "loading agent dashboard"),
+        (
+            lambda: storage.agent_has_listed_mission(1, "basic-training"),
+            "checking mission list",
+        ),
+        (lambda: storage.find_listed_mission(1, "basic-training"), "loading mission"),
     ]
 
     for operation, message_fragment in operations:

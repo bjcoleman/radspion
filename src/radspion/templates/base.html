@@ -21,6 +21,7 @@
       </div>
     {% endif %}
   {% endwith %}
+  {% block site_header %}{% endblock %}
   <main class="page__main {% block main_class %}{% endblock %}">
     {% block content %}{% endblock %}
   </main>

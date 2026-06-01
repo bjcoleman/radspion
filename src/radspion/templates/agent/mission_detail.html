@@ -1,0 +1,30 @@
+{% extends "agent/base_agent.html" %}
+
+{% block title %}{{ mission.title }} — Radspion{% endblock %}
+{% block body_class %}page--dashboard{% endblock %}
+{% block main_class %}page__main--mission{% endblock %}
+
+{% block agent_content %}
+  <div class="mission-detail">
+    <nav class="mission-detail__nav">
+      <a class="mission-detail__back" href="{{ url_for('agent.dashboard') }}">← Mission Dashboard</a>
+    </nav>
+
+    <header class="mission-detail__header">
+      <h1 class="mission-detail__title">{{ mission.title }}</h1>
+      <p class="mission-detail__meta text-mono">
+        {{ mission.slug }} ·
+        <span class="status-badge status-badge--{{ mission.status }}">{{ mission.status }}</span>
+      </p>
+    </header>
+
+    <section class="mission-detail__section" aria-labelledby="mission-placeholder-heading">
+      <h2 id="mission-placeholder-heading" class="mission-detail__section-title text-mono">
+        Mission detail
+      </h2>
+      <p class="text-muted">
+        Full mission brief, recovered data, and debrief views are coming soon.
+      </p>
+    </section>
+  </div>
+{% endblock %}

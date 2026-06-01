@@ -3,6 +3,7 @@
 import sqlite3
 from pathlib import Path
 
+from radspion.missions import DashboardGroup, DashboardMission
 from radspion.user import User
 
 
@@ -93,3 +94,127 @@ class DatabaseRadspionStorage:
         except sqlite3.Error as exc:
             raise DatabaseError(f"Database error creating user: {exc}") from exc
         return self._row_to_user(row)
+
+    def sync_mission_status(self, user_id: int) -> None:
+        """
+        Keep agent_mission_status aligned with listable missions (UC-012).
+
+        - open: ensure an active row exists (never downgrade completed).
+        - requires_complete: active row when all list prerequisites are completed.
+        - unlock_code: no row until redeem (handled elsewhere).
+        """
+        try:
+            self._conn.execute(
+                """
+                INSERT INTO agent_mission_status (user_id, mission_id, status)
+                SELECT ?, m.id, 'active'
+                FROM missions m
+                WHERE m.access_rule = 'open'
+                  AND NOT EXISTS (
+                    SELECT 1 FROM agent_mission_status ams
+                    WHERE ams.user_id = ? AND ams.mission_id = m.id
+                  )
+                """,
+                (user_id, user_id),
+            )
+            self._conn.execute(
+                """
+                INSERT INTO agent_mission_status (user_id, mission_id, status)
+                SELECT ?, m.id, 'active'
+                FROM missions m
+                WHERE m.access_rule = 'requires_complete'
+                  AND NOT EXISTS (
+                    SELECT 1 FROM agent_mission_status ams
+                    WHERE ams.user_id = ? AND ams.mission_id = m.id
+                  )
+                  AND (
+                    SELECT COUNT(*) FROM mission_list_requires mlr
+                    WHERE mlr.mission_id = m.id
+                  ) = (
+                    SELECT COUNT(*) FROM mission_list_requires mlr
+                    JOIN agent_mission_status ams
+                      ON ams.mission_id = mlr.required_mission_id
+                     AND ams.user_id = ?
+                     AND ams.status = 'completed'
+                    WHERE mlr.mission_id = m.id
+                  )
+                """,
+                (user_id, user_id, user_id),
+            )
+            self._conn.commit()
+        except sqlite3.Error as exc:
+            raise DatabaseError(f"Database error syncing mission status: {exc}") from exc
+
+    def get_agent_dashboard(self, user_id: int) -> list[DashboardGroup]:
+        """Mission list grouped by story arc, groups ordered by descending group id."""
+        try:
+            rows = self._conn.execute(
+                """
+                SELECT g.id AS group_id,
+                       g.name AS group_name,
+                       m.slug,
+                       m.title,
+                       ams.status
+                FROM agent_mission_status ams
+                JOIN missions m ON m.id = ams.mission_id
+                JOIN groups g ON g.id = m.group_id
+                WHERE ams.user_id = ?
+                ORDER BY g.id DESC,
+                         CASE ams.status WHEN 'active' THEN 0 ELSE 1 END,
+                         m.slug ASC
+                """,
+                (user_id,),
+            ).fetchall()
+        except sqlite3.Error as exc:
+            raise DatabaseError(f"Database error loading agent dashboard: {exc}") from exc
+
+        groups: list[DashboardGroup] = []
+        by_id: dict[int, DashboardGroup] = {}
+        for row in rows:
+            group_id = row["group_id"]
+            if group_id not in by_id:
+                group = DashboardGroup(id=group_id, name=row["group_name"])
+                by_id[group_id] = group
+                groups.append(group)
+            by_id[group_id].missions.append(
+                DashboardMission(
+                    slug=row["slug"],
+                    title=row["title"],
+                    status=row["status"],
+                )
+            )
+        return groups
+
+    def agent_has_listed_mission(self, user_id: int, slug: str) -> bool:
+        """True when the agent has an active or completed row for this mission slug."""
+        try:
+            row = self._conn.execute(
+                """
+                SELECT 1
+                FROM agent_mission_status ams
+                JOIN missions m ON m.id = ams.mission_id
+                WHERE ams.user_id = ? AND m.slug = ?
+                """,
+                (user_id, slug),
+            ).fetchone()
+        except sqlite3.Error as exc:
+            raise DatabaseError(f"Database error checking mission list: {exc}") from exc
+        return row is not None
+
+    def find_listed_mission(self, user_id: int, slug: str) -> DashboardMission | None:
+        """Load one listed mission for detail stub pages."""
+        try:
+            row = self._conn.execute(
+                """
+                SELECT m.slug, m.title, ams.status
+                FROM agent_mission_status ams
+                JOIN missions m ON m.id = ams.mission_id
+                WHERE ams.user_id = ? AND m.slug = ?
+                """,
+                (user_id, slug),
+            ).fetchone()
+        except sqlite3.Error as exc:
+            raise DatabaseError(f"Database error loading mission: {exc}") from exc
+        if row is None:
+            return None
+        return DashboardMission(slug=row["slug"], title=row["title"], status=row["status"])

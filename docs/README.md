@@ -10,7 +10,7 @@ Read in order:
 2. [design/02-entities.md](design/02-entities.md) — data model (conceptual)  
 3. [design/03-database-schema.md](design/03-database-schema.md) — tables (SQLite)  
 4. [design/04-example-data-walkthrough.md](design/04-example-data-walkthrough.md) — Example Storyline test data in SQL  
-5. [design/05-example-storyline.md](design/05-example-storyline.md) — Example Storyline acceptance cheat sheet  
+5. [design/05-testing-storyline.md](design/05-testing-storyline.md) — Testing Storyline acceptance cheat sheet (dev/test only)  
 6. [design/06-agent-experience.md](design/06-agent-experience.md) — agent UI rules  
 7. [design/07-operator-setup.md](design/07-operator-setup.md) — how you configure data today  
 8. [design/use-cases.md](design/use-cases.md) — V1 use cases ordered by dependency (work backlog)

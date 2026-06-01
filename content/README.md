@@ -7,8 +7,9 @@ Paths are relative to the project root (e.g. `content/missions/<slug>/brief.md`)
 
 | Path | Purpose |
 |------|---------|
-| `content/missions/` | **Live** mission files served in production and referenced by operator SQL |
-| `content/missions/basic-training/` | Default system mission  |
+| `content/missions/` | Mission Brief and Debrief markdown referenced by `missions` rows |
+| `content/missions/basic-training/` | Default orientation mission (production) |
+| `content/missions/es-*/` | Testing Storyline missions (dev/test only; see `seed_testing_storyline.sql`) |
 
 Each mission directory is named by **slug** and contains `brief.md` and `debrief.md`.
 

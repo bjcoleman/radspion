@@ -1,5 +1,6 @@
 """In-memory storage fakes for tests."""
 
+from radspion.missions import DashboardGroup, DashboardMission
 from radspion.user import User
 
 
@@ -55,3 +56,16 @@ class InMemoryRadspionStorage:
         )
         self._users[user_id] = user
         return user
+
+    def sync_mission_status(self, user_id: int) -> None:
+        """No-op — mission tests use SQLite fixtures."""
+        _ = user_id
+
+    def get_agent_dashboard(self, user_id: int) -> list[DashboardGroup]:
+        _ = user_id
+        return []
+
+    def find_listed_mission(self, user_id: int, slug: str) -> DashboardMission | None:
+        _ = user_id
+        _ = slug
+        return None
