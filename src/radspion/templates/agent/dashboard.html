@@ -1,15 +1,82 @@
-{% extends "base.html" %}
+{% extends "agent/base_agent.html" %}
 
 {% block title %}Mission Dashboard — Radspion{% endblock %}
 
-{% block content %}
-  <div class="landing">
-    <h1 class="landing__title">Mission Dashboard</h1>
-    <p class="landing__briefing">
-      Signed in as <strong>{{ user.display_name }}</strong> ({{ user.email }}).
-    </p>
-    <form action="{{ url_for('auth.logout') }}" method="post">
-      <button type="submit" class="access-panel__submit">Sign out</button>
-    </form>
+{% block extra_head %}
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}" defer></script>
+{% endblock %}
+
+{% block agent_content %}
+  <div class="dashboard">
+    <header class="dashboard__intro">
+      <h1 class="dashboard__heading">Mission Dashboard</h1>
+      <p class="dashboard__lede text-muted">
+        Missions are assigned by Command, or added when you submit an unlock code
+        that confirms you are ready.
+      </p>
+    </header>
+
+    <section class="unlock-panel dashboard__unlock" aria-label="Unlock mission">
+      <form class="unlock-form" action="#" method="post">
+        <label class="sr-only" for="unlock-code">Mission unlock code</label>
+        <input
+          class="unlock-form__input text-mono"
+          type="text"
+          id="unlock-code"
+          name="unlock_code"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="Enter Mission Unlock Code"
+          disabled
+        >
+        <button class="unlock-form__submit" type="button" disabled>Validate</button>
+      </form>
+    </section>
+
+    <div class="dashboard__controls">
+      <label class="dashboard__toggle">
+        <input type="checkbox" class="dashboard__toggle-input" checked data-show-completed>
+        <span class="dashboard__toggle-label">Show completed missions</span>
+      </label>
+    </div>
+
+    {% for group in dashboard_groups %}
+      <details
+        class="mission-group mission-group--collapsible"
+        data-mission-group
+        {% if group.active_count > 0 %}open{% endif %}
+      >
+        <summary class="mission-group__summary">
+          <span class="mission-group__chevron" aria-hidden="true">
+            <svg class="mission-group__chevron-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <polyline class="mission-group__chevron-path mission-group__chevron-path--closed" points="12,6 18,12 12,18" />
+              <polyline class="mission-group__chevron-path mission-group__chevron-path--open" points="6,10 12,16 18,10" />
+            </svg>
+          </span>
+          <span class="mission-group__title">{{ group.name }}</span>
+          <span class="mission-group__counts text-muted" data-group-counts>{{ group.counts_label() }}</span>
+        </summary>
+        <ul class="mission-list">
+          {% for mission in group.missions %}
+            <li
+              class="mission-list__item{% if mission.status == 'completed' %} mission-list__item--completed{% endif %}"
+              data-mission-status="{{ mission.status }}"
+            >
+              <a
+                href="{{ url_for('agent.mission_detail', slug=mission.slug) }}"
+                class="mission-card mission-card--{{ mission.status }}"
+              >
+                <span class="mission-card__body">
+                  <span class="mission-card__title">{{ mission.title }}</span>
+                  <span class="mission-card__slug text-mono">{{ mission.slug }}</span>
+                  <span class="status-badge status-badge--{{ mission.status }}">{{ mission.status }}</span>
+                </span>
+                <span class="mission-card__arrow" aria-hidden="true">→</span>
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </details>
+    {% endfor %}
   </div>
 {% endblock %}

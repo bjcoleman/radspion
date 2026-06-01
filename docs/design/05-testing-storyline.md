@@ -1,9 +1,10 @@
-# Example Storyline (test seed)
+# Testing Storyline (dev/test seed)
 
-Generic mission chain for **local testing** and use-case acceptance. Not used in production.
+Generic mission chain for **local testing** and use-case acceptance. **Not used in production.**
 
-**Orientation** includes `basic-training` (`open`). **Example Storyline** exercises shared unlock codes, list prerequisites, a hidden side mission, and a two-prereq finale.
+**Orientation** includes `basic-training` (`open`). **Testing Storyline** exercises shared unlock codes, list prerequisites, a hidden side mission, and a two-prereq finale.
 
+Seed: [`src/radspion/sql/seed_testing_storyline.sql`](../../src/radspion/sql/seed_testing_storyline.sql).  
 Details: [04-example-data-walkthrough.md](04-example-data-walkthrough.md). Always refer to missions by **slug**.
 
 ## Cast
@@ -21,7 +22,7 @@ Four sample agents; each illustrates a distinct progress state:
 
 | Agent | Expected behavior |
 |-------|-------------------|
-| Diana | Sees `basic-training` only; no Example Storyline missions until unlock |
+| Diana | Sees `basic-training` only; no Testing Storyline missions until unlock |
 | Alice | `es-gamma` active after `es-alpha` complete; `es-delta` not listed until `es-beta` and `es-gamma` are both complete |
 | Charlie | `es-beta` complete but `es-gamma` not listed (`es-alpha` not complete) |
 | Bob | All `es-*` missions `completed`; can view all captured completion codes |

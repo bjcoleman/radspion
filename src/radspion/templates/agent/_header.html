@@ -1,0 +1,20 @@
+<header class="site-header">
+  <a class="site-header__brand" href="{{ url_for('agent.dashboard') }}">
+    <img
+      class="site-header__mark"
+      src="{{ url_for('static', filename='img/radspion_mark_white.svg') }}"
+      width="36"
+      height="36"
+      alt=""
+    >
+    <span class="site-header__title">Radspion</span>
+  </a>
+  <div class="site-header__agent">
+    <span class="site-header__agent-label">Agent</span>
+    <span class="site-header__agent-name">{{ user.display_name }}</span>
+    <span class="site-header__agent-email text-mono">{{ user.email }}</span>
+  </div>
+  <form action="{{ url_for('auth.logout') }}" method="post">
+    <button type="submit" class="site-header__action">Sign out</button>
+  </form>
+</header>

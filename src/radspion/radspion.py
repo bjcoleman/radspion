@@ -1,5 +1,6 @@
 """Application (business) layer for Radspion."""
 
+from radspion.missions import DashboardGroup, DashboardMission
 from radspion.oauth_types import GoogleProfile, SignupNotAllowedError
 from radspion.user import User
 
@@ -57,4 +58,12 @@ class Radspion:
 
     def sync_mission_status(self, user_id: int) -> None:
         """Keep agent_mission_status in sync for listable missions (UC-012)."""
-        _ = user_id
+        self._storage.sync_mission_status(user_id)
+
+    def get_agent_dashboard(self, user_id: int) -> list[DashboardGroup]:
+        """Listed missions grouped by story arc for the dashboard."""
+        return self._storage.get_agent_dashboard(user_id)
+
+    def find_listed_mission(self, user_id: int, slug: str) -> DashboardMission | None:
+        """One mission on the agent's list, or None."""
+        return self._storage.find_listed_mission(user_id, slug)
