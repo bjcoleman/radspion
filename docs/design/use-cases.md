@@ -1,8 +1,8 @@
 # Use cases (V1)
 
-Ordered by **dependency** — build from the top down. Each case lists **Requires** (other UC ids that must work first). Agent scenarios at the end assume the example seed once updated in **radspion-missions** ([04-example-data-walkthrough.md](04-example-data-walkthrough.md), [`example-class/seed_example_class.sql`](../../../radspion-missions/example-class/seed_example_class.sql) — **pending rework**).
+Ordered by **dependency** — build from the top down. Each case lists **Requires** (other UC ids that must work first). Agent scenarios at the end assume the **Example Storyline** test seed ([04-example-data-walkthrough.md](04-example-data-walkthrough.md)).
 
-**Reference agents:** Alice, Bob, Charlie, Diana — [05-example-class.md](05-example-class.md). Mission names are **slugs** everywhere (e.g. `read-the-manual`, not numeric ids).
+**Reference agents:** Alice, Bob, Charlie, Diana — [05-example-storyline.md](05-example-storyline.md). Mission names are **slugs** everywhere (e.g. `es-alpha`, not numeric ids).
 
 ## Resolved decisions
 
@@ -16,12 +16,13 @@ Ordered by **dependency** — build from the top down. Each case lists **Require
 | Mission visibility | `access_rule` + `mission_unlock_codes` + `mission_list_requires` |
 | Welcome | Seed includes `basic-training` (`open`) in **Orientation** arc |
 | Code vs automatic listing | A mission never mixes **`unlock_code`** with **`mission_list_requires`** |
+| Unlock codes | One row per mission in `mission_unlock_codes`; **same code string may gate multiple missions** |
 | Mission list UX | Dashboard shows missions with `agent_mission_status` rows, grouped by story arc |
 | `agent_mission_status` | Keep table **in sync at all times** (login + unlock + complete); dashboard reads this table |
 | Debrief | Only after mission `completed` |
 | Error copy (UC-020, UC-022) | Wording TBD — you’ll review per case |
 | Web framework | **Flask + Jinja** SSR; JSON API at `/api/access`, `/api/unlock`, `/api/missions/<slug>/submit` |
-| Brief/Debrief paths | Live missions under `content/missions/<slug>/`; packs in **radspion-missions** |
+| Brief/Debrief paths | Live missions under `content/missions/<slug>/` |
 | Operator config V1 | SQL/seed only — no in-app mission editor |
 | Operator progress V1 | Read-only UI: story arcs → missions → agent status |
 | `users.is_operator` | SQLite `INTEGER` `0`/`1`; gates operator routes |
@@ -44,11 +45,11 @@ Apply [`src/radspion/sql/schema.sql`](../../src/radspion/sql/schema.sql) so all 
 
 ---
 
-### UC-002 — Load example class seed
+### UC-002 — Load Example Storyline test seed
 
 **Actor:** Operator (dev)  
 **Requires:** UC-001  
-Load example-class seed from **radspion-missions** for Orientation + 220.2 DevOps arcs, missions, constraints, and sample progress rows. **Pending pack rework** to match current schema.
+Load schema, orientation (`basic-training`), registration codes, **Example Storyline** missions (`es-*`), unlock/list constraints, and sample progress for Alice, Bob, Charlie, Diana ([04-example-data-walkthrough.md](04-example-data-walkthrough.md)).
 
 ---
 
@@ -113,7 +114,7 @@ Agent authenticates with Google (any Google account); app establishes a session 
 
 **Actor:** Operator  
 **Requires:** UC-002 (for example paths)  
-Operator-authored markdown at paths stored on `missions` under `content/missions/<slug>/`. Mission packs live in **radspion-missions**. UI mockups inline representative brief/debrief in HTML — not one mockup file per mission.
+Operator-authored markdown at paths stored on `missions` under `content/missions/<slug>/`. UI mockups inline representative brief/debrief in HTML — not one mockup file per mission.
 
 ---
 
@@ -171,11 +172,11 @@ After login (post-sync), dashboard lists all `agent_mission_status` rows (`activ
 
 ---
 
-### UC-014 — List mission after `unlock_code` redeemed
+### UC-014 — List missions after `unlock_code` redeemed
 
 **Actor:** Agent  
 **Requires:** UC-013  
-For `access_rule = unlock_code`, create `active` status when the agent submits the correct `mission_unlock_codes.unlock_code` (e.g. global-hidden).
+For each mission with `access_rule = unlock_code` whose `mission_unlock_codes.unlock_code` matches the submitted value, create an `active` status row if the agent has no row yet. A single code may match multiple missions. Skip missions already listed (`active` or `completed`).
 
 ---
 
@@ -211,7 +212,15 @@ After `completed`, agent sees the stored `completion_code` value for that missio
 
 **Actor:** Agent  
 **Requires:** UC-014  
-Valid unlock code → mission appears on list (`active`). Example: `UNLOCK-BLINDFOLD` for global-hidden.
+Valid unlock code → one or more matching missions appear on the list (`active`). API returns `outcome: success` and `new_missions` with summaries of missions newly listed (may be one or many). Example: `EXAMPLE UNLOCK` lists `es-alpha` and `es-beta`.
+
+---
+
+### UC-019b — Redeem unlock code (already done)
+
+**Actor:** Agent  
+**Requires:** UC-019  
+Valid unlock code, but every matching mission already has a status row for this agent → `outcome: already_done`, `new_missions: []`. Optional generic `message`.
 
 ---
 
@@ -219,7 +228,7 @@ Valid unlock code → mission appears on list (`active`). Example: `UNLOCK-BLIND
 
 **Actor:** Agent  
 **Requires:** UC-019  
-Invalid unlock code → clear error without revealing mission existence or codes. *(Wording TBD.)*
+No matching `mission_unlock_codes` row → `outcome: invalid`; clear error without revealing mission existence or codes. *(Wording TBD.)*
 
 ---
 
@@ -229,7 +238,15 @@ Invalid unlock code → clear error without revealing mission existence or codes
 
 **Actor:** Agent  
 **Requires:** UC-016, UC-017  
-Agent submits correct `completion_code` while mission is `active` → `status = completed`. Examples: basic-training; any listed mission with matching code.
+Agent submits correct `completion_code` while mission is `active` → `status = completed`; run listing sync (UC-024). API returns `outcome: success` and `new_missions` for missions that became listable (may be empty). Examples: basic-training; any listed mission with matching code.
+
+---
+
+### UC-021b — Complete mission (already done)
+
+**Actor:** Agent  
+**Requires:** UC-021  
+Mission already `completed` for this agent (re-submit) → `outcome: already_done`, `new_missions: []`. Optional generic `message`.
 
 ---
 
@@ -259,45 +276,45 @@ For `access_rule = requires_complete`, mission appears on the dashboard when all
 
 ## Canonical agent scenarios (acceptance)
 
-These validate the full stack against seed data once **radspion-missions** example-class seed is updated. See [05-example-class.md](05-example-class.md).
+These validate the full stack against the Example Storyline test seed. See [05-example-storyline.md](05-example-storyline.md).
 
 ### UC-025 — Diana: orientation only
 
 **Actor:** Diana  
 **Requires:** UC-013, UC-011  
-Sees `basic-training` (`active` or `completed`); does not see DevOps arc missions (arc not entered).
+Sees `basic-training` (`active` or `completed`); no Example Storyline missions listed (no unlock redeemed).
 
 ---
 
-### UC-026 — Alice: DevOps progress
+### UC-026 — Alice: storyline mid-progress
 
 **Actor:** Alice  
 **Requires:** UC-013, UC-018  
-DevOps list per updated seed; **global-hidden** not listed until unlocked.
+`es-alpha` `completed`; `es-beta` and `es-gamma` `active`; `es-delta` not listed (`es-beta` not yet complete).
 
 ---
 
-### UC-027 — Alice: Unlock global-hidden
+### UC-027 — Agent: Unlock es-hidden
 
-**Actor:** Alice  
-**Requires:** UC-019, UC-026  
-Submit `UNLOCK-BLINDFOLD` → global-hidden appears `active`.
+**Actor:** Agent  
+**Requires:** UC-019  
+Submit `HIDDEN UNLOCK` → `es-hidden` appears `active` (hint on ES: Beta brief). Re-submitting when already listed → UC-019b (`already_done`).
 
 ---
 
-### UC-028 — Alice: Complete remote-access
+### UC-028 — Alice: Complete es-beta
 
 **Actor:** Alice  
 **Requires:** UC-021  
-Can complete **remote-access** when listed and code matches (no separate completion prereqs).
+Can complete **es-beta** when listed; submit `COMPLETE es-beta`.
 
 ---
 
-### UC-029 — Charlie: Partial DevOps progress
+### UC-029 — Charlie: partial parallel branch
 
 **Actor:** Charlie  
 **Requires:** UC-013, UC-021  
-Listed missions can be completed with correct code; unlisted missions remain hidden.
+`es-beta` `completed`; `es-alpha` still `active`; `es-gamma` not listed; unlisted missions remain hidden.
 
 ---
 
@@ -305,15 +322,15 @@ Listed missions can be completed with correct code; unlisted missions remain hid
 
 **Actor:** Bob  
 **Requires:** UC-013, UC-018  
-All missions `completed`; can view all captured completion codes.
+All `es-*` missions `completed`; can view all captured completion codes.
 
 ---
 
-### UC-032 — identify-the-traitor lists after DevOps prerequisites
+### UC-032 — es-delta lists after both branches
 
 **Actor:** Agent (e.g. Bob path)  
 **Requires:** UC-015, UC-024  
-**identify-the-traitor** appears when **read-the-manual** and **remote-access** are both `completed` (`mission_list_requires`).
+**es-delta** appears when **es-beta** and **es-gamma** are both `completed` (`mission_list_requires`).
 
 ---
 
@@ -363,7 +380,7 @@ For a selected mission, list agents with status on missions in that arc (or all 
 
 **Actor:** Operator  
 **Requires:** UC-036  
-Diana has no DevOps status rows until she enters that arc.
+Diana has no Example Storyline status rows until she redeems storyline unlock codes.
 
 ---
 

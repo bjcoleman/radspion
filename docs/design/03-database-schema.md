@@ -3,7 +3,7 @@
 **Engine:** SQLite 3  
 **DDL:** [`src/radspion/sql/schema.sql`](../../src/radspion/sql/schema.sql)  
 **Seed (infrastructure):** [`seed_orientation.sql`](../../src/radspion/sql/seed_orientation.sql), [`seed_registration_access_codes.sql`](../../src/radspion/sql/seed_registration_access_codes.sql)  
-**Mission packs:** seeds live in the sibling [`radspion-missions`](../../../radspion-missions/) repo (e.g. [`example-class/seed_example_class.sql`](../../../radspion-missions/example-class/seed_example_class.sql) — pending rework)
+
 
 Enable foreign keys on each connection: `PRAGMA foreign_keys = ON;` (included at the top of the SQL files).
 
@@ -34,7 +34,7 @@ SQLite has no separate enum types. Allowed values are enforced on the column:
 |--------|------|-------------|
 | `code` | `TEXT` | PK |
 
-Signup gate only: a new agent must submit a valid row before first Google OAuth creates a `users` row. **Not** tied to groups or missions. Trim whitespace on input; comparison is **case-sensitive**. Returning agents (existing `users` row) sign in with Google only. Seed: [`seed_registration_access_codes.sql`](../../src/radspion/sql/seed_registration_access_codes.sql).
+Signup gate only: a new agent must submit a valid row before first Google OAuth creates a `users` row. Trim whitespace on input; comparison is **case-sensitive**. Returning agents (existing `users` row) sign in with Google only. Seed: [`seed_registration_access_codes.sql`](../../src/radspion/sql/seed_registration_access_codes.sql).
 
 ### `groups`
 
@@ -43,7 +43,7 @@ Signup gate only: a new agent must submit a valid row before first Google OAuth 
 | `id` | `INTEGER` | PK, `AUTOINCREMENT` |
 | `name` | `TEXT` | NOT NULL, UNIQUE |
 
-Story-arc label for dashboard sections and operator navigation. **Not** an access-control roster.
+Story-arc label for dashboard sections and operator navigation.
 
 ### `missions`
 
@@ -66,7 +66,7 @@ Story-arc label for dashboard sections and operator navigation. **Not** an acces
 | `unlock_code` | Exactly one row in `mission_unlock_codes`; **no** `mission_list_requires` rows for this mission |
 | `requires_complete` | One or more `mission_list_requires` |
 
-**V1 product rule:** A mission never combines **`unlock_code`** with **`mission_list_requires`**. Use either a redeemable code **or** automatic listing after completions, not both.
+**product rule:** A mission never combines **`unlock_code`** with **`mission_list_requires`**. Use either a redeemable code **or** automatic listing after completions, not both.
 
 ### `mission_unlock_codes`
 
@@ -74,6 +74,12 @@ Story-arc label for dashboard sections and operator navigation. **Not** an acces
 |--------|------|-------------|
 | `mission_id` | `INTEGER` | PK, FK → `missions` |
 | `unlock_code` | `TEXT` | NOT NULL |
+
+**Product rules:**
+
+- One row per mission (`mission_id` PK) when `access_rule = unlock_code`.
+- **`unlock_code` is not unique** across rows — operators may reuse the same string on multiple missions.
+- Redeeming a code lists every matching mission that does not yet have an `agent_mission_status` row for the agent.
 
 ### `mission_list_requires`
 

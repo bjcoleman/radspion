@@ -62,35 +62,41 @@ Business failures return **HTTP 200** with an `outcome` field (invalid code) so 
 
 **Request:** `{ "unlock_code": "..." }`
 
-**Response** (`outcome` discriminates UI branch):
+**Response:** same shape as submit — [`MissionListResponse`](../api.yaml) (`outcome`, optional `message`, `new_missions`).
 
 | `outcome` | When | Response body |
 |-----------|------|----------------|
-| `success` | Valid code; status row created | `mission`: `{ "title", "slug", "group_name" }` — show in modal; dashboard updates on OK |
+| `success` | Valid code; one or more matching missions newly listed | `new_missions`: array of `{ "title", "slug", "group_name" }` — one or many when the code is shared |
+| `already_done` | Valid code; every matching mission already on the agent's list (`active` or `completed`) | `new_missions`: `[]`; optional `message` |
 | `invalid` | Code not found | Optional `message` — no mission hints (UC-020) |
 
 **HTTP 401** when not signed in.
+
+Redeem creates an `active` row for each matching `unlock_code` mission that has no status row yet. The same `unlock_code` value may appear on multiple missions.
 
 ### `POST /api/missions/<slug>/submit`
 
 **Auth:** signed-in agent (session cookie).
 
-**Path:** mission `slug` (e.g. `read-the-manual`).
+**Path:** mission `slug` (e.g. `es-alpha`).
 
 **Request:** `{ "completion_code": "..." }`
 
-**Response:**
+**Response:** same shape as unlock — [`MissionListResponse`](../api.yaml).
 
 | `outcome` | When | Response body |
 |-----------|------|----------------|
-| `success` | Code matches; mission marked completed | `new_missions`: array of `{ "title", "slug", "group_name" }` for missions that became listable (may be **empty**) |
+| `success` | Code matches; mission marked `completed`; listing sync ran | `new_missions`: array of missions that became listable (may be **empty**) |
+| `already_done` | Mission already `completed` for this agent (re-submit) | `new_missions`: `[]`; optional `message` |
 | `invalid` | Code wrong | Optional generic `message` |
 
 **HTTP 401** when not signed in. **HTTP 404** when the slug is unknown or the mission is not on the agent’s list.
 
-**Success UX fork:**
+**Success UX fork** (unlock and submit share the same modal branches):
 
-- `new_missions` **empty** — congratulate; **OK** → mission detail **completed** view (debrief).
-- `new_missions` **non-empty** — congratulate; list each new mission (title, slug, group name); **OK** → same completed view (agent reads debrief; new missions appear after sync).
+- `new_missions` **empty** — unlock: confirm code accepted (nothing new); submit: congratulate completion; **OK** → dashboard refresh or mission detail **completed** view (debrief).
+- `new_missions` **non-empty** — list each new mission (title, slug, group name); **OK** → dashboard refresh (unlock) or completed view (submit).
 
-Unlock success always includes the **one** unlocked mission in `mission`. Completion success may surface **zero or more** newly listable missions after sync (missions that use `requires_complete` and whose list prerequisites were just satisfied).
+**Already done UX:** show optional `message`; **OK** dismisses without changing the list.
+
+Unlock and submit both return **`new_missions`** for missions newly added to the dashboard. A mission can only already be listed if the agent unlocked or completed it (or sync listed an `open` / `requires_complete` mission) — hence the shared `already_done` outcome.

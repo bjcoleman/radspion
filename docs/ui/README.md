@@ -1,14 +1,14 @@
 # Radspion UI mockups (V1)
 
-Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snapshot—no backend. Modal animations use **inline scripts** on dedicated outcome pages; production will use server-rendered pages plus `fetch` to the JSON API ([06-agent-experience.md](../design/06-agent-experience.md), [api.yaml](../api.yaml)). Personas and seed states: [design docs](../design/) (example-class seed in **radspion-missions** — pending rework).
+Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snapshot—no backend. Modal animations use **inline scripts** on dedicated outcome pages; production will use server-rendered pages plus `fetch` to the JSON API ([06-agent-experience.md](../design/06-agent-experience.md), [api.yaml](../api.yaml)). Personas and seed states: [05-example-storyline.md](../design/05-example-storyline.md) (Alice mid-progress on **Example Storyline**).
 
-**Design reference:** [06-agent-experience.md](../design/06-agent-experience.md) (includes hybrid JSON endpoints) · [use-cases.md](../design/use-cases.md) · [05-example-class.md](../design/05-example-class.md) · [COLOR_USAGE.md](COLOR_USAGE.md)
+**Design reference:** [06-agent-experience.md](../design/06-agent-experience.md) (includes hybrid JSON endpoints) · [use-cases.md](../design/use-cases.md) · [05-example-storyline.md](../design/05-example-storyline.md) · [COLOR_USAGE.md](COLOR_USAGE.md)
 
 **Assets:** shared styles in [`css/radspion.css`](css/radspion.css); logos in [`logos/`](../../logos/). Mission brief and debrief copy is **inlined in HTML** on mission detail mockups (production loads markdown from `content/missions/`).
 
-**Sample data alignment:** Story arcs **Orientation** and **DevOps**; missions use **`unlock_code`** or **`requires_complete`** listing — never both on one mission.
+**Sample data alignment:** Story arcs **Orientation** and **Example Storyline** (`es-*` missions); **`unlock_code`** or **`requires_complete`** listing — never both on one mission.
 
-**Mock vs production:** Modal outcome pages hard-code copy and animation; no `fetch`. Production will call `POST /api/access`, `POST /api/unlock`, and `POST /api/missions/<slug>/submit` per [`api.yaml`](../api.yaml). API `outcome` values: access — `success`, `invalid`; unlock — `success`, `invalid`; submit — `success`, `invalid`. Submit **success-unlocks** simulates `success` with a non-empty `new_missions` array.
+**Mock vs production:** Modal outcome pages hard-code copy and animation; no `fetch`. Production will call `POST /api/access`, `POST /api/unlock`, and `POST /api/missions/<slug>/submit` per [`api.yaml`](../api.yaml). API `outcome` values: access — `success`, `invalid`; unlock and submit — `success`, `invalid`, `already_done` (shared [`MissionListResponse`](../api.yaml) with `new_missions`). Unlock success may list one or many missions; submit **success-unlocks** simulates `success` with a non-empty `new_missions` array.
 
 ---
 
@@ -35,7 +35,7 @@ Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snaps
 
 | File | Status | Persona / state | Use cases |
 |------|--------|-----------------|-----------|
-| [agent-dashboard.html](agent-dashboard.html) | done | Alice; completed missions visible; DevOps expanded | UC-013, UC-019, UC-026 |
+| [agent-dashboard.html](agent-dashboard.html) | done | Alice; Example Storyline expanded (`es-alpha` done, `es-beta`/`es-gamma` active) | UC-013, UC-019, UC-026 |
 | [agent-dashboard-hidden.html](agent-dashboard-hidden.html) | done | Same list; **Show completed missions** off | UC-013 |
 | [agent-dashboard-unlock-success.html](agent-dashboard-unlock-success.html) | done | Unlock success modal | UC-020, UC-027 |
 | [agent-dashboard-unlock-bad-code.html](agent-dashboard-unlock-bad-code.html) | done | Unlock invalid modal | UC-020 |
@@ -44,10 +44,10 @@ Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snaps
 
 | File | Status | Persona / state | Use cases |
 |------|--------|-----------------|-----------|
-| [mission-detail-active.html](mission-detail-active.html) | done | **Alice / remote-access** active: Brief, Recovered Data | UC-009, UC-016, UC-017 |
-| [mission-detail-completed.html](mission-detail-completed.html) | done | **Alice / learn-the-system** completed; collapsible Mission Debrief + Mission Brief | UC-010, UC-018, UC-021 |
+| [mission-detail-active.html](mission-detail-active.html) | done | **Alice / es-beta** active: Brief, Recovered Data | UC-009, UC-016, UC-017 |
+| [mission-detail-completed.html](mission-detail-completed.html) | done | **Alice / es-alpha** completed; collapsible Mission Debrief + Mission Brief | UC-010, UC-018, UC-021 |
 | [mission-detail-submit-success.html](mission-detail-submit-success.html) | done | Submit success (no new missions) | UC-021 |
-| [mission-detail-submit-success-unlocks.html](mission-detail-submit-success-unlocks.html) | done | Submit success + **identify-the-traitor** listed | UC-021, UC-032 |
+| [mission-detail-submit-success-unlocks.html](mission-detail-submit-success-unlocks.html) | done | Submit **es-alpha** success + **es-gamma** listed | UC-021, UC-032 |
 | [mission-detail-submit-invalid.html](mission-detail-submit-invalid.html) | done | Submit invalid code | UC-022 |
 
 ### Operator (read-only)

@@ -27,8 +27,6 @@ database/              SQLite file (gitignored)
 tests/                 Unit tests
 ```
 
-Mission packs (content + SQL seeds) live in the sibling **radspion-missions** repo.
-
 ## Quick start (development)
 
 ```bash
@@ -38,7 +36,7 @@ pip install -r requirements.txt && pip install -e .
 make
 ```
 
-For the example class pack (after seed rework): see **radspion-missions** `example-class/bootstrap_sample_class.sh`.
+For local acceptance testing, see [docs/design/04-example-data-walkthrough.md](docs/design/04-example-data-walkthrough.md) and [05-example-storyline.md](docs/design/05-example-storyline.md).
 
 See [docs/dev.md](docs/dev.md) for OAuth, CI, and deployment.
 

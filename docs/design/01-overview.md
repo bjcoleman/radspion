@@ -16,7 +16,6 @@ A web app where students act as **agents** in a spy-agency fiction. **Missions**
 | `mission_unlock_codes`, `mission_list_requires` | |
 | **Operator** (you)—configure via SQL seed | |
 | Operator **progress** UI (`is_operator`, read-only) | |
-| Example class seed in **radspion-missions** (pending rework) | |
 
 ## Access
 
@@ -30,17 +29,12 @@ A web app where students act as **agents** in a spy-agency fiction. **Missions**
 - **Flask + Jinja** for server-rendered pages; JSON API at `/api/` (access, unlock, mission submit) — see [api.yaml](../api.yaml)
 - SQLite 3
 - Markdown files on disk for Brief/Debrief under `content/missions/<slug>/`; UI mockups in `docs/ui/` inline HTML for layout review
-- Mission packs (content + SQL seeds) in sibling repo **radspion-missions**
-
 ## Core entities
 
 - **Group** — story arc (`missions.group_id`); organizes the dashboard, does not gate access
 - **Mission** — one group, `access_rule`, `completion_code`, story paths
-- **Constraints** — unlock code (1:1), list prereqs (`mission_list_requires`)
+- **Constraints** — unlock codes (one per mission; code strings may be shared), list prereqs (`mission_list_requires`)
 - **AgentMissionStatus** — per agent per mission: `active` or `completed`
 
 Details: [02-entities.md](02-entities.md), [03-database-schema.md](03-database-schema.md).
 
-## Example data
-
-The **220.2 DevOps** example pack + four agents (Alice, Bob, Charlie, Diana) is the reference for use cases once the seed in **radspion-missions** is updated: [05-example-class.md](05-example-class.md), [04-example-data-walkthrough.md](04-example-data-walkthrough.md).
