@@ -36,6 +36,23 @@ def test_get_listed_mission_content_includes_completion_code_when_completed(stor
     assert content.completion_code == "COMPLETE es-alpha"
 
 
+def test_find_listed_mission_returns_dashboard_mission_when_listed(storyline_db: Path):
+    storage = DatabaseRadspionStorage(storyline_db)
+
+    mission = storage.find_listed_mission(SAMPLE_AGENTS["alice"]["id"], "es-alpha")
+
+    assert mission is not None
+    assert mission.slug == "es-alpha"
+    assert mission.title == "ES: Alpha"
+    assert mission.status == "completed"
+
+
+def test_find_listed_mission_none_when_not_listed(storyline_db: Path):
+    storage = DatabaseRadspionStorage(storyline_db)
+
+    assert storage.find_listed_mission(SAMPLE_AGENTS["diana"]["id"], "es-alpha") is None
+
+
 def test_get_listed_mission_content_none_when_not_listed(storyline_db: Path):
     storage = DatabaseRadspionStorage(storyline_db)
 
