@@ -72,4 +72,6 @@ def test_mission_detail_404_when_not_listed(storyline_db: Path):
     with client.session_transaction() as sess:
         sess[SESSION_USER_ID] = SAMPLE_AGENTS["diana"]["id"]
 
-    assert client.get("/agent/missions/es-alpha").status_code == 404
+    response = client.get("/agent/missions/es-alpha")
+    assert response.status_code == 404
+    assert "Transmission Terminated" in response.data.decode()
