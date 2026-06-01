@@ -1,7 +1,7 @@
 {% extends "agent/base_agent.html" %}
 
 {% block title %}{{ mission.title }} — Radspion{% endblock %}
-{% block body_class %}page--dashboard{% endblock %}
+{% block body_class %}page--mission{% endblock %}
 {% block main_class %}page__main--mission{% endblock %}
 
 {% block agent_content %}
@@ -18,13 +18,64 @@
       </p>
     </header>
 
-    <section class="mission-detail__section" aria-labelledby="mission-placeholder-heading">
-      <h2 id="mission-placeholder-heading" class="mission-detail__section-title text-mono">
-        Mission detail
-      </h2>
-      <p class="text-muted">
-        Full mission brief, recovered data, and debrief views are coming soon.
-      </p>
-    </section>
+    {% if mission.status == 'active' %}
+      <section class="mission-detail__section" aria-labelledby="brief-heading">
+        <h2 id="brief-heading" class="mission-detail__section-title text-mono">Mission Brief</h2>
+        <article class="markdown">{{ mission.brief_html }}</article>
+      </section>
+
+      <section class="mission-detail__section completion-panel" aria-labelledby="recovered-data-heading">
+        <header class="completion-panel__header">
+          <h2 id="recovered-data-heading" class="completion-panel__title">Recovered Data</h2>
+          <p class="completion-panel__lede text-muted">
+            Enter the data you recovered during fieldwork.
+          </p>
+        </header>
+        <form class="completion-form" action="#" method="post">
+          <label class="sr-only" for="completion-code">Recovered data from fieldwork</label>
+          <input
+            class="completion-form__input text-mono"
+            type="text"
+            id="completion-code"
+            name="completion_code"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Recovered data"
+            disabled
+          >
+          <button class="completion-form__submit" type="submit" disabled>Submit</button>
+        </form>
+      </section>
+    {% else %}
+      <section class="mission-detail__section recovered-data-panel" aria-labelledby="recovered-data-heading">
+        <h2 id="recovered-data-heading" class="recovered-data-panel__title">Recovered Data</h2>
+        <p class="recovered-data-panel__lede text-muted">
+          The following data is secured in agency archives.
+        </p>
+        <div class="recovered-data__block">
+          <pre class="recovered-data__value text-mono">{{ mission.recovered_code }}</pre>
+        </div>
+      </section>
+
+      <section class="mission-detail__section" aria-labelledby="debrief-heading">
+        <details class="mission-group mission-group--collapsible" open>
+          <summary class="mission-group__summary">
+            {% include "agent/_mission_chevron.html" %}
+            <span id="debrief-heading" class="mission-detail__section-title text-mono">Mission Debrief</span>
+          </summary>
+          <article class="markdown">{{ mission.debrief_html }}</article>
+        </details>
+      </section>
+
+      <section class="mission-detail__section" aria-labelledby="brief-heading">
+        <details class="mission-group mission-group--collapsible">
+          <summary class="mission-group__summary">
+            {% include "agent/_mission_chevron.html" %}
+            <span id="brief-heading" class="mission-detail__section-title text-mono">Mission Brief</span>
+          </summary>
+          <article class="markdown">{{ mission.brief_html }}</article>
+        </details>
+      </section>
+    {% endif %}
   </div>
 {% endblock %}

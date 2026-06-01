@@ -3,7 +3,13 @@
 import sqlite3
 from pathlib import Path
 
-from radspion.missions import DashboardGroup, DashboardMission, MissionSummary, UnlockRedeemResult
+from radspion.missions import (
+    DashboardGroup,
+    DashboardMission,
+    ListedMissionContent,
+    MissionSummary,
+    UnlockRedeemResult,
+)
 from radspion.user import User
 
 
@@ -218,6 +224,37 @@ class DatabaseRadspionStorage:
         if row is None:
             return None
         return DashboardMission(slug=row["slug"], title=row["title"], status=row["status"])
+
+    def get_listed_mission_content(self, user_id: int, slug: str) -> ListedMissionContent | None:
+        """Load mission brief/debrief for a listed mission (UC-016)."""
+        try:
+            row = self._conn.execute(
+                """
+                SELECT m.slug,
+                       m.title,
+                       ams.status,
+                       m.brief_markdown,
+                       m.debrief_markdown,
+                       m.completion_code
+                FROM agent_mission_status ams
+                JOIN missions m ON m.id = ams.mission_id
+                WHERE ams.user_id = ? AND m.slug = ?
+                """,
+                (user_id, slug),
+            ).fetchone()
+        except sqlite3.Error as exc:
+            raise DatabaseError(f"Database error loading mission detail: {exc}") from exc
+        if row is None:
+            return None
+        recovered = row["completion_code"] if row["status"] == "completed" else None
+        return ListedMissionContent(
+            slug=row["slug"],
+            title=row["title"],
+            status=row["status"],
+            brief_markdown=row["brief_markdown"],
+            debrief_markdown=row["debrief_markdown"],
+            completion_code=recovered,
+        )
 
     def redeem_unlock_code(self, user_id: int, unlock_code: str) -> UnlockRedeemResult:
         """

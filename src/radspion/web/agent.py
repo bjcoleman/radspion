@@ -24,9 +24,9 @@ def dashboard():
 @agent_bp.get("/missions/<slug>")
 @login_required
 def mission_detail(slug: str):
-    """Mission detail placeholder until full brief/debrief UI (UC-016 stub)."""
+    """Mission detail: brief, debrief, recovered data (UC-016)."""
     radspion = current_app.extensions["radspion"]
-    mission = radspion.find_listed_mission(g.user.id, slug)
+    mission = radspion.get_mission_detail(g.user.id, slug)
     if mission is None:
         abort(404)
 

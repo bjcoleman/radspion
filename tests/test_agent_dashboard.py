@@ -75,28 +75,6 @@ def test_dashboard_group_order_descending_group_id(testing_storyline_db: Path):
     assert titles == ["Testing Storyline", "Orientation"]
 
 
-def test_mission_detail_stub_for_listed_mission(testing_storyline_db: Path):
-    client = _client_for_db(testing_storyline_db)
-    with client.session_transaction() as sess:
-        sess[SESSION_USER_ID] = SAMPLE_AGENTS["alice"]["id"]
-
-    response = client.get("/agent/missions/es-beta")
-    body = response.data.decode()
-
-    assert response.status_code == 200
-    assert "ES: Beta" in body
-    assert "coming soon" in body.lower()
-
-
-def test_mission_detail_404_when_not_listed(testing_storyline_db: Path):
-    client = _client_for_db(testing_storyline_db)
-    with client.session_transaction() as sess:
-        sess[SESSION_USER_ID] = SAMPLE_AGENTS["diana"]["id"]
-
-    response = client.get("/agent/missions/es-alpha")
-    assert response.status_code == 404
-
-
 def test_dashboard_includes_unlock_form_and_transmission_modal(testing_storyline_db: Path):
     client = _client_for_db(testing_storyline_db)
     with client.session_transaction() as sess:

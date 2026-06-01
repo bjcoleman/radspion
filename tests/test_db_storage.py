@@ -94,6 +94,10 @@ def test_registration_code_exists_raises_database_error_when_table_missing(tmp_p
             "loading mission",
         ),
         (
+            lambda storage: storage.get_listed_mission_content(1, "basic-training"),
+            "loading mission detail",
+        ),
+        (
             lambda storage: storage.redeem_unlock_code(1, "EXAMPLE UNLOCK"),
             "redeeming unlock code",
         ),
@@ -154,6 +158,10 @@ def test_closed_connection_raises_database_error_for_all_queries(tmp_path: Path)
             "checking mission list",
         ),
         (lambda: storage.find_listed_mission(1, "basic-training"), "loading mission"),
+        (
+            lambda: storage.get_listed_mission_content(1, "basic-training"),
+            "loading mission detail",
+        ),
         (lambda: storage.redeem_unlock_code(1, "EXAMPLE UNLOCK"), "redeeming unlock code"),
     ]
 

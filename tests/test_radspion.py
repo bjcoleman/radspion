@@ -42,3 +42,9 @@ def test_redeem_unlock_code_rejects_empty_after_trim():
     assert result.outcome == "invalid"
     assert result.new_missions == ()
     assert result.message is None
+
+
+def test_find_listed_mission_delegates_to_storage():
+    app = Radspion(InMemoryRadspionStorage())
+
+    assert app.find_listed_mission(1, "es-alpha") is None

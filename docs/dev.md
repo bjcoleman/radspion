@@ -31,6 +31,7 @@ Create `.env` in the project root. **Never commit** this file.
 | `GOOGLE_CLIENT_SECRET` | OAuth client secret |
 | `SECRET_KEY` | Flask session signing (**required**; app exits at startup if unset). Generate with `python3 -c "import secrets; print(secrets.token_urlsafe(32))"` |
 | `DATABASE_PATH` | Optional; default `database/radspion.db` |
+| `DEV_EMAIL` | Optional; your Google sign-in email — used by `./scripts/bind_dev_email.sh` only |
 
 ## Local setup
 
@@ -50,6 +51,8 @@ pip install -e .
 ```
 
 SQL in this repo: `schema.sql`, `seed_orientation.sql`, `seed_registration_access_codes.sql`. Mission brief/debrief markdown is **inlined** in the orientation and testing storyline seeds. Author copy in the private **radspion-missions** repo and run `scripts/generate_radspion_sql.py` there to refresh `seed_*.sql`. After schema or seed changes, recreate `database/radspion.db` (existing files are incompatible).
+
+For a full local test database with your Google account on the Alice fixture, set `DEV_EMAIL` in `.env` to the address you use for sign-in and run `./scripts/bind_dev_email.sh`. That recreates the test database (you can confirm overwrite when prompted) and binds Alice’s progress to your email (see [05-testing-storyline.md](design/05-testing-storyline.md)).
 
 ### Application layout
 
