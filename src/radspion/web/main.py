@@ -1,8 +1,17 @@
 """Public pages blueprint."""
 
-from flask import Blueprint, render_template
+from flask import Blueprint, current_app, render_template, send_from_directory
 
 main_bp = Blueprint("main", __name__)
+
+
+@main_bp.get("/favicon.ico")
+def favicon():
+    return send_from_directory(
+        current_app.static_folder,
+        "favicon.ico",
+        mimetype="image/vnd.microsoft.icon",
+    )
 
 
 @main_bp.get("/")

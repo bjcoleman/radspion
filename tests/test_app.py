@@ -1,10 +1,19 @@
 """Tests for HTTP routes."""
 
 
+def test_favicon(client):
+    response = client.get("/favicon.ico")
+    assert response.status_code == 200
+    assert response.mimetype == "image/vnd.microsoft.icon"
+    assert response.data[:4] == b"\x00\x00\x01\x00"
+
+
 def test_index(client):
     response = client.get("/")
     assert response.status_code == 200
     html = response.data.decode()
+    assert 'rel="icon"' in html
+    assert "/static/favicon.ico" in html
     assert "Radspion" in html
     assert "New Agents" in html
     assert 'name="access_code"' in html
