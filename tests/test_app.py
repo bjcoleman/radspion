@@ -43,3 +43,20 @@ def test_privacy(client):
     assert "Privacy Policy" in html
     assert "Google" in html
     assert 'href="/privacy"' in html
+
+
+def test_unknown_route_returns_themed_404(client):
+    response = client.get("/no-such-channel")
+    assert response.status_code == 404
+    html = response.data.decode()
+    assert "Transmission Terminated" in html
+    assert "ERR-NO-SIGNAL" in html
+    assert "Return to secure channel" in html
+    assert 'href="/"' in html
+
+
+def test_api_unknown_route_returns_json_404(client):
+    response = client.get("/api/no-such-endpoint")
+    assert response.status_code == 404
+    assert response.is_json
+    assert response.get_json() == {"error": "Not found"}

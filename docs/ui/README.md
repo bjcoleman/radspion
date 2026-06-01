@@ -22,6 +22,12 @@ Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snaps
 
 ## File index
 
+### Errors
+
+| File | Status | Persona / state | Use cases |
+|------|--------|-----------------|-----------|
+| [not-found.html](not-found.html) | done | HTTP 404 — unverified path / lost signal | — |
+
 ### Auth & landing
 
 | File | Status | Persona / state | Use cases |

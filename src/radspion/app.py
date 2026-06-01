@@ -3,7 +3,7 @@
 import sys
 
 from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, jsonify, render_template, request
 
 from radspion.config import Config, ConfigurationError, load_config
 from radspion.database import DatabaseError, DatabaseRadspionStorage
@@ -31,6 +31,13 @@ def create_app(*, config: Config, radspion: Radspion, oauth) -> Flask:
     app.register_blueprint(api_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(agent_bp)
+
+    @app.errorhandler(404)
+    def not_found(_error):
+        if request.path.startswith("/api/"):
+            return jsonify({"error": "Not found"}), 404
+        return render_template("errors/404.html"), 404
+
     return app
 
 

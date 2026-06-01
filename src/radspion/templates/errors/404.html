@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Transmission Terminated — Radspion{% endblock %}
+{% block meta_description %}Radspion — the requested channel could not be located.{% endblock %}
+{% block body_class %}page--landing{% endblock %}
+
+{% block content %}
+  <div class="not-found">
+    <img
+      class="not-found__mark"
+      src="{{ url_for('static', filename='img/radspion_mark_white.svg') }}"
+      width="96"
+      height="96"
+      alt=""
+    >
+
+    <p class="not-found__code text-mono" aria-hidden="true">404</p>
+    <p class="not-found__designation text-mono">ERR-NO-SIGNAL · Unverified Path</p>
+
+    <h1 class="not-found__title">Transmission Terminated</h1>
+
+    <p class="not-found__briefing">
+      The coordinates you entered do not correspond to any known field operation.
+      This channel may have been sealed, reassigned, or never catalogued in agency records.
+    </p>
+
+    <section class="not-found__status" aria-label="Channel status">
+      <p class="not-found__status-row">
+        <span>Signal status</span>
+        <span class="not-found__status-value not-found__status-value--alert">Lost</span>
+      </p>
+      <p class="not-found__status-row">
+        <span>Route index</span>
+        <span class="not-found__status-value">No match</span>
+      </p>
+      <p class="not-found__status-row">
+        <span>Clearance</span>
+        <span class="not-found__status-value">N/A — unverified path</span>
+      </p>
+    </section>
+
+    <p class="not-found__actions">
+      <a href="{{ url_for('main.index') }}" class="not-found__link">Return to secure channel</a>
+    </p>
+  </div>
+{% endblock %}
