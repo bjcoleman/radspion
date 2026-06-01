@@ -1,0 +1,31 @@
+---
+description: Use project .venv only; never install packages globally
+alwaysApply: true
+---
+
+# Python environment
+
+This repo uses a virtual environment at `.venv/` (gitignored). **Always use it.**
+
+## Required
+
+- Run tools via `.venv/bin/...` (e.g. `.venv/bin/pytest`, `.venv/bin/pip`, `.venv/bin/ruff`), **or** `source .venv/bin/activate` first and then use `python`/`pip`.
+- Install dependencies only with:
+  - `.venv/bin/pip install -r requirements.txt`
+  - `.venv/bin/pip install -e .`
+
+## Forbidden
+
+- `pip install` / `pip3 install` without `.venv/bin/` or an activated venv
+- `python -m pip install` when `which python` is not `.venv/bin/python`
+- Installing packages into the system/user Python
+
+## If `.venv` is missing
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/pip install -e .
+```
+
+Match CI: `.github/actions/setup_venv/action.yml` and `redeploy.sh`.
