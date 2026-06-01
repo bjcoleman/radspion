@@ -14,7 +14,7 @@ SQLite. **Groups** are story arcs (organization for the dashboard and operator v
 |-------|---------|
 | `slug` | Stable internal id |
 | `title` | Agent-visible name |
-| `brief_path`, `debrief_path` | Mission Brief / Debrief markdown |
+| `brief_markdown`, `debrief_markdown` | Mission Brief / Debrief markdown |
 | `group_id` | Story arc for dashboard grouping |
 | `access_rule` | How the mission gets on the agent’s list |
 | `completion_code` | Secret to mark completed |

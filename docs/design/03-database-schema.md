@@ -52,8 +52,8 @@ Story-arc label for dashboard sections and operator navigation.
 | `id` | `INTEGER` | PK, `AUTOINCREMENT` |
 | `slug` | `TEXT` | NOT NULL, UNIQUE |
 | `title` | `TEXT` | NOT NULL |
-| `brief_path` | `TEXT` | NOT NULL |
-| `debrief_path` | `TEXT` | NOT NULL |
+| `brief_markdown` | `TEXT` | NOT NULL |
+| `debrief_markdown` | `TEXT` | NOT NULL |
 | `group_id` | `INTEGER` | NOT NULL, FK → `groups` |
 | `access_rule` | `TEXT` | NOT NULL, CHECK (see enums above) |
 | `completion_code` | `TEXT` | NOT NULL |

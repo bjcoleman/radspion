@@ -4,7 +4,7 @@ Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snaps
 
 **Design reference:** [06-agent-experience.md](../design/06-agent-experience.md) (includes hybrid JSON endpoints) · [use-cases.md](../design/use-cases.md) · [05-example-storyline.md](../design/05-example-storyline.md) · [COLOR_USAGE.md](COLOR_USAGE.md)
 
-**Assets:** styles in [`css/radspion.css`](css/radspion.css) are kept in sync with production [`src/radspion/static/css/radspion.css`](../../src/radspion/static/css/radspion.css) (mockup rules + app-only rules for flash, content pages, disabled controls). Logos in [`logos/`](../../logos/). Mission brief and debrief copy is **inlined in HTML** on mission detail mockups (production loads markdown from `content/missions/`).
+**Assets:** styles in [`css/radspion.css`](css/radspion.css) are kept in sync with production [`src/radspion/static/css/radspion.css`](../../src/radspion/static/css/radspion.css) (mockup rules + app-only rules for flash, content pages, disabled controls). Logos in [`logos/`](../../logos/). Mission brief and debrief copy is **inlined in HTML** on mission detail mockups (production loads markdown from the database).
 
 **Sample data alignment:** Story arcs **Orientation** and **Example Storyline** (`es-*` missions); **`unlock_code`** or **`requires_complete`** listing — never both on one mission.
 

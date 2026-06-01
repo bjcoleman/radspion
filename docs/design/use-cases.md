@@ -22,7 +22,7 @@ Ordered by **dependency** — build from the top down. Each case lists **Require
 | Debrief | Only after mission `completed` |
 | Error copy (UC-020, UC-022) | Wording TBD — you’ll review per case |
 | Web framework | **Flask + Jinja** SSR; JSON API at `/api/access`, `/api/unlock`, `/api/missions/<slug>/submit` |
-| Brief/Debrief paths | Live missions under `content/missions/<slug>/` |
+| Brief/Debrief bodies | `missions.brief_markdown` / `debrief_markdown` (seed SQL generated from **radspion-missions**) |
 | Operator config V1 | SQL/seed only — no in-app mission editor |
 | Operator progress V1 | Read-only UI: story arcs → missions → agent status |
 | `users.is_operator` | SQLite `INTEGER` `0`/`1`; gates operator routes |
@@ -114,7 +114,7 @@ Agent authenticates with Google (any Google account); app establishes a session 
 
 **Actor:** Operator  
 **Requires:** UC-002 (for example paths)  
-Operator-authored markdown at paths stored on `missions` under `content/missions/<slug>/`. UI mockups inline representative brief/debrief in HTML — not one mockup file per mission.
+Operator-authored markdown in **radspion-missions**, generated into storyline seed SQL. UI mockups inline representative brief/debrief in HTML — not one mockup file per mission.
 
 ---
 

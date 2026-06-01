@@ -17,6 +17,6 @@ Read in order:
 
 **UI mockups:** [ui/README.md](ui/README.md) — static HTML/CSS prototypes (build before Jinja templates)
 
-**SQL (infrastructure):** [src/radspion/sql/schema.sql](../src/radspion/sql/schema.sql), [seed_orientation.sql](../src/radspion/sql/seed_orientation.sql)
+**SQL (infrastructure):** [src/radspion/sql/README.md](../src/radspion/sql/README.md) — schema and seeds (mission markdown inlined)
 
-**Development:** [dev.md](dev.md) · **Mission markdown:** [mission-markdown.md](mission-markdown.md) · **JSON API (OpenAPI):** [api.yaml](api.yaml)
+**Development:** [dev.md](dev.md) · **JSON API (OpenAPI):** [api.yaml](api.yaml)

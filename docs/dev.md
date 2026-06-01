@@ -49,7 +49,7 @@ pip install -e .
 ./scripts/create_empty_db.sh
 ```
 
-SQL in this repo: `schema.sql`, `seed_orientation.sql`, `seed_registration_access_codes.sql`.
+SQL in this repo: `schema.sql`, `seed_orientation.sql`, `seed_registration_access_codes.sql`. Mission brief/debrief markdown is **inlined** in the orientation and testing storyline seeds. Author copy in the private **radspion-missions** repo and run `scripts/generate_radspion_sql.py` there to refresh `seed_*.sql`. After schema or seed changes, recreate `database/radspion.db` (existing files are incompatible).
 
 ### Application layout
 

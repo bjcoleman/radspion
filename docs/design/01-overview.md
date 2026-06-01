@@ -28,7 +28,7 @@ A web app where students act as **agents** in a spy-agency fiction. **Missions**
 
 - **Flask + Jinja** for server-rendered pages; JSON API at `/api/` (access, unlock, mission submit) — see [api.yaml](../api.yaml)
 - SQLite 3
-- Markdown files on disk for Brief/Debrief under `content/missions/<slug>/`; UI mockups in `docs/ui/` inline HTML for layout review
+- Mission Brief/Debrief markdown in DB (`brief_markdown` / `debrief_markdown`), seeded from **radspion-missions**; UI mockups in `docs/ui/` inline HTML for layout review
 ## Core entities
 
 - **Group** — story arc (`missions.group_id`); organizes the dashboard, does not gate access

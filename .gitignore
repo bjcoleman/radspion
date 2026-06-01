@@ -10,4 +10,3 @@ htmlcov/
 database/*.db
 .DS_Store
 
-# Mission markdown lives under content/missions/ (tracked in git).
