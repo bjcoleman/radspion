@@ -25,8 +25,8 @@ Missions that are not yet listable are **not shown** on the dashboard.
 
 ## Mission detail
 
-- **Mission Brief** from `brief_path` when the mission is on the agent’s list.
-- **Debrief** from `debrief_path` only after **completed**.
+- **Mission Brief** from `missions.brief_markdown` when the mission is on the agent’s list.
+- **Debrief** from `missions.debrief_markdown` only after **completed**.
 - After **completed**, show captured value from `missions.completion_code` (never expose to `active` missions in API).
 
 ## Completion

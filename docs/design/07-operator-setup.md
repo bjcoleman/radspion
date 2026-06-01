@@ -21,12 +21,12 @@ Default seed placeholders: [`seed_registration_access_codes.sql`](../../src/rads
 ## Configure a story arc (mission pack)
 
 1. Create a `groups` row (story-arc name)  
-2. Insert `missions` with `group_id`, `access_rule`, `completion_code`, paths under `content/missions/<slug>/`, `title`  
+2. Insert `missions` with `group_id`, `access_rule`, `completion_code`, `brief_markdown`, `debrief_markdown`, `title` (author in **radspion-missions**, then run `scripts/generate_radspion_sql.py`)  
 3. If `unlock_code` → row in `mission_unlock_codes` (typical arc entry). The same `unlock_code` string may appear on multiple missions if you want one redeem to list several entries.
 4. If `requires_complete` → rows in `mission_list_requires`  
 5. Trigger status **sync** for affected agents (app does this on login/unlock/complete when live; in SQL-only workflows, sign-in or a future CLI will reconcile)  
 
-Infrastructure seeds (`schema.sql`, `seed_orientation.sql`, `seed_registration_access_codes.sql`) live in this repo. Additional story arcs and mission markdown are operator-authored under `content/missions/`.
+Infrastructure seeds (`schema.sql`, `seed_orientation.sql`, `seed_registration_access_codes.sql`) live in this repo. Storyline mission prose is authored in the private **radspion-missions** repo and generated into `seed_*.sql` via `scripts/generate_radspion_sql.py`.
 
 ## Operator progress view
 

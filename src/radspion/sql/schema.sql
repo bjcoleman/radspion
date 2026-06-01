@@ -42,11 +42,11 @@ CREATE TABLE groups (
 
 CREATE TABLE missions (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
-    slug            TEXT NOT NULL UNIQUE,
-    title           TEXT NOT NULL,
-    brief_path      TEXT NOT NULL,
-    debrief_path    TEXT NOT NULL,
-    group_id        INTEGER NOT NULL REFERENCES groups (id) ON DELETE CASCADE,
+    slug              TEXT NOT NULL UNIQUE,
+    title             TEXT NOT NULL,
+    brief_markdown    TEXT NOT NULL,
+    debrief_markdown  TEXT NOT NULL,
+    group_id          INTEGER NOT NULL REFERENCES groups (id) ON DELETE CASCADE,
     access_rule     TEXT NOT NULL CHECK (access_rule IN ('open', 'unlock_code', 'requires_complete')),
     completion_code TEXT NOT NULL
 );

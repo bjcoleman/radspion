@@ -18,8 +18,7 @@ Secret-organization-themed mission platform for coursework. Agents complete **mi
 
 ```
 src/radspion/          Application package
-src/radspion/sql/      Schema and orientation seed
-content/missions/      Live mission Brief / Debrief (basic-training default)
+src/radspion/sql/      Schema and seeds (mission markdown inlined in SQL)
 deploy/                nginx vhost, systemd unit (production)
 docs/                  Design docs, API outline, UI mockups
 scripts/               DB bootstrap (create_empty_db.sh, create_test_db.sh)
