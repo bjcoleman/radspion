@@ -21,7 +21,7 @@ src/radspion/          Application package
 src/radspion/sql/      Schema and seeds (mission markdown inlined in SQL)
 deploy/                nginx vhost, systemd unit (production)
 docs/                  Design docs, API outline, UI mockups
-scripts/               DB bootstrap (create_empty_db.sh, create_test_db.sh)
+scripts/               DB bootstrap (create_empty_db.sh, create_test_db.sh, add_clearance.sh)
 database/              SQLite file (gitignored)
 tests/                 Unit tests
 ```

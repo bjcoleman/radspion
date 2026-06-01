@@ -9,7 +9,6 @@ cd "$ROOT"
 DB_PATH="database/radspion.db"
 SCHEMA_FILE="src/radspion/sql/schema.sql"
 ORIENTATION_SEED="src/radspion/sql/seed_orientation.sql"
-REGISTRATION_CODES_SEED="src/radspion/sql/seed_registration_access_codes.sql"
 
 if [ -f "$DB_PATH" ]; then
     echo "Warning: Database file already exists at $DB_PATH"
@@ -23,7 +22,7 @@ fi
 
 mkdir -p database
 
-for f in "$SCHEMA_FILE" "$ORIENTATION_SEED" "$REGISTRATION_CODES_SEED"; do
+for f in "$SCHEMA_FILE" "$ORIENTATION_SEED"; do
     if [ ! -f "$f" ]; then
         echo "Error: Missing $f"
         exit 1
@@ -36,8 +35,5 @@ sqlite3 "$DB_PATH" < "$SCHEMA_FILE"
 echo "Loading orientation seed (basic-training)..."
 sqlite3 "$DB_PATH" < "$ORIENTATION_SEED"
 
-echo "Loading registration access codes..."
-sqlite3 "$DB_PATH" < "$REGISTRATION_CODES_SEED"
-
-echo "Created database at $DB_PATH (Orientation + basic-training + registration codes)."
-echo "Replace CHANGE-ME-* codes in registration_access_codes before inviting agents."
+echo "Created database at $DB_PATH (Orientation + basic-training)."
+echo "Add registration clearance codes with ./scripts/add_clearance.sh \"your code\""

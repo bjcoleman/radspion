@@ -4,8 +4,9 @@
 |------|---------|
 | `schema.sql` | Tables and indexes |
 | `seed_orientation.sql` | Orientation group + `basic-training` (production) |
-| `seed_registration_access_codes.sql` | Signup gate codes |
 | `seed_testing_storyline.sql` | Testing Storyline + sample agents (dev/test only) |
+
+Registration clearance codes are not seeded. Add them with `./scripts/add_clearance.sh "your code"`.
 
 ## Mission markdown in seeds
 

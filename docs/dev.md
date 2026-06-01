@@ -50,7 +50,7 @@ pip install -e .
 ./scripts/create_empty_db.sh
 ```
 
-SQL in this repo: `schema.sql`, `seed_orientation.sql`, `seed_registration_access_codes.sql`. Mission brief/debrief markdown is **inlined** in the orientation and testing storyline seeds. Author copy in the private **radspion-missions** repo and run `scripts/generate_radspion_sql.py` there to refresh `seed_*.sql`. After schema or seed changes, recreate `database/radspion.db` (existing files are incompatible).
+SQL in this repo: `schema.sql`, `seed_orientation.sql`. Mission brief/debrief markdown is **inlined** in the orientation and testing storyline seeds. Author copy in the private **radspion-missions** repo and run `scripts/generate_radspion_sql.py` there to refresh `seed_*.sql`. After schema or seed changes, recreate `database/radspion.db` (existing files are incompatible). Add registration clearance codes with `./scripts/add_clearance.sh "your code"`.
 
 For a full local test database with your Google account on the Alice fixture, set `DEV_EMAIL` in `.env` to the address you use for sign-in and run `./scripts/bind_dev_email.sh`. That recreates the test database (you can confirm overwrite when prompted) and binds Alice’s progress to your email (see [05-testing-storyline.md](design/05-testing-storyline.md)).
 
