@@ -31,7 +31,7 @@
             Enter the data you recovered during fieldwork.
           </p>
         </header>
-        <form class="completion-form" action="#" method="post">
+        <form class="completion-form" action="#" method="post" data-mission-slug="{{ mission.slug }}">
           <label class="sr-only" for="completion-code">Recovered data from fieldwork</label>
           <input
             class="completion-form__input text-mono"
@@ -41,9 +41,8 @@
             autocomplete="off"
             spellcheck="false"
             placeholder="Recovered data"
-            disabled
           >
-          <button class="completion-form__submit" type="submit" disabled>Submit</button>
+          <button class="completion-form__submit" type="submit">Submit</button>
         </form>
       </section>
     {% else %}
@@ -78,4 +77,12 @@
       </section>
     {% endif %}
   </div>
+{% endblock %}
+
+{% block extra_body %}
+  {% if mission.status == 'active' %}
+    {% include "_transmission_modal.html" %}
+    <script src="{{ url_for('static', filename='js/transmission-modal.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/mission-detail-submit.js') }}"></script>
+  {% endif %}
 {% endblock %}
