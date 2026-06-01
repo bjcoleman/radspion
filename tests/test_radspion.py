@@ -32,3 +32,13 @@ def test_validate_registration_code_rejects_empty_after_trim():
     app = Radspion(InMemoryRadspionStorage({"SECRET-CODE"}))
 
     assert app.validate_registration_code("   ") is False
+
+
+def test_redeem_unlock_code_rejects_empty_after_trim():
+    app = Radspion(InMemoryRadspionStorage())
+
+    result = app.redeem_unlock_code(1, "   ")
+
+    assert result.outcome == "invalid"
+    assert result.new_missions == ()
+    assert result.message is None

@@ -4,6 +4,42 @@ from dataclasses import dataclass, field
 
 
 @dataclass(frozen=True)
+class MissionSummary:
+    """Mission newly listed after unlock or submit."""
+
+    title: str
+    slug: str
+    group_name: str
+
+
+@dataclass(frozen=True)
+class UnlockRedeemResult:
+    """Result of redeeming a mission unlock code (UC-019 / UC-019b / UC-020)."""
+
+    outcome: str  # success | invalid | already_done
+    new_missions: tuple[MissionSummary, ...] = ()
+    message: str | None = None
+
+    def to_api_dict(self) -> dict:
+        """Serialize for POST /api/unlock and submit responses."""
+        data: dict = {"outcome": self.outcome}
+        if self.message is not None:
+            data["message"] = self.message
+        if self.outcome == "success":
+            data["new_missions"] = [
+                {
+                    "title": mission.title,
+                    "slug": mission.slug,
+                    "group_name": mission.group_name,
+                }
+                for mission in self.new_missions
+            ]
+        elif self.outcome == "already_done":
+            data["new_missions"] = []
+        return data
+
+
+@dataclass(frozen=True)
 class DashboardMission:
     """One mission row on the agent dashboard."""
 

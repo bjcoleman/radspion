@@ -3,7 +3,7 @@
 import sqlite3
 from pathlib import Path
 
-from radspion.missions import DashboardGroup, DashboardMission
+from radspion.missions import DashboardGroup, DashboardMission, MissionSummary, UnlockRedeemResult
 from radspion.user import User
 
 
@@ -218,3 +218,68 @@ class DatabaseRadspionStorage:
         if row is None:
             return None
         return DashboardMission(slug=row["slug"], title=row["title"], status=row["status"])
+
+    def redeem_unlock_code(self, user_id: int, unlock_code: str) -> UnlockRedeemResult:
+        """
+        Redeem a mission unlock code (UC-014, UC-019).
+
+        ``unlock_code`` must be trimmed and non-empty. Comparison is case-sensitive.
+        """
+        try:
+            known = self._conn.execute(
+                "SELECT 1 FROM mission_unlock_codes WHERE unlock_code = ? LIMIT 1",
+                (unlock_code,),
+            ).fetchone()
+            if known is None:
+                return UnlockRedeemResult(outcome="invalid")
+
+            rows = self._conn.execute(
+                """
+                SELECT m.id AS mission_id,
+                       m.slug,
+                       m.title,
+                       g.name AS group_name
+                FROM mission_unlock_codes muc
+                JOIN missions m ON m.id = muc.mission_id
+                JOIN groups g ON g.id = m.group_id
+                WHERE muc.unlock_code = ?
+                  AND m.access_rule = 'unlock_code'
+                  AND NOT EXISTS (
+                    SELECT 1 FROM agent_mission_status ams
+                    WHERE ams.user_id = ? AND ams.mission_id = m.id
+                  )
+                ORDER BY m.slug ASC
+                """,
+                (unlock_code, user_id),
+            ).fetchall()
+
+            if not rows:
+                return UnlockRedeemResult(
+                    outcome="already_done",
+                    message="Those missions are already on your dashboard.",
+                )
+
+            new_missions: list[MissionSummary] = []
+            for row in rows:
+                self._conn.execute(
+                    """
+                    INSERT INTO agent_mission_status (user_id, mission_id, status)
+                    VALUES (?, ?, 'active')
+                    """,
+                    (user_id, row["mission_id"]),
+                )
+                new_missions.append(
+                    MissionSummary(
+                        title=row["title"],
+                        slug=row["slug"],
+                        group_name=row["group_name"],
+                    )
+                )
+            self._conn.commit()
+        except sqlite3.Error as exc:
+            raise DatabaseError(f"Database error redeeming unlock code: {exc}") from exc
+
+        return UnlockRedeemResult(
+            outcome="success",
+            new_missions=tuple(new_missions),
+        )

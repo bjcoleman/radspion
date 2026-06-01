@@ -27,9 +27,8 @@
           autocomplete="off"
           spellcheck="false"
           placeholder="Enter Mission Unlock Code"
-          disabled
         >
-        <button class="unlock-form__submit" type="button" disabled>Validate</button>
+        <button class="unlock-form__submit" type="submit">Validate</button>
       </form>
     </section>
 
@@ -79,4 +78,10 @@
       </details>
     {% endfor %}
   </div>
+{% endblock %}
+
+{% block extra_body %}
+  {% include "_transmission_modal.html" %}
+  <script src="{{ url_for('static', filename='js/transmission-modal.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/dashboard-unlock.js') }}"></script>
 {% endblock %}
