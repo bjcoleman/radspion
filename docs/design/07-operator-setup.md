@@ -9,14 +9,15 @@ Set `users.is_operator = 1` for your account (SQLite stores booleans as integers
 Rows in `registration_access_codes` gate **new account creation** only. Use separate codes per audience so you can rotate one without changing the others (e.g. CS recruitment, DevOps class, external invite). Comparison is **case-sensitive** after trimming whitespace.
 
 ```sql
--- Add or rotate a code
-INSERT INTO registration_access_codes (code) VALUES ('your-secret-code');
-
 -- Revoke a code (blocks new signups with that code; existing users unaffected)
 DELETE FROM registration_access_codes WHERE code = 'old-code';
 ```
 
-Default seed placeholders: [`seed_registration_access_codes.sql`](../../src/radspion/sql/seed_registration_access_codes.sql). Replace `CHANGE-ME-*` before production.
+Add a code with the operator script (supports spaces; quote the argument):
+
+```bash
+./scripts/add_clearance.sh "Let Me In"
+```
 
 ## Configure a story arc (mission pack)
 
@@ -26,7 +27,7 @@ Default seed placeholders: [`seed_registration_access_codes.sql`](../../src/rads
 4. If `requires_complete` → rows in `mission_list_requires`  
 5. Trigger status **sync** for affected agents (app does this on login/unlock/complete when live; in SQL-only workflows, sign-in or a future CLI will reconcile)  
 
-Infrastructure seeds (`schema.sql`, `seed_orientation.sql`, `seed_registration_access_codes.sql`) live in this repo. Storyline mission prose is authored in the private **radspion-missions** repo and generated into `seed_*.sql` via `scripts/generate_radspion_sql.py`.
+Infrastructure seeds (`schema.sql`, `seed_orientation.sql`) live in this repo. Storyline mission prose is authored in the private **radspion-missions** repo and generated into `seed_*.sql` via `scripts/generate_radspion_sql.py`.
 
 ## Operator progress view
 
