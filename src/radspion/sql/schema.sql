@@ -53,7 +53,7 @@ CREATE TABLE missions (
 
 CREATE INDEX idx_missions_group_id ON missions (group_id);
 
--- Unlock secret when access_rule = unlock_code (1:1)
+-- Unlock secret when access_rule = unlock_code (one row per mission; unlock_code values may repeat)
 CREATE TABLE mission_unlock_codes (
     mission_id      INTEGER PRIMARY KEY REFERENCES missions (id) ON DELETE CASCADE,
     unlock_code     TEXT NOT NULL

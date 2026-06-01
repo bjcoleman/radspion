@@ -49,8 +49,6 @@ pip install -e .
 ./scripts/create_empty_db.sh
 ```
 
-**Example class pack** (mission markdown + seed): sibling repo **radspion-missions**, `./example-class/bootstrap_sample_class.sh`. The example-class SQL seed is **pending rework** to match the current schema (no rosters, no `mission_complete_requires`).
-
 SQL in this repo: `schema.sql`, `seed_orientation.sql`, `seed_registration_access_codes.sql`.
 
 ### Application layout
@@ -177,8 +175,6 @@ pip install -e .
 ```bash
 ./scripts/create_empty_db.sh
 ```
-
-  For the example class pack locally, use **radspion-missions** `example-class/bootstrap_sample_class.sh` (after seed rework).
 
 
 ### systemd (admin, after clone)

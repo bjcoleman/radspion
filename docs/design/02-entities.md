@@ -4,7 +4,7 @@ SQLite. **Groups** are story arcs (organization for the dashboard and operator v
 
 ## Groups
 
-- `groups` — named story arcs (e.g. **Orientation**, **Last Transmission**, **220.2 DevOps**)
+- `groups` — named story arcs (e.g. **Orientation**, **Example Storyline**)
 - `missions.group_id` — which arc a mission belongs to (UI sections, operator reports)
 - Groups do **not** gate access; any signed-in agent is evaluated against each mission’s `access_rule`
 
@@ -31,9 +31,9 @@ A mission is surfaced by **unlock code** or **automatic listing after completion
 
 ## Constraint tables
 
-### `mission_unlock_codes` (1:1)
+### `mission_unlock_codes` (one row per mission)
 
-`unlock_code` text when `access_rule = unlock_code`. Codes are mutually exclusive with automatic listing (**`mission_list_requires`**).
+Each `unlock_code` mission has exactly one row in this table (`mission_id` PK). The **`unlock_code` string is not unique** across rows — the same value may gate multiple missions; redeeming it lists every matching mission not yet on the agent's dashboard. Codes are mutually exclusive with automatic listing (**`mission_list_requires`**) on the same mission.
 
 ### `mission_list_requires` (1:many)
 
