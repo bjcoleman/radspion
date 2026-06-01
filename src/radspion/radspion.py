@@ -93,3 +93,20 @@ class Radspion:
         if not code:
             return UnlockRedeemResult(outcome="invalid")
         return self._storage.redeem_unlock_code(user_id, code)
+
+    def submit_mission_completion(
+        self,
+        user_id: int,
+        slug: str,
+        raw_code: str,
+    ) -> UnlockRedeemResult | None:
+        """
+        Submit a mission completion code for the signed-in agent.
+
+        Trims whitespace; comparison is case-sensitive.
+        Returns None when the mission is not on the agent's list.
+        """
+        code = raw_code.strip()
+        if not code:
+            return UnlockRedeemResult(outcome="invalid")
+        return self._storage.submit_mission_completion(user_id, slug, code)

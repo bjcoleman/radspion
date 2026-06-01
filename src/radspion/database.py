@@ -320,3 +320,78 @@ class DatabaseRadspionStorage:
             outcome="success",
             new_missions=tuple(new_missions),
         )
+
+    def _listed_mission_summaries(self, user_id: int) -> dict[str, MissionSummary]:
+        """Map slug → summary for every mission on the agent's dashboard."""
+        rows = self._conn.execute(
+            """
+            SELECT m.slug, m.title, g.name AS group_name
+            FROM agent_mission_status ams
+            JOIN missions m ON m.id = ams.mission_id
+            JOIN groups g ON g.id = m.group_id
+            WHERE ams.user_id = ?
+            ORDER BY m.slug ASC
+            """,
+            (user_id,),
+        ).fetchall()
+        return {
+            row["slug"]: MissionSummary(
+                title=row["title"],
+                slug=row["slug"],
+                group_name=row["group_name"],
+            )
+            for row in rows
+        }
+
+    def submit_mission_completion(
+        self,
+        user_id: int,
+        slug: str,
+        completion_code: str,
+    ) -> UnlockRedeemResult | None:
+        """
+        Submit a mission completion code (UC-021).
+
+        ``completion_code`` must be trimmed and non-empty. Comparison is case-sensitive.
+        Returns None when the mission is not on the agent's list.
+        """
+        try:
+            row = self._conn.execute(
+                """
+                SELECT ams.status, m.id AS mission_id, m.completion_code
+                FROM agent_mission_status ams
+                JOIN missions m ON m.id = ams.mission_id
+                WHERE ams.user_id = ? AND m.slug = ?
+                """,
+                (user_id, slug),
+            ).fetchone()
+            if row is None:
+                return None
+
+            if row["status"] == "completed":
+                return UnlockRedeemResult(
+                    outcome="already_done",
+                    message="This mission is already marked complete.",
+                )
+
+            if row["completion_code"] != completion_code:
+                return UnlockRedeemResult(outcome="invalid")
+
+            listed_before = self._listed_mission_summaries(user_id)
+            self._conn.execute(
+                """
+                UPDATE agent_mission_status
+                SET status = 'completed'
+                WHERE user_id = ? AND mission_id = ?
+                """,
+                (user_id, row["mission_id"]),
+            )
+            self.sync_mission_status(user_id)
+            listed_after = self._listed_mission_summaries(user_id)
+            new_slugs = sorted(set(listed_after) - set(listed_before))
+            new_missions = tuple(listed_after[s] for s in new_slugs)
+            self._conn.commit()
+        except sqlite3.Error as exc:
+            raise DatabaseError(f"Database error submitting mission completion: {exc}") from exc
+
+        return UnlockRedeemResult(outcome="success", new_missions=new_missions)
