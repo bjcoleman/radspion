@@ -22,7 +22,7 @@ src/radspion/sql/      Schema and orientation seed
 content/missions/      Live mission Brief / Debrief (basic-training default)
 deploy/                nginx vhost, systemd unit (production)
 docs/                  Design docs, API outline, UI mockups
-scripts/               DB bootstrap (create_empty_db.sh)
+scripts/               DB bootstrap (create_empty_db.sh, create_test_db.sh)
 database/              SQLite file (gitignored)
 tests/                 Unit tests
 ```
@@ -36,7 +36,7 @@ pip install -r requirements.txt && pip install -e .
 make
 ```
 
-For local acceptance testing, see [docs/design/04-example-data-walkthrough.md](docs/design/04-example-data-walkthrough.md) and [05-example-storyline.md](docs/design/05-example-storyline.md).
+For production-like DB: `./scripts/create_empty_db.sh`. For dev/test with sample agents and `es-*` missions: `./scripts/create_test_db.sh`. See [05-testing-storyline.md](docs/design/05-testing-storyline.md) and [04-example-data-walkthrough.md](docs/design/04-example-data-walkthrough.md).
 
 See [docs/dev.md](docs/dev.md) for OAuth, CI, and deployment.
 
