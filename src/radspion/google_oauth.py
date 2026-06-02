@@ -14,7 +14,7 @@ from radspion.oauth_types import (
     OAuthStateError,
     OAuthVerificationError,
 )
-from radspion.web.session_keys import SESSION_REGISTRATION_CLEARED
+from radspion.web.session_keys import SESSION_PENDING_UNLOCK, SESSION_REGISTRATION_CLEARED
 
 SESSION_OAUTH_STATE = "oauth_state"
 SESSION_OAUTH_CODE_VERIFIER = "oauth_code_verifier"
@@ -72,6 +72,9 @@ class GoogleOAuth:
         self._pending_by_state[state] = {
             "code_verifier": flow.code_verifier,
             "registration_cleared": bool(session.get(SESSION_REGISTRATION_CLEARED)),
+            # Move out of the browser session so a stale QR visit cannot re-redeem
+            # on every later Secure Login from the landing page.
+            "pending_unlock": session.pop(SESSION_PENDING_UNLOCK, None),
         }
         session[SESSION_OAUTH_STATE] = state
         if flow.code_verifier:
@@ -80,13 +83,19 @@ class GoogleOAuth:
             session.modified = True
         return authorization_url
 
+    def _restore_pending_session_flags(self, session, pending: dict[str, Any]) -> None:
+        if pending.get("registration_cleared"):
+            session[SESSION_REGISTRATION_CLEARED] = True
+        pending_unlock = pending.get("pending_unlock")
+        if pending_unlock:
+            session[SESSION_PENDING_UNLOCK] = pending_unlock
+
     def _resolve_callback_context(self, session, *, state: str | None) -> tuple[str | None, bool]:
         """Return PKCE verifier and whether registration access was cleared."""
         if state:
             pending = self._pending_by_state.pop(state, None)
             if pending is not None:
-                if pending["registration_cleared"]:
-                    session[SESSION_REGISTRATION_CLEARED] = True
+                self._restore_pending_session_flags(session, pending)
                 return pending["code_verifier"], pending["registration_cleared"]
 
         expected_state = session.pop(SESSION_OAUTH_STATE, None)

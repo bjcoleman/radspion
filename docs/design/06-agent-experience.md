@@ -56,6 +56,21 @@ Business failures return **HTTP 200** with an `outcome` field (invalid code) so 
 | `success` | Row in `registration_access_codes` | Session flag set for signup OAuth (UC-006); modal → Continue with Google |
 | `invalid` | Code not found | Optional `message` — generic only |
 
+### Mission unlock links (`GET /unlock/<token>`)
+
+**Auth:** none to view; redemption requires a signed-in agent.
+
+QR codes and field handouts may link to `https://…/unlock/<token>` where `<token>` is the
+URL-encoded mission unlock code. The page stages `pending_unlock_code` in session (and in
+OAuth pending state for the Google redirect). **New agents** must still validate a
+registration access code before Google sign-in—the QR link does not replace class
+enrollment. **Returning agents** use Secure Login only.
+
+- **Signed in:** confirm on the unlock page → `POST /api/unlock` (transmission modal).
+- **Signed out:** access code (new) and/or Secure Login (returning) → after OAuth, the
+  server redeems the pending unlock and redirects to the dashboard, which runs the same
+  secure-channel transmission modal as manual unlock.
+
 ### `POST /api/unlock`
 
 **Auth:** signed-in agent (session cookie).

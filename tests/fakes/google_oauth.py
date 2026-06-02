@@ -6,6 +6,7 @@ from radspion.oauth_types import (
     OAuthCodeError,
     OAuthStateError,
 )
+from radspion.web.session_keys import SESSION_PENDING_UNLOCK, SESSION_REGISTRATION_CLEARED
 
 
 class FakeGoogleOAuth:
@@ -14,6 +15,7 @@ class FakeGoogleOAuth:
     def __init__(self) -> None:
         self._profile: GoogleProfile | None = None
         self._exception: Exception | None = None
+        self._pending_by_state: dict[str, dict] = {}
         self.redirect_uri = "http://localhost:8000/auth/google/callback"
 
     def returns(self, *, google_subject_id: str, email: str, display_name: str) -> None:
@@ -31,13 +33,26 @@ class FakeGoogleOAuth:
         self._profile = None
 
     def authorization_url(self, session) -> str:
-        session[SESSION_OAUTH_STATE] = "test-oauth-state"
+        state = "test-oauth-state"
+        session[SESSION_OAUTH_STATE] = state
         session[SESSION_OAUTH_CODE_VERIFIER] = "test-verifier"
+        self._pending_by_state[state] = {
+            "registration_cleared": bool(session.get(SESSION_REGISTRATION_CLEARED)),
+            "pending_unlock": session.pop(SESSION_PENDING_UNLOCK, None),
+        }
         return "https://accounts.google.test/o/oauth2/auth"
 
     def profile_from_callback(self, session, *, code: str, state: str | None) -> GoogleProfile:
         if self._exception is not None:
             raise self._exception
+
+        pending = self._pending_by_state.pop(state, None)
+        if pending is not None:
+            if pending.get("registration_cleared"):
+                session[SESSION_REGISTRATION_CLEARED] = True
+            pending_unlock = pending.get("pending_unlock")
+            if pending_unlock:
+                session[SESSION_PENDING_UNLOCK] = pending_unlock
 
         expected_state = session.pop(SESSION_OAUTH_STATE, None)
         session.pop(SESSION_OAUTH_CODE_VERIFIER, None)

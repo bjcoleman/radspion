@@ -83,5 +83,12 @@
 {% block extra_body %}
   {% include "_transmission_modal.html" %}
   <script src="{{ url_for('static', filename='js/transmission-modal.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/unlock-redeem.js') }}"></script>
   <script src="{{ url_for('static', filename='js/dashboard-unlock.js') }}"></script>
+  {% if post_login_unlock_result %}
+    <script>
+      window.RADSPION_POST_LOGIN_UNLOCK = {{ post_login_unlock_result | tojson }};
+    </script>
+    <script src="{{ url_for('static', filename='js/dashboard-post-login-unlock.js') }}"></script>
+  {% endif %}
 {% endblock %}

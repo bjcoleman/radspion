@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block body_class %}page--landing page--unlock{% endblock %}
+
+{% block content %}
+  <div class="landing landing--unlock">
+    <img
+      class="landing__mark"
+      src="{{ url_for('static', filename='img/radspion_mark_white.svg') }}"
+      width="176"
+      height="176"
+      alt=""
+    >
+    <h1 class="landing__title">Mission unlock</h1>
+    <p class="landing__briefing">
+      Command sent a <em>mission unlock</em> through a secure channel.
+      {% if signed_in %}
+        Confirm below to add matching missions to your dashboard.
+      {% else %}
+        Sign in to apply it to your account.
+      {% endif %}
+    </p>
+
+    {% if signed_in %}
+      <section class="unlock-panel unlock-panel--confirm" aria-label="Confirm mission unlock">
+        <form class="unlock-form" action="#" method="post">
+          <input type="hidden" name="unlock_code" value="{{ unlock_code }}">
+          <button class="unlock-form__submit" type="submit">Apply mission unlock</button>
+        </form>
+        <p class="access-panel__prompt access-panel__prompt--secondary">
+          <a href="{{ url_for('agent.dashboard') }}">Return to Mission Dashboard</a>
+        </p>
+      </section>
+    {% else %}
+      <section class="access-panel" aria-label="Agent access">
+        <p class="access-panel__prompt">New agents</p>
+        <p class="access-panel__hint text-muted">
+          Enter your <strong>registration access code</strong> first (class enrollment).
+          That is separate from the mission unlock in your QR link.
+        </p>
+
+        <form class="access-panel__form" action="#" method="post">
+          <label class="sr-only" for="access_code">Access code</label>
+          <input
+            class="access-panel__input text-mono"
+            id="access_code"
+            name="access_code"
+            type="text"
+            autocomplete="off"
+            placeholder="Enter your access code"
+          >
+          <button class="access-panel__submit" type="submit">Validate</button>
+        </form>
+
+        <div class="access-panel__divider" aria-hidden="true"></div>
+
+        <p class="access-panel__prompt access-panel__prompt--secondary">Returning agents</p>
+        <a href="{{ url_for('auth.google_login') }}" class="btn-google btn-google--agent-login">Secure Login</a>
+      </section>
+    {% endif %}
+  </div>
+{% endblock %}
+
+{% block extra_body %}
+  {% include "_transmission_modal.html" %}
+  <script>
+    window.RADSPION_AUTH_GOOGLE_URL = {{ url_for('auth.google_login') | tojson }};
+  </script>
+  <script src="{{ url_for('static', filename='js/transmission-modal.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/unlock-redeem.js') }}"></script>
+  {% if signed_in %}
+    <script src="{{ url_for('static', filename='js/dashboard-unlock.js') }}"></script>
+  {% else %}
+    <script src="{{ url_for('static', filename='js/landing-access.js') }}"></script>
+  {% endif %}
+{% endblock %}
