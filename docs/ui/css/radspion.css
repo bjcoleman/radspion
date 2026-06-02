@@ -276,6 +276,11 @@ a:hover {
   color: var(--color-accent);
 }
 
+.access-panel__prompt--auth {
+  margin-top: calc(var(--space-sm) * -1.5);
+  margin-bottom: var(--space-md);
+}
+
 .access-panel__prompt--secondary {
   margin-top: var(--space-md);
 }

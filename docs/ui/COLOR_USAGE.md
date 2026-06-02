@@ -34,6 +34,6 @@ This spec defines consistent color roles for static UI mockups in `docs/ui/`.
 ## Current Mapping in Mockups
 
 - Accent buttons: `Validate`, `OK`, mission submit actions
-- White provider buttons: `Secure Login`, `Continue with Google`
+- White provider buttons: `Sign in with Google`, `Continue with Google`
 - Accent headings: access panel headings, mission and modal outcome headings
 - Muted body copy: instructional and status text

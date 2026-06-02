@@ -15,8 +15,8 @@ def test_index(client):
     assert 'rel="icon"' in html
     assert "/static/favicon.ico" in html
     assert "Radspion" in html
-    assert "Agent Login" in html
-    assert "Secure Login" in html
+    assert "Agent Authentication" in html
+    assert "Sign in with Google" in html
     assert "@moravian.edu" not in html
     assert 'href="/about"' in html
     assert 'href="/privacy"' in html

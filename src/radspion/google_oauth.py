@@ -72,7 +72,7 @@ class GoogleOAuth:
         self._pending_by_state[state] = {
             "code_verifier": flow.code_verifier,
             # Move out of the browser session so a stale QR visit cannot re-redeem
-            # on every later Secure Login from the landing page.
+            # on every later Sign in with Google from the landing page.
             "pending_unlock": session.pop(SESSION_PENDING_UNLOCK, None),
         }
         session[SESSION_OAUTH_STATE] = state

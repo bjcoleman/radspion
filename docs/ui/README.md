@@ -32,7 +32,7 @@ Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snaps
 
 | File | Status | Persona / state | Use cases |
 |------|--------|-----------------|-----------|
-| [index.html](index.html) | done | Signed-out landing; Secure Login | UC-006 |
+| [index.html](index.html) | done | Signed-out landing; Sign in with Google | UC-006 |
 | [secure_login_modal.html](secure_login_modal.html) | done | Landing + Google sign-in modal | UC-006 |
 
 ### Agent dashboard

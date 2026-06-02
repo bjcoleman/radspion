@@ -51,7 +51,7 @@ URL-encoded mission unlock code. The page stages `pending_unlock_code` in sessio
 OAuth pending state for the Google redirect) until the user signs in.
 
 - **Signed in:** confirm on the unlock page → `POST /api/unlock` (transmission modal).
-- **Signed out:** Secure Login → after OAuth, the server redeems the pending unlock and redirects to the dashboard, which runs the same
+- **Signed out:** Sign in with Google → after OAuth, the server redeems the pending unlock and redirects to the dashboard, which runs the same
   secure-channel transmission modal as manual unlock.
 
 ### `POST /api/unlock`
