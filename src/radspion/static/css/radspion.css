@@ -1524,7 +1524,7 @@ body.has-transmission-modal {
   color: var(--color-text-faint);
 }
 
-.outcome-missions__clearance {
+.outcome-missions__group {
   font-size: 0.8125rem;
   color: var(--color-text-muted);
 }
