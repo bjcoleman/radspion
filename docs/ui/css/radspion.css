@@ -276,6 +276,11 @@ a:hover {
   color: var(--color-accent);
 }
 
+.access-panel__prompt--auth {
+  margin-top: calc(var(--space-sm) * -1.5);
+  margin-bottom: var(--space-md);
+}
+
 .access-panel__prompt--secondary {
   margin-top: var(--space-md);
 }
@@ -1501,7 +1506,7 @@ body.has-transmission-modal {
   color: var(--color-text-faint);
 }
 
-.outcome-missions__clearance {
+.outcome-missions__group {
   font-size: 0.8125rem;
   color: var(--color-text-muted);
 }

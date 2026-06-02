@@ -8,7 +8,7 @@ A web app where students act as **agents** in a spy-agency fiction. **Missions**
 
 | In scope | Out of scope (post-V1) |
 |----------|------------------------------------------|
-| Google OAuth (any account); registration code on first signup | Faculty self-service wizard |
+| Google OAuth (any account) | Faculty self-service wizard |
 | SQLite data model below | Story templates / publish pipeline |
 | **Groups** as story arcs (dashboard organization) | Audit log, timestamps |
 | Mission Brief / Debrief (markdown paths) | Per-agent keyed codes |
@@ -19,14 +19,13 @@ A web app where students act as **agents** in a spy-agency fiction. **Missions**
 
 ## Access
 
-- **New agents:** valid `registration_access_codes` row, then Google OAuth (any Google account). First sign-in creates a `users` row.
-- **Returning agents:** Google OAuth only (no registration code).
+- Agents sign in with Google OAuth (any Google account). First sign-in creates a `users` row.
 - **Mission visibility:** `access_rule` + unlock/list constraints — not group membership. Story-arc entry uses `unlock_code` or `open` missions (e.g. `basic-training`).
 - Seed welcome mission: `basic-training` (“Welcome to Radspion”) in the **Orientation** story arc.
 
 ## Stack
 
-- **Flask + Jinja** for server-rendered pages; JSON API at `/api/` (access, unlock, mission submit) — see [api.yaml](../api.yaml)
+- **Flask + Jinja** for server-rendered pages; JSON API at `/api/` (unlock, mission submit) — see [api.yaml](../api.yaml)
 - SQLite 3
 - Mission Brief/Debrief markdown in DB (`brief_markdown` / `debrief_markdown`), seeded from **radspion-missions**; UI mockups in `docs/ui/` inline HTML for layout review
 ## Core entities

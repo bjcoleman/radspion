@@ -8,10 +8,7 @@ Ordered by **dependency** — build from the top down. Each case lists **Require
 
 | Topic | Decision |
 |-------|----------|
-| Who can sign in | Google OAuth; **new** agents need a valid `registration_access_codes` row first |
-| New agents | Valid registration code → OAuth → auto-create `users` row |
-| Returning agents | Google OAuth only (existing `users` row) |
-| Registration codes | Flat list in SQL; case-sensitive after trim; not stored on `users`; independent rotation per code |
+| Who can sign in | Google OAuth (any account); first sign-in auto-creates `users` row |
 | Story arcs | `groups` organize missions on the dashboard; **do not** gate access |
 | Mission visibility | `access_rule` + `mission_unlock_codes` + `mission_list_requires` |
 | Welcome | Seed includes `basic-training` (`open`) in **Orientation** arc |
@@ -21,7 +18,7 @@ Ordered by **dependency** — build from the top down. Each case lists **Require
 | `agent_mission_status` | Keep table **in sync at all times** (login + unlock + complete); dashboard reads this table |
 | Debrief | Only after mission `completed` |
 | Error copy (UC-020, UC-022) | Wording TBD — you’ll review per case |
-| Web framework | **Flask + Jinja** SSR; JSON API at `/api/access`, `/api/unlock`, `/api/missions/<slug>/submit` |
+| Web framework | **Flask + Jinja** SSR; JSON API at `/api/unlock`, `/api/missions/<slug>/submit` |
 | Brief/Debrief bodies | `missions.brief_markdown` / `debrief_markdown` (seed SQL generated from **radspion-missions**) |
 | Operator config V1 | SQL/seed only — no in-app mission editor |
 | Operator progress V1 | Read-only UI: story arcs → missions → agent status |
@@ -49,7 +46,7 @@ Apply [`src/radspion/sql/schema.sql`](../../src/radspion/sql/schema.sql) so all 
 
 **Actor:** Operator (dev)  
 **Requires:** UC-001  
-Load schema, orientation (`basic-training`), registration codes, **Example Storyline** missions (`es-*`), unlock/list constraints, and sample progress for Alice, Bob, Charlie, Diana ([04-example-data-walkthrough.md](04-example-data-walkthrough.md)).
+Load schema, orientation (`basic-training`), **Example Storyline** missions (`es-*`), unlock/list constraints, and sample progress for Alice, Bob, Charlie, Diana ([04-example-data-walkthrough.md](04-example-data-walkthrough.md)).
 
 ---
 
@@ -81,18 +78,10 @@ Create group (arc), missions, unlock/list constraints, and optional seed progres
 
 ## Authentication
 
-### UC-006 — Validate registration access code (new agents)
+### UC-006 — Sign in with Google OAuth
 
 **Actor:** Agent (prospective)  
 **Requires:** UC-004  
-Agent submits a registration access code on the landing page (`POST /api/access`). App trims whitespace and checks `registration_access_codes` (case-sensitive). On success, mark the browser session cleared for signup OAuth; on failure, show invalid-code UI. Returning agents skip this step (UC-006b).
-
----
-
-### UC-006b — Sign in with Google OAuth
-
-**Actor:** Agent  
-**Requires:** UC-004; UC-006 for first-time signup  
 Agent authenticates with Google (any Google account); app establishes a session tied to a `users` row.
 
 ---
@@ -100,9 +89,9 @@ Agent authenticates with Google (any Google account); app establishes a session 
 ### UC-007 — Resolve or provision agent from OAuth
 
 **Actor:** System  
-**Requires:** UC-006b  
-- If `users` row exists for `google_subject_id` or email → attach session (no registration code).  
-- If no `users` row → require UC-006 session clearance; else reject provisioning.  
+**Requires:** UC-006  
+- If `users` row exists for `google_subject_id` or email → attach session.  
+- If no `users` row → create user from OAuth profile.
 - Create user from OAuth profile (`email`, `google_subject_id`, `display_name`).  
 - Run mission-status sync (UC-012) before showing the dashboard.
 
@@ -121,7 +110,7 @@ Operator-authored markdown in **radspion-missions**, generated into storyline se
 ### UC-009 — Render Mission Brief
 
 **Actor:** Agent  
-**Requires:** UC-006b, UC-008  
+**Requires:** UC-006, UC-008  
 Agent can view the Brief for a mission they are allowed to see (see UC-012, UC-013).
 
 ---

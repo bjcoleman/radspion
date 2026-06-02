@@ -36,4 +36,3 @@ echo "Loading orientation seed (basic-training)..."
 sqlite3 "$DB_PATH" < "$ORIENTATION_SEED"
 
 echo "Created database at $DB_PATH (Orientation + basic-training)."
-echo "Add registration clearance codes with ./scripts/add_clearance.sh \"your code\""

@@ -41,8 +41,6 @@
         Toggle <strong>Reduce motion</strong> in OS settings to skip the animation.
       </p>
       <div class="demo__actions">
-        <button type="button" id="demo-access-ok">Access code · success (fast POST)</button>
-        <button type="button" id="demo-access-fail">Access code · failure (fast POST)</button>
         <button type="button" id="demo-unlock-ok">Unlock code · success (slow POST)</button>
         <button type="button" id="demo-completion-ok">Completion data · success</button>
       </div>
@@ -68,20 +66,6 @@
     (function () {
       var P = window.RadspionTransmission.PRESET;
 
-      function renderAccessSuccess(data, el) {
-        el.innerHTML =
-          '<h2 class="transmission-modal__title">Clearance confirmed</h2>' +
-          '<p class="transmission-modal__message">Access code accepted. Continue with Google to verify your identity.</p>' +
-          '<button type="button" class="transmission-modal__ok">OK</button>';
-      }
-
-      function renderAccessFail(data, el) {
-        el.innerHTML =
-          '<h2 class="transmission-modal__title">Validation failed</h2>' +
-          '<p class="transmission-modal__message">We could not validate that access code against agency records.</p>' +
-          '<button type="button" class="transmission-modal__ok">OK</button>';
-      }
-
       function renderUnlockSuccess(data, el) {
         el.innerHTML =
           '<h2 class="transmission-modal__title">Verification succeeded</h2>' +
@@ -100,18 +84,6 @@
       function transmit(preset, request, renderOutcome) {
         window.RadspionTransmission.transmit({ preset: preset, request: request, renderOutcome: renderOutcome });
       }
-
-      document.getElementById("demo-access-ok").addEventListener("click", function () {
-        transmit(P.ACCESS_CODE, function () {
-          return new Promise(function (r) { setTimeout(function () { r({ ok: true }); }, 120); });
-        }, renderAccessSuccess);
-      });
-
-      document.getElementById("demo-access-fail").addEventListener("click", function () {
-        transmit(P.ACCESS_CODE, function () {
-          return new Promise(function (r) { setTimeout(function () { r({ ok: false }); }, 80); });
-        }, renderAccessFail);
-      });
 
       document.getElementById("demo-unlock-ok").addEventListener("click", function () {
         transmit(P.UNLOCK_CODE, function () {

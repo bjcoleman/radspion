@@ -16,7 +16,7 @@ def config():
 
 @pytest.fixture
 def storage():
-    """In-memory storage with no registration codes."""
+    """In-memory storage for auth and route tests."""
     return InMemoryRadspionStorage()
 
 

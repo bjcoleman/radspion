@@ -28,17 +28,6 @@ class DatabaseRadspionStorage:
         self._conn.row_factory = sqlite3.Row
         self._conn.execute("PRAGMA foreign_keys = ON")
 
-    def registration_code_exists(self, code: str) -> bool:
-        """Return True when the code exists in registration_access_codes."""
-        try:
-            row = self._conn.execute(
-                "SELECT 1 FROM registration_access_codes WHERE code = ?",
-                (code,),
-            ).fetchone()
-        except sqlite3.Error as exc:
-            raise DatabaseError(f"Database error checking registration code: {exc}") from exc
-        return row is not None
-
     def _row_to_user(self, row: sqlite3.Row) -> User:
         return User(
             id=row["id"],

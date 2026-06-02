@@ -2,7 +2,7 @@
  * Secure transmission modal — progress animation + outcome panel.
  *
  * Usage (step 3+): RadspionTransmission.transmit({
- *   preset: RadspionTransmission.PRESET.ACCESS_CODE,
+ *   preset: RadspionTransmission.PRESET.UNLOCK_CODE,
  *   request: () => fetch(...).then(r => r.json()),
  *   renderOutcome: (data, outcomeEl) => { ... },
  * });
@@ -11,17 +11,11 @@
   "use strict";
 
   const PRESET = {
-    ACCESS_CODE: "accessCode",
     UNLOCK_CODE: "unlockCode",
     COMPLETION_DATA: "completionData",
   };
 
   const PRESETS = {
-    [PRESET.ACCESS_CODE]: {
-      title: "Secure channel",
-      introText: "Initializing secure channel…",
-      dataLabel: "access code",
-    },
     [PRESET.UNLOCK_CODE]: {
       title: "Secure channel",
       introText: "Initializing secure channel…",

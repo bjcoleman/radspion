@@ -14,7 +14,7 @@ def landing(token: str):
     Stage a mission unlock from a URL and prompt sign-in or confirmation.
 
     The token is a URL-encoded unlock code. Logged-in agents confirm and redeem
-    via POST /api/unlock; anonymous visitors complete access code + OAuth first.
+    via POST /api/unlock; anonymous visitors sign in with Google first.
     """
     unlock_code = decode_unlock_token(token)
     if unlock_code is None:
@@ -31,7 +31,7 @@ def landing(token: str):
         else:
             signed_in = True
 
-    # Anonymous visitors need the code carried through access + OAuth; signed-in agents
+    # Anonymous visitors need the code carried through OAuth; signed-in agents
     # redeem via POST /api/unlock on this page (no session staging).
     if not signed_in:
         session[SESSION_PENDING_UNLOCK] = unlock_code

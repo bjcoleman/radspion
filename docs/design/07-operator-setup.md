@@ -4,21 +4,6 @@ V1: you configure the system directly with **SQL** (schema + seed scripts). A re
 
 Set `users.is_operator = 1` for your account (SQLite stores booleans as integers).
 
-## Registration access codes
-
-Rows in `registration_access_codes` gate **new account creation** only. Use separate codes per audience so you can rotate one without changing the others (e.g. CS recruitment, DevOps class, external invite). Comparison is **case-sensitive** after trimming whitespace.
-
-```sql
--- Revoke a code (blocks new signups with that code; existing users unaffected)
-DELETE FROM registration_access_codes WHERE code = 'old-code';
-```
-
-Add a code with the operator script (supports spaces; quote the argument):
-
-```bash
-./scripts/add_clearance.sh "Let Me In"
-```
-
 ## Configure a story arc (mission pack)
 
 1. Create a `groups` row (story-arc name)  
