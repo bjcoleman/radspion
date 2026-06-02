@@ -68,7 +68,7 @@ def test_oauth_callback_rejects_new_user_without_access_code(client, oauth):
     assert response.status_code == 302
     assert response.location.endswith("/")
     html = client.get("/").data.decode()
-    assert "Submit a valid access code" in html
+    assert "registration access code" in html
     with client.session_transaction() as sess:
         assert SESSION_USER_ID not in sess
 

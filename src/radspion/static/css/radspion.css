@@ -724,6 +724,12 @@ a:hover {
   cursor: not-allowed;
 }
 
+/* Mission unlock confirmation (/unlock, signed in) */
+
+.unlock-panel--confirm .unlock-form {
+  justify-content: center;
+}
+
 .flash-messages {
   max-width: 28rem;
   margin: var(--space-md) auto 0;
