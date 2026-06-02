@@ -6,8 +6,6 @@
 | `seed_orientation.sql` | Orientation group + `basic-training` (production) |
 | `seed_testing_storyline.sql` | Testing Storyline + sample agents (dev/test only) |
 
-Registration clearance codes are not seeded. Add them with `./scripts/add_clearance.sh "your code"`.
-
 ## Mission markdown in seeds
 
 `seed_orientation.sql` and `seed_testing_storyline.sql` include **inlined** `brief_markdown` and `debrief_markdown`. Do not edit those bodies by hand.

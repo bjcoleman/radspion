@@ -1,6 +1,6 @@
 # Radspion
 
-Secret-organization-themed mission platform for coursework. Agents complete **missions** in story **arcs** using unlock codes, prerequisites, Mission Briefs, and Debriefs. Operators configure missions via SQL seed; new agents need a registration access code, then Google OAuth (any account); returning agents use Google only.
+Secret-organization-themed mission platform for coursework. Agents complete **missions** in story **arcs** using unlock codes, prerequisites, Mission Briefs, and Debriefs. Operators configure missions via SQL seed, and agents sign in with Google OAuth (any account).
 
 ## Documentation
 
@@ -9,7 +9,7 @@ Secret-organization-themed mission platform for coursework. Agents complete **mi
 | Design overview and reading order | [docs/README.md](docs/README.md) |
 | Use cases (build backlog) | [docs/design/use-cases.md](docs/design/use-cases.md) |
 | Agent UI rules + JSON endpoints | [docs/design/06-agent-experience.md](docs/design/06-agent-experience.md) |
-| JSON API (`/api/access`, `/api/unlock`, mission submit) | [docs/api.yaml](docs/api.yaml) |
+| JSON API (`/api/unlock`, mission submit) | [docs/api.yaml](docs/api.yaml) |
 | UI mockups (not production JS) | [docs/ui/README.md](docs/ui/README.md) |
 | Dev setup, testing, Ruff, deploy | [docs/dev.md](docs/dev.md) |
 | Operator SQL workflow | [docs/design/07-operator-setup.md](docs/design/07-operator-setup.md) |
@@ -21,7 +21,7 @@ src/radspion/          Application package
 src/radspion/sql/      Schema and seeds (mission markdown inlined in SQL)
 deploy/                nginx vhost, systemd unit (production)
 docs/                  Design docs, API outline, UI mockups
-scripts/               DB bootstrap (create_empty_db.sh, create_test_db.sh, add_clearance.sh)
+scripts/               DB bootstrap (create_empty_db.sh, create_test_db.sh)
 database/              SQLite file (gitignored)
 tests/                 Unit tests
 ```

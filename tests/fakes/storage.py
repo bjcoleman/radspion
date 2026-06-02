@@ -5,22 +5,17 @@ from radspion.user import User
 
 
 class InMemoryRadspionStorage:
-    """In-memory users and registration codes."""
+    """In-memory users for auth-focused tests."""
 
     def __init__(
         self,
-        registration_codes: set[str] | None = None,
         users: list[User] | None = None,
     ) -> None:
-        self._registration_codes = set(registration_codes or ())
         self._users: dict[int, User] = {}
         self._next_user_id = 1
         for user in users or ():
             self._users[user.id] = user
             self._next_user_id = max(self._next_user_id, user.id + 1)
-
-    def registration_code_exists(self, code: str) -> bool:
-        return code in self._registration_codes
 
     def find_user_by_google_subject_id(self, google_subject_id: str) -> User | None:
         for user in self._users.values():

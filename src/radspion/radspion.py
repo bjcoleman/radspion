@@ -2,7 +2,7 @@
 
 from radspion.markdown_render import render_mission_markdown
 from radspion.missions import DashboardGroup, DashboardMission, MissionDetail, UnlockRedeemResult
-from radspion.oauth_types import GoogleProfile, SignupNotAllowedError
+from radspion.oauth_types import GoogleProfile
 from radspion.user import User
 
 
@@ -12,17 +12,6 @@ class Radspion:
     def __init__(self, storage) -> None:
         self._storage = storage
 
-    def validate_registration_code(self, raw_code: str) -> bool:
-        """
-        Validate a registration access code.
-
-        Trims whitespace; comparison is case-sensitive.
-        """
-        code = raw_code.strip()
-        if not code:
-            return False
-        return self._storage.registration_code_exists(code)
-
     def get_user(self, user_id: int) -> User | None:
         """Load a user by primary key."""
         return self._storage.find_user_by_id(user_id)
@@ -30,14 +19,12 @@ class Radspion:
     def sign_in_with_google(
         self,
         profile: GoogleProfile,
-        *,
-        registration_cleared: bool,
     ) -> User:
         """
         Resolve an existing user or provision a new agent after Google OAuth.
 
         Existing users are matched by google_subject_id, then email.
-        New users require registration_cleared.
+        New users are provisioned automatically after verified Google OAuth.
         """
         user = self._storage.find_user_by_google_subject_id(profile.google_subject_id)
         if user is None:
@@ -45,9 +32,6 @@ class Radspion:
         if user is not None:
             self.sync_mission_status(user.id)
             return user
-
-        if not registration_cleared:
-            raise SignupNotAllowedError()
 
         user = self._storage.create_user(
             email=profile.email,

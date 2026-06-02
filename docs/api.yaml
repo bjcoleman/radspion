@@ -7,46 +7,10 @@ info:
     name: Moravian University CS Department
 
 tags:
-  - name: Registration
-    description: No session required
   - name: Agent
     description: Session cookie required
 
 paths:
-  /api/access:
-    post:
-      tags: [Registration]
-      summary: Validate registration access code
-      description: |
-        Trims leading and trailing whitespace from `access_code`. Comparison is case-sensitive.
-
-        When `outcome` is `success`, the server stores session state that permits account
-        creation on the next sign-in.
-      operationId: validateAccess
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AccessRequest"
-      responses:
-        "200":
-          description: Validation result
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AccessResponse"
-              examples:
-                success:
-                  value:
-                    outcome: success
-                invalid:
-                  value:
-                    outcome: invalid
-                    message: We could not validate that access code against agency records.
-        "400":
-          description: Missing or empty `access_code`
-
   /api/unlock:
     post:
       tags: [Agent]
@@ -180,23 +144,6 @@ components:
       description: Signed session cookie
 
   schemas:
-    AccessRequest:
-      type: object
-      required: [access_code]
-      properties:
-        access_code:
-          type: string
-
-    AccessResponse:
-      type: object
-      required: [outcome]
-      properties:
-        outcome:
-          type: string
-          enum: [success, invalid]
-        message:
-          type: string
-
     UnlockRequest:
       type: object
       required: [unlock_code]

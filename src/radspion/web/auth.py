@@ -6,11 +6,9 @@ from radspion.oauth_types import (
     OAuthCodeError,
     OAuthStateError,
     OAuthVerificationError,
-    SignupNotAllowedError,
 )
 from radspion.web.session_keys import (
     SESSION_PENDING_UNLOCK,
-    SESSION_REGISTRATION_CLEARED,
     SESSION_USER_ID,
 )
 from radspion.web.unlock_flow import store_post_login_unlock_result
@@ -30,7 +28,6 @@ def _redirect_after_signup_blocked() -> str:
 def _finish_agent_session(user) -> str:
     """Establish the session, apply any pending unlock, and return redirect target."""
     session[SESSION_USER_ID] = user.id
-    session.pop(SESSION_REGISTRATION_CLEARED, None)
 
     radspion = current_app.extensions["radspion"]
     pending_unlock = session.pop(SESSION_PENDING_UNLOCK, None)
@@ -70,19 +67,7 @@ def google_callback():
         flash("Google sign-in could not be verified. Try again.", "error")
         return redirect(_redirect_after_signup_blocked())
 
-    registration_cleared = bool(session.get(SESSION_REGISTRATION_CLEARED))
-    try:
-        user = radspion.sign_in_with_google(
-            profile,
-            registration_cleared=registration_cleared,
-        )
-    except SignupNotAllowedError:
-        flash(
-            "Submit a valid registration access code before signing in with Google. "
-            "This is separate from the mission unlock in your QR link.",
-            "error",
-        )
-        return redirect(_redirect_after_signup_blocked())
+    user = radspion.sign_in_with_google(profile)
 
     return redirect(_finish_agent_session(user))
 

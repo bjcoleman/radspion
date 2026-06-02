@@ -28,14 +28,6 @@ SQLite has no separate enum types. Allowed values are enforced on the column:
 | `display_name` | `TEXT` | NOT NULL |
 | `is_operator` | `INTEGER` | NOT NULL, DEFAULT `0`, CHECK `IN (0, 1)` |
 
-### `registration_access_codes`
-
-| Column | Type | Constraints |
-|--------|------|-------------|
-| `code` | `TEXT` | PK |
-
-Signup gate only: a new agent must submit a valid row before first Google OAuth creates a `users` row. Trim whitespace on input; comparison is **case-sensitive**. Returning agents (existing `users` row) sign in with Google only. Add codes with `./scripts/add_clearance.sh "your code"`.
-
 ### `groups`
 
 | Column | Type | Constraints |

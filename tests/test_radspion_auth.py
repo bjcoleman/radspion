@@ -1,8 +1,6 @@
 """Tests for Radspion sign-in and provisioning."""
 
-import pytest
-
-from radspion.oauth_types import GoogleProfile, SignupNotAllowedError
+from radspion.oauth_types import GoogleProfile
 from radspion.radspion import Radspion
 from tests.fakes.storage import InMemoryRadspionStorage
 
@@ -28,7 +26,6 @@ def test_sign_in_returns_existing_user_by_google_subject_id():
 
     user = app.sign_in_with_google(
         _profile(google_subject_id="google-alice", email="alice@example.com"),
-        registration_cleared=False,
     )
 
     assert user.id == existing.id
@@ -45,25 +42,16 @@ def test_sign_in_returns_existing_user_by_email():
 
     user = app.sign_in_with_google(
         _profile(google_subject_id="google-other", email="alice@example.com"),
-        registration_cleared=False,
     )
 
     assert user.id == existing.id
 
 
-def test_sign_in_provisions_new_user_when_registration_cleared():
+def test_sign_in_provisions_new_user():
     storage = InMemoryRadspionStorage()
     app = Radspion(storage)
 
-    user = app.sign_in_with_google(_profile(), registration_cleared=True)
+    user = app.sign_in_with_google(_profile())
 
     assert user.email == "new@example.com"
     assert storage.find_user_by_id(user.id) is not None
-
-
-def test_sign_in_rejects_new_user_without_registration_cleared():
-    storage = InMemoryRadspionStorage()
-    app = Radspion(storage)
-
-    with pytest.raises(SignupNotAllowedError):
-        app.sign_in_with_google(_profile(), registration_cleared=False)

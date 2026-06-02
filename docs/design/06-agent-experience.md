@@ -2,8 +2,7 @@
 
 ## Sign-in
 
-- **New agents:** submit a registration access code (trim whitespace; match is case-sensitive), then Google OAuth (any Google account).
-- **Returning agents:** Google OAuth only.
+- Agents sign in with Google OAuth (any Google account).
 - First sign-in creates the agent (`users` row).
 - After login, the app **syncs** `agent_mission_status` so the mission list is current. A listable `open` mission without an `active` row is a system error.
 
@@ -37,24 +36,11 @@ Missions that are not yet listable are **not shown** on the dashboard.
 
 ## Interactive actions (hybrid SSR + JSON)
 
-Pages are **Flask + Jinja** (dashboard, mission detail). Code validation, unlock, and field submission call the **JSON API** under `/api/` with the same session cookie (except access, which is pre-signup) so the browser can run the secure-channel modal (progress animation) and render outcome-specific copy without a full page reload.
+Pages are **Flask + Jinja** (dashboard, mission detail). Unlock and field submission call the **JSON API** under `/api/` with the same session cookie so the browser can run the secure-channel modal (progress animation) and render outcome-specific copy without a full page reload.
 
 Canonical request/response shapes: [`docs/api.yaml`](../api.yaml). Static mockups in `docs/ui/` **hard-code** modal outcomes (no `fetch`); production uses `RadspionTransmission.transmit()` against these endpoints.
 
 Business failures return **HTTP 200** with an `outcome` field (invalid code) so the modal always completes its animation before showing the result.
-
-### `POST /api/access`
-
-**Auth:** none (prospective agent on landing page).
-
-**Request:** `{ "access_code": "..." }`
-
-**Response:**
-
-| `outcome` | When | Response body |
-|-----------|------|----------------|
-| `success` | Row in `registration_access_codes` | Session flag set for signup OAuth (UC-006); modal → Continue with Google |
-| `invalid` | Code not found | Optional `message` — generic only |
 
 ### Mission unlock links (`GET /unlock/<token>`)
 
@@ -62,13 +48,10 @@ Business failures return **HTTP 200** with an `outcome` field (invalid code) so 
 
 QR codes and field handouts may link to `https://…/unlock/<token>` where `<token>` is the
 URL-encoded mission unlock code. The page stages `pending_unlock_code` in session (and in
-OAuth pending state for the Google redirect). **New agents** must still validate a
-registration access code before Google sign-in—the QR link does not replace class
-enrollment. **Returning agents** use Secure Login only.
+OAuth pending state for the Google redirect) until the user signs in.
 
 - **Signed in:** confirm on the unlock page → `POST /api/unlock` (transmission modal).
-- **Signed out:** access code (new) and/or Secure Login (returning) → after OAuth, the
-  server redeems the pending unlock and redirects to the dashboard, which runs the same
+- **Signed out:** Secure Login → after OAuth, the server redeems the pending unlock and redirects to the dashboard, which runs the same
   secure-channel transmission modal as manual unlock.
 
 ### `POST /api/unlock`

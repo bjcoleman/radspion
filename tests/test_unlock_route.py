@@ -1,13 +1,11 @@
 """Tests for GET /unlock/<token> and OAuth-staged unlock redemption."""
 
-import sqlite3
 from pathlib import Path
 
 import pytest
 
 from radspion.web.session_keys import (
     SESSION_PENDING_UNLOCK,
-    SESSION_REGISTRATION_CLEARED,
     SESSION_USER_ID,
 )
 from tests.conftest import complete_oauth_callback
@@ -147,42 +145,11 @@ def test_second_login_without_unlock_link_skips_modal(storyline_db: Path):
     assert b"RADSPION_POST_LOGIN_UNLOCK" not in second_dashboard.data
 
 
-def test_oauth_new_user_without_access_code_returns_to_unlock_page(storyline_db: Path):
+def test_oauth_new_user_redeems_unlock_without_access_gate(storyline_db: Path):
     oauth = FakeGoogleOAuth()
     client, _ = _client_for_db(storyline_db, oauth=oauth)
 
     client.get("/unlock/HIDDEN%20UNLOCK")
-    client.get("/auth/google")
-    oauth.returns(
-        google_subject_id="google-new",
-        email="new@example.com",
-        display_name="New Agent",
-    )
-
-    response = complete_oauth_callback(client, oauth)
-
-    assert response.status_code == 302
-    assert response.location.endswith("/unlock/HIDDEN%20UNLOCK")
-    html = client.get("/unlock/HIDDEN%20UNLOCK").data.decode()
-    assert "registration access code" in html
-    with client.session_transaction() as sess:
-        assert SESSION_USER_ID not in sess
-        assert sess[SESSION_PENDING_UNLOCK] == "HIDDEN UNLOCK"
-
-
-def test_oauth_new_user_with_access_code_redeems_unlock(storyline_db: Path):
-    with sqlite3.connect(storyline_db) as conn:
-        conn.execute(
-            "INSERT INTO registration_access_codes (code) VALUES (?)",
-            ("CLASS-SECRET",),
-        )
-        conn.commit()
-
-    oauth = FakeGoogleOAuth()
-    client, _ = _client_for_db(storyline_db, oauth=oauth)
-
-    client.get("/unlock/HIDDEN%20UNLOCK")
-    client.post("/api/access", json={"access_code": "CLASS-SECRET"})
     client.get("/auth/google")
     oauth.returns(
         google_subject_id="google-new",
@@ -199,4 +166,3 @@ def test_oauth_new_user_with_access_code_redeems_unlock(storyline_db: Path):
     assert b"es-hidden" in dashboard.data
     with client.session_transaction() as sess:
         assert SESSION_PENDING_UNLOCK not in sess
-        assert SESSION_REGISTRATION_CLEARED not in sess

@@ -26,7 +26,3 @@ class OAuthCodeError(OAuthError):
 
 class OAuthVerificationError(OAuthError):
     """ID token verification failed."""
-
-
-class SignupNotAllowedError(Exception):
-    """New user sign-in without registration access clearance."""

@@ -9,35 +9,6 @@ from radspion.database import DatabaseError, DatabaseRadspionStorage
 from radspion.radspion import Radspion
 from tests.helpers import load_orientation_database
 
-_VALID_CODE = "TEST-CODE-ONE"
-_OTHER_CODE = "TEST-CODE-TWO"
-
-
-@pytest.fixture
-def database_path(tmp_path: Path) -> Path:
-    path = tmp_path / "test.db"
-    with sqlite3.connect(path) as conn:
-        conn.execute("CREATE TABLE registration_access_codes (code TEXT NOT NULL PRIMARY KEY)")
-        conn.executemany(
-            "INSERT INTO registration_access_codes (code) VALUES (?)",
-            [(_VALID_CODE,), (_OTHER_CODE,)],
-        )
-        conn.commit()
-    return path
-
-
-def test_registration_code_exists_for_known_code(database_path: Path):
-    storage = DatabaseRadspionStorage(database_path)
-
-    assert storage.registration_code_exists(_VALID_CODE) is True
-    assert storage.registration_code_exists(_OTHER_CODE) is True
-
-
-def test_registration_code_exists_false_for_unknown(database_path: Path):
-    storage = DatabaseRadspionStorage(database_path)
-
-    assert storage.registration_code_exists("not-a-real-code") is False
-
 
 @pytest.fixture
 def orientation_database_path(tmp_path: Path) -> Path:
@@ -68,16 +39,6 @@ def test_agent_has_listed_mission_false_when_not_listed(orientation_database_pat
     Radspion(storage).sync_mission_status(user.id)
 
     assert storage.agent_has_listed_mission(user.id, "es-alpha") is False
-
-
-def test_registration_code_exists_raises_database_error_when_table_missing(tmp_path: Path):
-    path = tmp_path / "empty.db"
-    path.touch()
-
-    storage = DatabaseRadspionStorage(path)
-
-    with pytest.raises(DatabaseError, match="Database error checking registration code"):
-        storage.registration_code_exists(_VALID_CODE)
 
 
 @pytest.mark.parametrize(
@@ -127,7 +88,6 @@ def test_closed_connection_raises_database_error_for_all_queries(tmp_path: Path)
     with sqlite3.connect(path) as conn:
         conn.executescript(
             """
-            CREATE TABLE registration_access_codes (code TEXT NOT NULL PRIMARY KEY);
             CREATE TABLE users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 email TEXT NOT NULL UNIQUE,
@@ -143,7 +103,6 @@ def test_closed_connection_raises_database_error_for_all_queries(tmp_path: Path)
     storage._conn.close()
 
     operations = [
-        (lambda: storage.registration_code_exists(_VALID_CODE), "registration code"),
         (lambda: storage.find_user_by_google_subject_id("sub-1"), "loading user"),
         (lambda: storage.find_user_by_email("agent@example.com"), "loading user"),
         (lambda: storage.find_user_by_id(1), "loading user"),

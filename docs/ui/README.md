@@ -8,7 +8,7 @@ Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snaps
 
 **Sample data alignment:** Story arcs **Orientation** and **Example Storyline** (`es-*` missions); **`unlock_code`** or **`requires_complete`** listing — never both on one mission.
 
-**Mock vs production:** Modal outcome pages hard-code copy and animation; no `fetch`. Production will call `POST /api/access`, `POST /api/unlock`, and `POST /api/missions/<slug>/submit` per [`api.yaml`](../api.yaml). API `outcome` values: access — `success`, `invalid`; unlock and submit — `success`, `invalid`, `already_done` (shared [`MissionListResponse`](../api.yaml) with `new_missions`). Unlock success may list one or many missions; submit **success-unlocks** simulates `success` with a non-empty `new_missions` array.
+**Mock vs production:** Modal outcome pages hard-code copy and animation; no `fetch`. Production will call `POST /api/unlock` and `POST /api/missions/<slug>/submit` per [`api.yaml`](../api.yaml). API `outcome` values for unlock and submit are `success`, `invalid`, `already_done` (shared [`MissionListResponse`](../api.yaml) with `new_missions`). Unlock success may list one or many missions; submit **success-unlocks** simulates `success` with a non-empty `new_missions` array.
 
 ---
 
@@ -32,9 +32,7 @@ Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snaps
 
 | File | Status | Persona / state | Use cases |
 |------|--------|-----------------|-----------|
-| [index.html](index.html) | done | Signed-out landing; access code + Secure Login | UC-006 |
-| [bad_access_code_submitted.html](bad_access_code_submitted.html) | done | Landing + failed access-code modal | UC-006 |
-| [good_access_code_submitted.html](good_access_code_submitted.html) | done | Landing + success modal → Secure Login | UC-006 |
+| [index.html](index.html) | done | Signed-out landing; Secure Login | UC-006 |
 | [secure_login_modal.html](secure_login_modal.html) | done | Landing + Google sign-in modal | UC-006 |
 
 ### Agent dashboard

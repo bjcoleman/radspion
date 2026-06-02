@@ -6,7 +6,6 @@ import pytest
 
 from radspion.google_oauth import SESSION_OAUTH_CODE_VERIFIER, SESSION_OAUTH_STATE, GoogleOAuth
 from radspion.oauth_types import OAuthCodeError, OAuthStateError
-from radspion.web.session_keys import SESSION_REGISTRATION_CLEARED
 
 
 def test_redirect_uri_uses_callback_path():
@@ -49,7 +48,6 @@ def test_profile_from_callback_uses_pending_when_session_empty():
     )
     oauth._pending_by_state["state-abc"] = {
         "code_verifier": "verifier-xyz",
-        "registration_cleared": True,
     }
     session = {}
 
@@ -69,7 +67,6 @@ def test_profile_from_callback_uses_pending_when_session_empty():
         profile = oauth.profile_from_callback(session, code="auth-code", state="state-abc")
 
     assert profile.email == "user@example.com"
-    assert session[SESSION_REGISTRATION_CLEARED] is True
     assert "state-abc" not in oauth._pending_by_state
 
 

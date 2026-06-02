@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Radspion — Moravian University field operations platform for authorized agents.">
-  <title>Radspion - Returning Agent Login</title>
+  <title>Radspion - Agent Login</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -29,24 +29,7 @@
       </p>
 
       <section class="access-panel" aria-label="Agent access">
-        <p class="access-panel__prompt">New Agents</p>
-
-        <form class="access-panel__form" action="#" method="post">
-          <label class="sr-only" for="access_code">Access code</label>
-          <input
-            class="access-panel__input text-mono"
-            id="access_code"
-            name="access_code"
-            type="text"
-            autocomplete="off"
-            placeholder="Enter your access code"
-          >
-          <button class="access-panel__submit" type="submit">Validate</button>
-        </form>
-
-        <div class="access-panel__divider" aria-hidden="true"></div>
-
-        <p class="access-panel__prompt access-panel__prompt--secondary">Returning Agents</p>
+        <p class="access-panel__prompt">Agent Login</p>
         <a href="#" class="btn-google btn-google--agent-login">Secure Login</a>
       </section>
     </div>
@@ -71,9 +54,9 @@
       aria-labelledby="returning-login-title"
     >
       <div class="transmission-modal__outcome">
-        <h2 class="transmission-modal__title" id="returning-login-title">Returning Agent Login</h2>
+        <h2 class="transmission-modal__title" id="returning-login-title">Agent Login</h2>
         <p class="transmission-modal__message">
-          This login path is for agents who have already submitted a valid access code.
+          Use Google sign-in to verify your identity and enter secure operations.
         </p>
         <a href="#" class="btn-google btn-google--agent-login">
           <svg class="btn-google__icon" viewBox="0 0 48 48" aria-hidden="true">
@@ -84,9 +67,6 @@
           </svg>
           Continue with Google
         </a>
-        <p class="transmission-modal__message" style="margin-top: 0.75rem; margin-bottom: 0;">
-          <a href="#">Use Access Code Instead</a>
-        </p>
       </div>
     </section>
   </div>
