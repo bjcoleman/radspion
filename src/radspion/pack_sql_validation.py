@@ -20,12 +20,9 @@ def _format_codes(codes: set[str]) -> str:
 
 def _load_codes(conn: sqlite3.Connection) -> tuple[set[str], set[str], set[str]]:
     unlock = {
-        row[0]
-        for row in conn.execute("SELECT unlock_code FROM mission_unlock_codes").fetchall()
+        row[0] for row in conn.execute("SELECT unlock_code FROM mission_unlock_codes").fetchall()
     }
-    completion = {
-        row[0] for row in conn.execute("SELECT completion_code FROM missions").fetchall()
-    }
+    completion = {row[0] for row in conn.execute("SELECT completion_code FROM missions").fetchall()}
     duplicate_completion = {
         row[0]
         for row in conn.execute(
@@ -108,8 +105,7 @@ def validate_pack_sql(
 
     if duplicate_completion:
         errors.append(
-            "Pack defines duplicate completion codes: "
-            f"{_format_codes(duplicate_completion)}"
+            f"Pack defines duplicate completion codes: {_format_codes(duplicate_completion)}"
         )
 
     db_overlap = pack_all & existing_all
@@ -126,9 +122,7 @@ def validate_pack_sql(
             if code in pack_completion:
                 locations.append("pack completion")
             details.append(f"{code!r} ({', '.join(locations)})")
-        errors.append(
-            "Pack codes conflict with the database: " + "; ".join(details)
-        )
+        errors.append("Pack codes conflict with the database: " + "; ".join(details))
 
     if errors:
         raise PackValidationError(errors)

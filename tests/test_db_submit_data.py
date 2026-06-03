@@ -107,9 +107,7 @@ def test_submit_data_complete_invalid_wrong_code(storyline_db: Path):
     result = storage.submit_data(alice_id, "WRONG")
 
     assert result.outcome == "invalid"
-    assert_mission_status(
-        storyline_db, user_id=alice_id, slug="es-beta", expected_status="active"
-    )
+    assert_mission_status(storyline_db, user_id=alice_id, slug="es-beta", expected_status="active")
 
 
 def test_submit_data_complete_already_done(storyline_db: Path):
