@@ -1087,23 +1087,41 @@ a:hover {
   border-radius: var(--radius-sm);
 }
 
-.markdown .code-block {
-  position: relative;
+.markdown .highlight {
   margin: 0 0 var(--space-md);
 }
 
-.markdown .code-block pre {
+.markdown .highlight > pre {
   margin: 0;
   padding: var(--space-md);
-  padding-top: 2.25rem;
   overflow-x: auto;
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
 }
 
-.markdown .code-block:not(:has(.copy-btn)) pre {
-  padding-top: var(--space-md);
+.markdown .code-block {
+  position: relative;
+  margin: 0 0 var(--space-md);
+  overflow: hidden;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.markdown .code-block .highlight {
+  margin: 0;
+}
+
+.markdown .code-block .highlight > pre,
+.markdown .code-block > pre {
+  margin: 0;
+  padding: var(--space-md);
+  padding-top: 2.25rem;
+  overflow-x: auto;
+  background: transparent;
+  border: none;
+  border-radius: 0;
 }
 
 /* Collapsible Brief / Debrief (completed mission detail) */
@@ -1120,7 +1138,8 @@ a:hover {
   margin-bottom: 0;
 }
 
-.markdown pre code {
+.markdown pre code,
+.markdown .highlight code {
   display: block;
   padding: 0;
   font-size: 0.8125rem;
@@ -1128,6 +1147,7 @@ a:hover {
   background: none;
   border: none;
   white-space: pre;
+  font-family: var(--font-mono);
 }
 
 .markdown ul,
@@ -1146,6 +1166,32 @@ a:hover {
 
 .markdown li {
   margin-bottom: var(--space-xs);
+}
+
+.markdown table {
+  width: 100%;
+  margin: 0 0 var(--space-md);
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.markdown th,
+.markdown td {
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+  vertical-align: top;
+  border: 1px solid var(--color-border);
+}
+
+.markdown th {
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+.markdown tbody tr:nth-child(even) td {
+  background: rgba(196, 163, 90, 0.04);
 }
 
 .markdown blockquote {

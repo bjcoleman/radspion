@@ -1,5 +1,9 @@
 {% extends "agent/base_agent.html" %}
 
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pygments-native.css') }}">
+{% endblock %}
+
 {% block title %}{{ mission.title }} — Radspion{% endblock %}
 {% block body_class %}page--mission{% endblock %}
 {% block main_class %}page__main--mission{% endblock %}
@@ -80,6 +84,7 @@
 {% endblock %}
 
 {% block extra_body %}
+  <script src="{{ url_for('static', filename='js/mission-detail-copy-code.js') }}" defer></script>
   {% if mission.status == 'active' %}
     {% include "_transmission_modal.html" %}
     <script src="{{ url_for('static', filename='js/transmission-modal.js') }}"></script>

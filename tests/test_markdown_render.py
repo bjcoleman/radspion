@@ -3,8 +3,35 @@
 from radspion.markdown_render import render_mission_markdown
 
 
-def test_render_mission_markdown_includes_fenced_code():
-    source = "# Title\n\n```bash\necho hi\n```\n"
+def test_render_mission_markdown_fenced_code_with_language():
+    source = "# Title\n\n```python\necho hi\n```\n"
     html = str(render_mission_markdown(source))
-    assert "<pre>" in html or "<code>" in html
-    assert "echo hi" in html
+    assert '<div class="highlight">' in html
+    assert "<pre>" in html
+    assert '<span class="n">echo</span>' in html
+    assert '<span class="k">' in html or '<span class="n">' in html
+
+
+def test_render_mission_markdown_fenced_code_without_language():
+    source = "```\nplain text\n```\n"
+    html = str(render_mission_markdown(source))
+    assert '<div class="highlight">' in html
+    assert "plain text" in html
+    assert '<span class="k">' not in html
+
+
+def test_render_mission_markdown_fenced_code_inside_list():
+    source = """* First
+
+    ```python
+    def foo():
+        pass
+    ```
+
+* Second
+"""
+    html = str(render_mission_markdown(source))
+    assert html.count("<ul>") == 1
+    assert '<div class="highlight">' in html
+    assert "<pre>" in html
+    assert '<span class="k">def</span>' in html
