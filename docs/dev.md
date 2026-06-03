@@ -262,4 +262,6 @@ All presets use the same four steps: initiating secure connection → establishi
 
 **`transmit({ preset, request, renderOutcome })`** runs `request()` (typically `fetch`) **in parallel** with the progress animation. The outcome panel is shown only after **both** complete; a fast server response still waits for the animation (unless the user has **Reduce motion** enabled, in which case the outcome appears as soon as the request finishes).
 
+While the modal is open, unlock/completion forms are disabled and a second `transmit` is ignored. On the outcome step, **Enter** activates **OK** (same as click), including reload-on-success handlers wired by the page scripts.
+
 Manual check: open `docs/ui/transmission-modal-demo.html` in a browser (includes slow POST on unlock demo to verify animation wins the race).

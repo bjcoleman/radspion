@@ -39,6 +39,9 @@
 
   const STEP_WIDTHS = [22, 48, 72, 90];
 
+  /** Forms that submit unlock / completion data behind the modal. */
+  const SUBMIT_FORM_SELECTOR = ".unlock-form, .completion-form";
+
   function prefersReducedMotion() {
     return global.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
@@ -71,9 +74,46 @@
     this.heading = root.querySelector("[data-transmission-heading]");
     this.stepEl = root.querySelector("[data-transmission-step]");
     this.barEl = root.querySelector("[data-transmission-bar-fill]");
+    this._busy = false;
     this._boundOk = this._onOkClick.bind(this);
+    this._boundKeydown = this._onKeydown.bind(this);
     root.addEventListener("click", this._boundOk);
   }
+
+  TransmissionModal.prototype._setPageFormsDisabled = function (disabled) {
+    const forms = global.document.querySelectorAll(SUBMIT_FORM_SELECTOR);
+    forms.forEach(function (form) {
+      const controls = form.querySelectorAll("input, button, select, textarea");
+      controls.forEach(function (el) {
+        if (disabled) {
+          if (!el.disabled) {
+            el.disabled = true;
+            el.setAttribute("data-transmission-modal-disabled", "");
+          }
+        } else if (el.hasAttribute("data-transmission-modal-disabled")) {
+          el.disabled = false;
+          el.removeAttribute("data-transmission-modal-disabled");
+        }
+      });
+    });
+  };
+
+  TransmissionModal.prototype._onKeydown = function (event) {
+    if (!this._busy || this.root.hidden || event.key !== "Enter") {
+      return;
+    }
+    if (!this.outcome.hidden) {
+      const ok = this.outcome.querySelector(".transmission-modal__ok");
+      if (ok) {
+        event.preventDefault();
+        event.stopPropagation();
+        ok.click();
+      }
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+  };
 
   TransmissionModal.prototype._onOkClick = function (event) {
     if (!event.target.closest(".transmission-modal__ok")) {
@@ -92,6 +132,9 @@
     if (!this._requireElements()) {
       return;
     }
+    this._busy = true;
+    this._setPageFormsDisabled(true);
+    global.document.addEventListener("keydown", this._boundKeydown, true);
     this.root.hidden = false;
     global.document.body.classList.add("has-transmission-modal");
     this.progress.hidden = false;
@@ -106,6 +149,9 @@
   TransmissionModal.prototype.close = function () {
     this.root.hidden = true;
     global.document.body.classList.remove("has-transmission-modal");
+    global.document.removeEventListener("keydown", this._boundKeydown, true);
+    this._setPageFormsDisabled(false);
+    this._busy = false;
   };
 
   TransmissionModal.prototype._applyPreset = function (presetKey) {
@@ -121,6 +167,10 @@
     this.progress.hidden = true;
     this.outcome.hidden = false;
     renderOutcome(result, this.outcome);
+    const ok = this.outcome.querySelector(".transmission-modal__ok");
+    if (ok) {
+      ok.focus();
+    }
   };
 
   TransmissionModal.prototype.runProgress = function (presetKey) {
@@ -168,6 +218,10 @@
 
     if (!requestFn || !renderOutcome) {
       return Promise.reject(new Error("transmit requires request and renderOutcome"));
+    }
+
+    if (this._busy) {
+      return Promise.resolve();
     }
 
     const preset = this._applyPreset(presetKey);
