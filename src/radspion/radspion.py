@@ -76,8 +76,8 @@ class Radspion:
         """
         Submit field data for the signed-in agent.
 
-        Trims whitespace; comparison is case-sensitive. Resolves unlock codes
-        before completion codes.
+        Trims whitespace; comparison is case-sensitive. Resolves listing data
+        before completion data.
         """
         data = raw_data.strip()
         if not data:

@@ -17,23 +17,23 @@ SQLite. **Groups** are story arcs (organization for the dashboard and operator v
 | `brief_markdown`, `debrief_markdown` | Mission Brief / Debrief markdown |
 | `group_id` | Story arc for dashboard grouping |
 | `access_rule` | How the mission gets on the agent’s list |
-| `completion_code` | Secret to mark completed |
+| `completion_code` | Completion data string (marks mission complete when submitted) |
 
 ### `access_rule` (one per mission)
 
-A mission is surfaced by **unlock code** or **automatic listing after completions**, not both: `unlock_code` missions have no `mission_list_requires`.
+A mission is listed by **submitting listing data** or **automatic listing after completions**, not both: `unlock_code` missions have no `mission_list_requires`.
 
 | Value | Listed when |
 |-------|-------------|
 | `open` | Any signed-in agent (sync creates `active` row) |
-| `unlock_code` | Agent redeems `mission_unlock_codes` |
+| `unlock_code` | Agent submits matching listing data (`mission_unlock_codes`) |
 | `requires_complete` | Agent completed all `mission_list_requires` missions |
 
 ## Constraint tables
 
 ### `mission_unlock_codes` (one row per mission)
 
-Each `unlock_code` mission has exactly one row in this table (`mission_id` PK). The **`unlock_code` string is not unique** across rows — the same value may gate multiple missions; redeeming it lists every matching mission not yet on the agent's dashboard. Codes are mutually exclusive with automatic listing (**`mission_list_requires`**) on the same mission.
+Each `unlock_code` mission has exactly one row in this table (`mission_id` PK). The **`unlock_code` column** stores listing data; the string is not unique across rows — the same value may gate multiple missions. Submitting it lists every matching mission not yet on the agent's dashboard. Listing-gated missions are mutually exclusive with automatic listing (**`mission_list_requires`**) on the same mission.
 
 ### `mission_list_requires` (1:many)
 
@@ -49,8 +49,8 @@ Used with `requires_complete`. Prereqs may span story arcs if you design them th
 
 **`agent_mission_status`**: `(user_id, mission_id, status)` — `active` | `completed`.
 
-- Completed missions may display `missions.completion_code`; never expose it for `active` missions
-- **No row** means not listable yet (`unlock_code` not redeemed, or list prereqs not met). Missions that are not listable are **hidden** from the agent dashboard — not shown as locked placeholders
+- Completed missions may display recovered data (`missions.completion_code`); never expose it for `active` missions
+- **No row** means not listable yet (listing data not submitted, or list prereqs not met). Missions that are not listable are **hidden** from the agent dashboard — not shown as locked placeholders
 - For listable `open` missions, a missing row is a **sync error**
 
 ## Operator progress (V1, read-only)
@@ -65,11 +65,11 @@ Organize by story arc (`groups` → `missions`). For each mission, show agents w
 
 ## Runtime (summary)
 
-Keep **`agent_mission_status` current immediately** on login, unlock, and complete — agent dashboard and operator views read this table.
+Keep **`agent_mission_status` current immediately** on login, listing submit, and complete — agent dashboard and operator views read this table.
 
 1. Signed-in agent  
 2. **List:** per `access_rule` + `mission_list_requires` → ensure `active` row exists when listable  
-3. **Complete:** mission is `active` and input matches `completion_code` → `completed`  
+3. **Complete:** mission is `active` and submitted data matches `completion_code` → `completed`  
 4. On complete → sync: create `active` rows for missions whose `mission_list_requires` are now satisfied  
 
 ## Diagram
@@ -77,7 +77,7 @@ Keep **`agent_mission_status` current immediately** on login, unlock, and comple
 ```mermaid
 erDiagram
     groups ||--o{ missions : contains
-    missions ||--o| mission_unlock_codes : optional_unlock
+    missions ||--o| mission_unlock_codes : optional_listing
     missions ||--o{ mission_list_requires : lists_after
     users ||--o{ agent_mission_status : progress
     missions ||--o{ agent_mission_status : on

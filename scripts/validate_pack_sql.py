@@ -17,8 +17,8 @@ def _default_schema_path() -> Path:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description=(
-            "Validate that a storyline pack SQL file has disjoint unlock and "
-            "completion codes and does not overlap codes already in the database."
+            "Validate that a storyline pack SQL file has disjoint listing and "
+            "completion data strings and does not overlap strings already in the database."
         )
     )
     parser.add_argument("pack_sql", type=Path, help="Path to generated pack SQL")

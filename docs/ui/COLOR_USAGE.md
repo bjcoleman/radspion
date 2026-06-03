@@ -20,7 +20,7 @@ This spec defines consistent color roles for static UI mockups in `docs/ui/`.
    - Primary content text: `--color-text`
 
 3. **Button semantics are role-based**
-   - **App-native primary actions** (validate, submit, confirm): accent button.
+   - **App-native primary actions** (submit, confirm): accent button.
    - **Identity provider handoff** (Google OAuth): white Google-style button.
 
 4. **Keep visual hierarchy stable**
@@ -33,7 +33,7 @@ This spec defines consistent color roles for static UI mockups in `docs/ui/`.
 
 ## Current Mapping in Mockups
 
-- Accent buttons: `Validate`, `OK`, mission submit actions
+- Accent buttons: **Submit**, **OK**, link confirm actions
 - White provider buttons: `Sign in with Google`, `Continue with Google`
 - Accent headings: access panel headings, mission and modal outcome headings
 - Muted body copy: instructional and status text

@@ -33,7 +33,7 @@ A web app where students act as **agents** in a spy-agency fiction. **Missions**
 
 - **Group** — story arc (`missions.group_id`); organizes the dashboard, does not gate access
 - **Mission** — one group, `access_rule`, `completion_code`, story paths
-- **Constraints** — unlock codes (one per mission; code strings may be shared), list prereqs (`mission_list_requires`)
+- **Constraints** — listing data in `mission_unlock_codes` (one row per mission; strings may be shared), list prereqs (`mission_list_requires`)
 - **AgentMissionStatus** — per agent per mission: `active` or `completed`
 
 Details: [02-entities.md](02-entities.md), [03-database-schema.md](03-database-schema.md).

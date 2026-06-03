@@ -20,7 +20,7 @@ paths:
 
         The server resolves `data` as listing data (`mission_unlock_codes`, checked first)
         or completion data (`missions.completion_code` for an active listed mission).
-        Unlock success lists every matching mission not yet on the agent's dashboard.
+        Listing success lists every matching mission not yet on the agent's dashboard.
         Completion success marks the matching mission complete and runs listing sync.
 
         Unknown data, completion data for a mission not on the agent's list, and wrong
@@ -42,10 +42,10 @@ paths:
               schema:
                 $ref: "#/components/schemas/SubmitDataResponse"
               examples:
-                unlock_success:
+                list_success:
                   value:
                     outcome: success
-                    kind: unlock
+                    kind: list
                     new_missions:
                       - title: "ES: Alpha"
                         slug: es-alpha
@@ -97,7 +97,7 @@ components:
       properties:
         data:
           type: string
-          description: Field data submitted by the agent (unlock or completion code).
+          description: Field data submitted by the agent (listing or completion string).
 
     MissionSummary:
       type: object
@@ -122,8 +122,8 @@ components:
           description: Optional agent-facing copy. Generic on invalid; explains already_done when present.
         kind:
           type: string
-          enum: [unlock, complete]
-          description: Present on success — how the data was applied.
+          enum: [list, complete]
+          description: Present on success — listing data applied (`list`) or mission marked complete (`complete`).
         mission_slug:
           type: string
           description: Present on complete success — mission marked completed.
@@ -132,7 +132,7 @@ components:
           items:
             $ref: "#/components/schemas/MissionSummary"
           description: |
-            Missions newly added to the agent's list. On unlock success — each matching
+            Missions newly added to the agent's list. On list success — each matching
             mission that did not yet have a status row. On complete success — missions
             that became listable after completion sync (may be empty). Empty array on
             already_done.

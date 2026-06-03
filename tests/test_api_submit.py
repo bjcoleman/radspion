@@ -37,7 +37,7 @@ def test_submit_data_unlock_success(storyline_db: Path):
     assert response.status_code == 200
     data = response.get_json()
     assert data["outcome"] == "success"
-    assert data["kind"] == "unlock"
+    assert data["kind"] == "list"
     slugs = {mission["slug"] for mission in data["new_missions"]}
     assert slugs == {"es-alpha", "es-beta"}
     assert data["new_missions"][0]["group_name"] == "Testing Storyline"

@@ -16,12 +16,12 @@ class MissionSummary:
 
 @dataclass(frozen=True)
 class SubmitDataResult:
-    """Result of submitting field data (unlock or mission completion)."""
+    """Result of submitting field data (listing or completion)."""
 
     outcome: str  # success | invalid | already_done
     new_missions: tuple[MissionSummary, ...] = ()
     message: str | None = None
-    kind: str | None = None  # unlock | complete (success only)
+    kind: str | None = None  # list | complete (success only)
     mission_slug: str | None = None  # complete success only
 
     def to_api_dict(self) -> dict:

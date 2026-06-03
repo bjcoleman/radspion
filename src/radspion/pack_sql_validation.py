@@ -68,7 +68,7 @@ def validate_pack_sql(
     schema_path: Path,
 ) -> None:
     """
-    Ensure pack SQL does not introduce overlapping unlock/completion codes.
+    Ensure pack SQL does not introduce overlapping listing/completion codes.
 
     Checks:
     - no string appears as both unlock and completion within the pack
@@ -99,13 +99,13 @@ def validate_pack_sql(
     internal_overlap = pack_unlock & pack_completion
     if internal_overlap:
         errors.append(
-            "Pack lists the same string as both unlock and completion data: "
+            "Pack lists the same string as both listing and completion data: "
             f"{_format_codes(internal_overlap)}"
         )
 
     if duplicate_completion:
         errors.append(
-            f"Pack defines duplicate completion codes: {_format_codes(duplicate_completion)}"
+            f"Pack defines duplicate completion data strings: {_format_codes(duplicate_completion)}"
         )
 
     db_overlap = pack_all & existing_all
@@ -118,7 +118,7 @@ def validate_pack_sql(
             if code in existing_completion:
                 locations.append("existing missions.completion_code")
             if code in pack_unlock:
-                locations.append("pack unlock")
+                locations.append("pack listing")
             if code in pack_completion:
                 locations.append("pack completion")
             details.append(f"{code!r} ({', '.join(locations)})")

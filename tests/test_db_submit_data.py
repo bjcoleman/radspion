@@ -24,7 +24,7 @@ def test_submit_data_unlock_success(storyline_db: Path):
     result = storage.submit_data(diana_id, "EXAMPLE UNLOCK")
 
     assert result.outcome == "success"
-    assert result.kind == "unlock"
+    assert result.kind == "list"
     assert result.mission_slug is None
     assert len(result.new_missions) == 2
     assert {mission.slug for mission in result.new_missions} == {"es-alpha", "es-beta"}
@@ -140,7 +140,7 @@ def test_submit_data_unlock_checked_before_completion(storyline_db: Path):
     result = storage.submit_data(diana_id, "COMPLETE es-beta")
 
     assert result.outcome == "success"
-    assert result.kind == "unlock"
+    assert result.kind == "list"
     assert result.mission_slug is None
     assert len(result.new_missions) == 1
     assert result.new_missions[0].slug == "es-hidden"
@@ -176,7 +176,7 @@ def test_submit_data_unlock_hidden_mission(storyline_db: Path):
     result = storage.submit_data(diana_id, "HIDDEN UNLOCK")
 
     assert result.outcome == "success"
-    assert result.kind == "unlock"
+    assert result.kind == "list"
     assert len(result.new_missions) == 1
     assert result.new_missions[0].slug == "es-hidden"
 
@@ -205,7 +205,7 @@ def test_submit_data_unlock_trims_whitespace(storyline_db: Path):
     result = Radspion(storage).submit_data(diana_id, "  EXAMPLE UNLOCK  ")
 
     assert result.outcome == "success"
-    assert result.kind == "unlock"
+    assert result.kind == "list"
     assert len(result.new_missions) == 2
 
 

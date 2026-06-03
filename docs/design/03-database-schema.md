@@ -58,7 +58,7 @@ Story-arc label for dashboard sections and operator navigation.
 | `unlock_code` | Exactly one row in `mission_unlock_codes`; **no** `mission_list_requires` rows for this mission |
 | `requires_complete` | One or more `mission_list_requires` |
 
-**product rule:** A mission never combines **`unlock_code`** with **`mission_list_requires`**. Use either a redeemable code **or** automatic listing after completions, not both.
+**product rule:** A mission never combines **`unlock_code`** with **`mission_list_requires`**. Use either listing data **or** automatic listing after completions, not both.
 
 ### `mission_unlock_codes`
 
@@ -71,7 +71,7 @@ Story-arc label for dashboard sections and operator navigation.
 
 - One row per mission (`mission_id` PK) when `access_rule = unlock_code`.
 - **`unlock_code` is not unique** across rows — operators may reuse the same string on multiple missions.
-- Redeeming a code lists every matching mission that does not yet have an `agent_mission_status` row for the agent.
+- Submitting matching listing data lists every mission that does not yet have an `agent_mission_status` row for the agent.
 
 ### `mission_list_requires`
 
@@ -91,13 +91,13 @@ Story-arc label for dashboard sections and operator navigation.
 
 **Unique:** `(user_id, mission_id)`.
 
-After `completed`, UI may show `missions.completion_code` for that mission.
+After `completed`, UI may show recovered data (`missions.completion_code`) for that mission.
 
 ## Runtime summary
 
-**Sync policy:** maintain `agent_mission_status` **immediately** on login, unlock, and complete. A listable `open` mission without an `active` row is an error. No row on `unlock_code` missions until redeem is expected.
+**Sync policy:** maintain `agent_mission_status` **immediately** on login, listing submit, and complete. A listable `open` mission without an `active` row is an error. No row on `unlock_code` missions until listing data is submitted is expected.
 
 1. Signed-in agent  
-2. **List:** `open` → `active` row; `unlock_code` → after redeem; `requires_complete` → after all list prereqs completed  
+2. **List:** `open` → `active` row; `unlock_code` → after listing data submitted; `requires_complete` → after all list prereqs completed  
 3. **Complete:** mission `active` → match `completion_code` → `completed`  
 4. On complete (and on login) → sync `active` rows for missions whose list prereqs are now satisfied  

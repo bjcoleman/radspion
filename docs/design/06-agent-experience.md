@@ -62,7 +62,7 @@ QR codes and handouts may link to `https://…/link/<token>` where `<token>` is 
 
 **Request:** `{ "data": "..." }`
 
-**Response:** [`SubmitDataResponse`](../api.yaml) — `outcome`, optional `message`, `new_missions`, and on success `kind` (`unlock` | `complete`) plus `mission_slug` when `kind` is `complete`.
+**Response:** [`SubmitDataResponse`](../api.yaml) — `outcome`, optional `message`, `new_missions`, and on success `kind` (`list` | `complete`) plus `mission_slug` when `kind` is `complete`.
 
 | `outcome` | When | Response body |
 |-----------|------|----------------|
@@ -72,13 +72,13 @@ QR codes and handouts may link to `https://…/link/<token>` where `<token>` is 
 
 **HTTP 401** when not signed in.
 
-Listing success creates an `active` row for each matching `unlock_code` mission with no status row yet. The same unlock string may appear on multiple missions.
+Listing success creates an `active` row for each matching `unlock_code` mission with no status row yet. The same listing string may appear on multiple missions.
 
 ### Success UX
 
 1. Progress animation runs, then `POST /api/submit`.
-2. On **`success`**, the server stages a one-shot result in session; the client navigates to the **dashboard** (`kind: unlock`) or **mission detail** (`kind: complete`).
-3. The destination page plays the transmission modal once with the staged outcome.
+2. On **`success`**, the server stages a one-shot result in session; the client navigates to the **dashboard** (`kind: list`) or **mission detail** (`kind: complete`).
+3. The destination page shows the success outcome modal directly (no second animation).
 
 ### Error UX
 

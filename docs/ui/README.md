@@ -6,9 +6,9 @@ Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snaps
 
 **Assets:** styles in [`css/radspion.css`](css/radspion.css) are kept in sync with production [`src/radspion/static/css/radspion.css`](../../src/radspion/static/css/radspion.css) (mockup rules + app-only rules for flash, content pages, disabled controls). Logos in [`logos/`](../../logos/). Mission brief and debrief copy is **inlined in HTML** on mission detail mockups (production loads markdown from the database).
 
-**Sample data alignment:** Story arcs **Orientation** and **Testing Storyline** (`es-*` missions); **`unlock_code`** or **`requires_complete`** listing — never both on one mission.
+**Sample data alignment:** Story arcs **Orientation** and **Testing Storyline** (`es-*` missions); **`unlock_code`** access rule or **`requires_complete`** listing — never both on one mission.
 
-**Mock vs production:** Modal outcome pages hard-code copy and animation; no `fetch`. Production calls **`POST /api/submit`** with `{ "data": "..." }` per [`api.yaml`](../api.yaml). Responses use `outcome`: `success`, `invalid`, or `already_done`, with `kind` (`unlock` | `complete`) and `new_missions` on success.
+**Mock vs production:** Modal outcome pages hard-code copy and animation; no `fetch`. Production calls **`POST /api/submit`** with `{ "data": "..." }` per [`api.yaml`](../api.yaml). Responses use `outcome`: `success`, `invalid`, or `already_done`, with `kind` (`list` | `complete`) and `new_missions` on success.
 
 ---
 

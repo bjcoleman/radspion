@@ -2,7 +2,7 @@
 -- See docs/design/03-database-schema.md
 --
 -- Listing rule (V1): each mission exposes exactly one of open | unlock_code | requires_complete.
--- Never combine redeemable unlock codes (mission_unlock_codes) with automatic listing (mission_list_requires).
+-- Never combine listing-gated codes (mission_unlock_codes) with automatic listing (mission_list_requires).
 
 PRAGMA foreign_keys = ON;
 

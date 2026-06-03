@@ -46,14 +46,14 @@ INSERT INTO missions (slug, title, brief_markdown, debrief_markdown, group_id, a
 
 This is the overview for the mission called ES: Alpha.
 
-## Completion Code
+## Completion data
 
-The completion code for this mission is `COMPLETE es-alpha`.
+Submit this completion data when the mission is active on your list: `COMPLETE es-alpha`.
 ', '# ES: Alpha — Debrief
 
 Congratulations, you completed ES: Alpha.
 
-Completing this mission unlocks ES: Gamma on your dashboard.
+Completing this mission lists ES: Gamma on your dashboard.
 ', (SELECT id FROM groups WHERE name = 'Testing Storyline'), 'unlock_code', 'COMPLETE es-alpha'),
     ('es-beta', 'ES: Beta', '# ES: Beta — Brief
 
@@ -61,18 +61,18 @@ Completing this mission unlocks ES: Gamma on your dashboard.
 
 This is the overview for the mission called ES: Beta.
 
-## Completion Code
+## Completion data
 
-The completion code for this mission is `COMPLETE es-beta`.
+Submit this completion data when the mission is active on your list: `COMPLETE es-beta`.
 
 ## Hidden Mission
 
-This mission provides the unlock code for another mission: `HIDDEN UNLOCK`.
+This mission provides listing data for another mission: `HIDDEN UNLOCK`.
 ', '# ES: Beta — Debrief
 
 Congratulations, you completed ES: Beta.
 
-Completing this mission is one of two prerequisites for unlocking ES: Delta (you also need ES: Gamma).
+Completing this mission is one of two prerequisites for listing ES: Delta (you also need ES: Gamma).
 ', (SELECT id FROM groups WHERE name = 'Testing Storyline'), 'unlock_code', 'COMPLETE es-beta'),
     ('es-hidden', 'ES: Hidden', '# ES: Hidden — Brief
 
@@ -80,14 +80,14 @@ Completing this mission is one of two prerequisites for unlocking ES: Delta (you
 
 This is the overview for the mission called ES: Hidden.
 
-## Completion Code
+## Completion data
 
-The completion code for this mission is `COMPLETE es-hidden`.
+Submit this completion data when the mission is active on your list: `COMPLETE es-hidden`.
 ', '# ES: Hidden — Debrief
 
 Congratulations, you completed ES: Hidden.
 
-This mission does not unlock any other missions (dead end).
+This mission does not list any other missions (dead end).
 ', (SELECT id FROM groups WHERE name = 'Testing Storyline'), 'unlock_code', 'COMPLETE es-hidden'),
     ('es-gamma', 'ES: Gamma', '# ES: Gamma — Brief
 
@@ -95,14 +95,14 @@ This mission does not unlock any other missions (dead end).
 
 This is the overview for the mission called ES: Gamma.
 
-## Completion Code
+## Completion data
 
-The completion code for this mission is `COMPLETE es-gamma`.
+Submit this completion data when the mission is active on your list: `COMPLETE es-gamma`.
 ', '# ES: Gamma — Debrief
 
 Congratulations, you completed ES: Gamma.
 
-Completing this mission is one of two prerequisites for unlocking ES: Delta (you also need ES: Beta).
+Completing this mission is one of two prerequisites for listing ES: Delta (you also need ES: Beta).
 ', (SELECT id FROM groups WHERE name = 'Testing Storyline'), 'requires_complete', 'COMPLETE es-gamma'),
     ('es-delta', 'ES: Delta', '# ES: Delta — Brief
 
@@ -110,14 +110,14 @@ Completing this mission is one of two prerequisites for unlocking ES: Delta (you
 
 This is the overview for the mission called ES: Delta.
 
-## Completion Code
+## Completion data
 
-The completion code for this mission is `COMPLETE es-delta`.
+Submit this completion data when the mission is active on your list: `COMPLETE es-delta`.
 ', '# ES: Delta — Debrief
 
 Congratulations, you completed ES: Delta.
 
-This mission does not unlock any other missions (finale).
+This mission does not list any other missions (finale).
 ', (SELECT id FROM groups WHERE name = 'Testing Storyline'), 'requires_complete', 'COMPLETE es-delta');
 
 INSERT INTO mission_unlock_codes (mission_id, unlock_code)
@@ -144,7 +144,7 @@ FROM missions child
 JOIN missions parent ON parent.slug = 'es-gamma'
 WHERE child.slug = 'es-delta';
 
--- Diana: orientation only (no storyline unlocks).
+-- Diana: orientation only (no storyline listing data submitted).
 INSERT INTO agent_mission_status (user_id, mission_id, status)
 SELECT 4, id, 'active' FROM missions WHERE slug = 'basic-training';
 

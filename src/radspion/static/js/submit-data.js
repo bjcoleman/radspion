@@ -49,7 +49,7 @@
     };
   }
 
-  function renderUnlockSuccess(outcomeEl, newMissions) {
+  function renderListSuccess(outcomeEl, newMissions) {
     if (newMissions.length <= 1) {
       var messageHtml = newMissions.length
         ? singleMissionMessage(newMissions[0])
@@ -128,7 +128,7 @@
       if (data.kind === "complete") {
         renderCompleteSuccess(outcomeEl, data.new_missions || []);
       } else {
-        renderUnlockSuccess(outcomeEl, data.new_missions || []);
+        renderListSuccess(outcomeEl, data.new_missions || []);
       }
       return;
     }

@@ -96,7 +96,7 @@ class DatabaseRadspionStorage:
 
         - open: ensure an active row exists (never downgrade completed).
         - requires_complete: active row when all list prerequisites are completed.
-        - unlock_code: no row until redeem (handled elsewhere).
+        - unlock_code: no row until listing data is submitted (handled by submit_data).
         """
         try:
             self._conn.execute(
@@ -246,7 +246,7 @@ class DatabaseRadspionStorage:
         )
 
     def _submit_unlock(self, user_id: int, unlock_code: str) -> SubmitDataResult:
-        """Resolve a mission unlock code (internal; used by submit_data)."""
+        """Resolve listing data against mission_unlock_codes (internal; used by submit_data)."""
         try:
             known = self._conn.execute(
                 "SELECT 1 FROM mission_unlock_codes WHERE unlock_code = ? LIMIT 1",
@@ -299,12 +299,12 @@ class DatabaseRadspionStorage:
                 )
             self._conn.commit()
         except sqlite3.Error as exc:
-            raise DatabaseError(f"Database error submitting unlock data: {exc}") from exc
+            raise DatabaseError(f"Database error submitting listing data: {exc}") from exc
 
         return SubmitDataResult(
             outcome="success",
             new_missions=tuple(new_missions),
-            kind="unlock",
+            kind="list",
         )
 
     def _listed_mission_summaries(self, user_id: int) -> dict[str, MissionSummary]:
@@ -334,7 +334,7 @@ class DatabaseRadspionStorage:
         Submit field data for the signed-in agent.
 
         ``data`` must be trimmed and non-empty. Comparison is case-sensitive.
-        Unlock codes are checked before completion codes. Completion for a
+        Listing data is checked before completion data. Completion for a
         mission that is not on the agent's list returns ``invalid``.
         """
         try:

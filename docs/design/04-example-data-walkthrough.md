@@ -17,7 +17,7 @@ EXAMPLE UNLOCK ──► es-alpha ──► es-gamma ──┐
 HIDDEN UNLOCK ──► es-hidden (dead end)     │
 ```
 
-- **`unlock_code`** — agent redeems `mission_unlock_codes` (no `mission_list_requires` on the same mission).
+- **`unlock_code`** — agent submits listing data from `mission_unlock_codes` (no `mission_list_requires` on the same mission).
 - **`requires_complete`** — mission lists after all `mission_list_requires` targets are `completed`.
 
 ## missions
@@ -39,7 +39,7 @@ HIDDEN UNLOCK ──► es-hidden (dead end)     │
 | es-beta | EXAMPLE UNLOCK |
 | es-hidden | HIDDEN UNLOCK |
 
-Redeeming **EXAMPLE UNLOCK** lists both **es-alpha** and **es-beta** (same code, two missions).
+Submitting **EXAMPLE UNLOCK** lists both **es-alpha** and **es-beta** (same string, two missions).
 
 ## mission_list_requires
 
@@ -50,7 +50,7 @@ Redeeming **EXAMPLE UNLOCK** lists both **es-alpha** and **es-beta** (same code,
 
 ## agent_mission_status (seed personas)
 
-When `status = completed`, the app shows `missions.completion_code` for that mission.
+When `status = completed`, the app shows recovered data (`missions.completion_code`) for that mission.
 
 | user | Storyline state (summary) |
 |------|---------------------------|

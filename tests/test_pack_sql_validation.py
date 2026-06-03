@@ -80,7 +80,7 @@ def test_validate_rejects_internal_unlock_completion_overlap(
     pack_sql = tmp_path / "overlap.sql"
     pack_sql.write_text(OVERLAP_PACK_SQL, encoding="utf-8")
 
-    with pytest.raises(PackValidationError, match="both unlock and completion"):
+    with pytest.raises(PackValidationError, match="both listing and completion"):
         validate_pack_sql(pack_sql, schema_db, schema_path=SQL_DIR / "schema.sql")
 
 
@@ -91,7 +91,7 @@ def test_validate_rejects_duplicate_completion_codes(
     pack_sql = tmp_path / "duplicate.sql"
     pack_sql.write_text(DUPLICATE_COMPLETION_PACK_SQL, encoding="utf-8")
 
-    with pytest.raises(PackValidationError, match="duplicate completion codes"):
+    with pytest.raises(PackValidationError, match="duplicate completion data"):
         validate_pack_sql(pack_sql, schema_db, schema_path=SQL_DIR / "schema.sql")
 
 
