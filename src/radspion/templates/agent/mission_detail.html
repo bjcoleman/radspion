@@ -10,9 +10,7 @@
 
 {% block agent_content %}
   <div class="mission-detail">
-    <nav class="mission-detail__nav">
-      <a class="mission-detail__back" href="{{ url_for('agent.dashboard') }}">← Mission Dashboard</a>
-    </nav>
+    {% include "agent/_mission_back_nav.html" %}
 
     <header class="mission-detail__header">
       <h1 class="mission-detail__title">{{ mission.title }}</h1>
@@ -80,6 +78,10 @@
         </details>
       </section>
     {% endif %}
+
+    {% with bottom=true %}
+      {% include "agent/_mission_back_nav.html" %}
+    {% endwith %}
   </div>
 {% endblock %}
 
