@@ -6,7 +6,7 @@ from radspion.oauth_types import (
     OAuthCodeError,
     OAuthStateError,
 )
-from radspion.web.session_keys import SESSION_PENDING_UNLOCK
+from radspion.web.session_keys import SESSION_PENDING_SUBMIT_DATA
 
 
 class FakeGoogleOAuth:
@@ -37,7 +37,7 @@ class FakeGoogleOAuth:
         session[SESSION_OAUTH_STATE] = state
         session[SESSION_OAUTH_CODE_VERIFIER] = "test-verifier"
         self._pending_by_state[state] = {
-            "pending_unlock": session.pop(SESSION_PENDING_UNLOCK, None),
+            "pending_submit_data": session.pop(SESSION_PENDING_SUBMIT_DATA, None),
         }
         return "https://accounts.google.test/o/oauth2/auth"
 
@@ -47,9 +47,9 @@ class FakeGoogleOAuth:
 
         pending = self._pending_by_state.pop(state, None)
         if pending is not None:
-            pending_unlock = pending.get("pending_unlock")
-            if pending_unlock:
-                session[SESSION_PENDING_UNLOCK] = pending_unlock
+            pending_data = pending.get("pending_submit_data")
+            if pending_data:
+                session[SESSION_PENDING_SUBMIT_DATA] = pending_data
 
         expected_state = session.pop(SESSION_OAUTH_STATE, None)
         session.pop(SESSION_OAUTH_CODE_VERIFIER, None)

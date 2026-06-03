@@ -8,32 +8,32 @@ from radspion.oauth_types import (
     OAuthVerificationError,
 )
 from radspion.web.session_keys import (
-    SESSION_PENDING_UNLOCK,
+    SESSION_PENDING_SUBMIT_DATA,
     SESSION_USER_ID,
 )
-from radspion.web.unlock_flow import store_post_login_unlock_result
+from radspion.web.submit_flow import store_staged_submit_result
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 
 def _redirect_after_signup_blocked() -> str:
-    """Send new agents back to unlock staging or the landing page."""
-    pending = session.get(SESSION_PENDING_UNLOCK)
+    """Send new agents back to link staging or the landing page."""
+    pending = session.get(SESSION_PENDING_SUBMIT_DATA)
     if pending:
         # Let Flask encode the path segment once (avoid double-encoding %20).
-        return url_for("unlock.landing", token=pending)
+        return url_for("link.landing", token=pending)
     return url_for("main.index")
 
 
 def _finish_agent_session(user) -> str:
-    """Establish the session, apply any pending unlock, and return redirect target."""
+    """Establish the session, apply any pending data, and return redirect target."""
     session[SESSION_USER_ID] = user.id
 
     radspion = current_app.extensions["radspion"]
-    pending_unlock = session.pop(SESSION_PENDING_UNLOCK, None)
-    if pending_unlock:
-        result = radspion.redeem_unlock_code(user.id, pending_unlock)
-        store_post_login_unlock_result(session, result)
+    pending_data = session.pop(SESSION_PENDING_SUBMIT_DATA, None)
+    if pending_data:
+        result = radspion.submit_data(user.id, pending_data)
+        store_staged_submit_result(session, result)
 
     return url_for("agent.dashboard")
 

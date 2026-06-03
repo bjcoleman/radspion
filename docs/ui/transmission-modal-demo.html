@@ -41,8 +41,9 @@
         Toggle <strong>Reduce motion</strong> in OS settings to skip the animation.
       </p>
       <div class="demo__actions">
-        <button type="button" id="demo-unlock-ok">Unlock code · success (slow POST)</button>
-        <button type="button" id="demo-completion-ok">Completion data · success</button>
+        <button type="button" id="demo-listing-success">Listing data · success (slow POST)</button>
+        <button type="button" id="demo-complete-success">Completion data · success</button>
+        <button type="button" id="demo-invalid">Invalid data</button>
       </div>
     </div>
   </main>
@@ -51,8 +52,8 @@
     <div class="transmission-modal__backdrop"></div>
     <section class="transmission-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="transmission-heading">
       <div class="transmission-modal__progress" data-transmission-progress>
-        <h2 id="transmission-heading" class="transmission-modal__title text-mono" data-transmission-heading>Secure channel</h2>
-        <p class="transmission-modal__step" data-transmission-step aria-live="polite">Initiating secure connection…</p>
+        <h2 id="transmission-heading" class="transmission-modal__title text-mono" data-transmission-heading>Secure transmission</h2>
+        <p class="transmission-modal__step" data-transmission-step aria-live="polite">Initializing secure transmission…</p>
         <div class="transmission-modal__bar" aria-hidden="true">
           <div class="transmission-modal__bar-fill" data-transmission-bar-fill></div>
         </div>
@@ -62,41 +63,50 @@
   </div>
 
   <script src="../../src/radspion/static/js/transmission-modal.js"></script>
+  <script src="../../src/radspion/static/js/submit-data.js"></script>
   <script>
     (function () {
-      var P = window.RadspionTransmission.PRESET;
-
-      function renderUnlockSuccess(data, el) {
-        el.innerHTML =
-          '<h2 class="transmission-modal__title">Verification succeeded</h2>' +
-          '<p class="transmission-modal__message">The following mission was added to your dashboard:</p>' +
-          '<p class="transmission-modal__message"><strong>' + data.missionTitle + '</strong></p>' +
-          '<button type="button" class="transmission-modal__ok">OK</button>';
+      function transmit(request, redirectOnSuccess) {
+        window.RadspionTransmission.transmitSerialized({
+          request: request,
+          renderOutcome: window.RadspionSubmit.renderSubmitOutcome,
+          redirectOnSuccess: redirectOnSuccess,
+          onSuccess: redirectOnSuccess ? function () { alert("Would redirect to dashboard or mission."); } : undefined,
+        });
       }
 
-      function renderCompletionSuccess(data, el) {
-        el.innerHTML =
-          '<h2 class="transmission-modal__title">Transmission accepted</h2>' +
-          '<p class="transmission-modal__message">Lab verification confirmed your field data. This mission is now marked as completed.</p>' +
-          '<button type="button" class="transmission-modal__ok">OK</button>';
-      }
-
-      function transmit(preset, request, renderOutcome) {
-        window.RadspionTransmission.transmit({ preset: preset, request: request, renderOutcome: renderOutcome });
-      }
-
-      document.getElementById("demo-unlock-ok").addEventListener("click", function () {
-        transmit(P.UNLOCK_CODE, function () {
+      document.getElementById("demo-listing-success").addEventListener("click", function () {
+        transmit(function () {
           return new Promise(function (r) {
-            setTimeout(function () { r({ missionTitle: "ES: Gamma" }); }, 4000);
+            setTimeout(function () {
+              r({
+                outcome: "success",
+                kind: "unlock",
+                new_missions: [{ title: "ES: Gamma", slug: "es-gamma", group_name: "Testing Storyline" }],
+              });
+            }, 4000);
           });
-        }, renderUnlockSuccess);
+        }, true);
       });
 
-      document.getElementById("demo-completion-ok").addEventListener("click", function () {
-        transmit(P.COMPLETION_DATA, function () {
-          return new Promise(function (r) { setTimeout(function () { r({ ok: true }); }, 200); });
-        }, renderCompletionSuccess);
+      document.getElementById("demo-complete-success").addEventListener("click", function () {
+        transmit(function () {
+          return Promise.resolve({
+            outcome: "success",
+            kind: "complete",
+            mission_slug: "es-beta",
+            new_missions: [],
+          });
+        }, true);
+      });
+
+      document.getElementById("demo-invalid").addEventListener("click", function () {
+        transmit(function () {
+          return Promise.resolve({
+            outcome: "invalid",
+            message: "We could not validate that data against agency records.",
+          });
+        }, false);
       });
     })();
   </script>

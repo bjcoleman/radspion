@@ -1,6 +1,6 @@
 # Radspion documentation
 
-Secret-organization-themed mission platform for coursework. Students (**agents**) complete **missions** in story **arcs** using unlock and completion codes, **Mission Briefs**, and **Debriefs**.
+Secret-organization-themed mission platform for coursework. Students (**agents**) complete **missions** in story **arcs** by submitting **field data**, reading **Mission Briefs**, and **Debriefs**.
 
 ## Start here (for development)
 

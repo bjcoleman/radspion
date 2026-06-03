@@ -1,11 +1,11 @@
-"""Tests for GET /unlock/<token> and OAuth-staged unlock redemption."""
+"""Tests for GET /link/<token> and OAuth-staged data submission."""
 
 from pathlib import Path
 
 import pytest
 
 from radspion.web.session_keys import (
-    SESSION_PENDING_UNLOCK,
+    SESSION_PENDING_SUBMIT_DATA,
     SESSION_USER_ID,
 )
 from tests.conftest import complete_oauth_callback
@@ -33,64 +33,65 @@ def _client_for_db(db_path: Path, *, oauth: FakeGoogleOAuth | None = None):
     return create_app(config=config, radspion=radspion, oauth=oauth).test_client(), oauth
 
 
-def test_unlock_link_stages_pending_code(storyline_db: Path):
+def test_link_stages_pending_data(storyline_db: Path):
     client, _oauth = _client_for_db(storyline_db)
-    response = client.get("/unlock/EXAMPLE%20UNLOCK")
+    response = client.get("/link/EXAMPLE%20UNLOCK")
 
     assert response.status_code == 200
-    assert b"Mission unlock" in response.data
-    assert b"Apply mission unlock" not in response.data
+    assert b"Secure data link" in response.data
+    assert b"link-form__submit" not in response.data
     assert b"Sign in with Google" in response.data
     with client.session_transaction() as sess:
-        assert sess[SESSION_PENDING_UNLOCK] == "EXAMPLE UNLOCK"
+        assert sess[SESSION_PENDING_SUBMIT_DATA] == "EXAMPLE UNLOCK"
 
 
-def test_unlock_link_invalid_token_redirects_home(storyline_db: Path):
+def test_link_invalid_token_redirects_home(storyline_db: Path):
     client, _oauth = _client_for_db(storyline_db)
-    response = client.get("/unlock/%20%20")
+    response = client.get("/link/%20%20")
 
     assert response.status_code == 302
     assert response.location.endswith("/")
     with client.session_transaction() as sess:
-        assert SESSION_PENDING_UNLOCK not in sess
+        assert SESSION_PENDING_SUBMIT_DATA not in sess
 
 
-def test_unlock_signed_in_shows_confirm_form(storyline_db: Path):
+def test_link_signed_in_shows_confirm_form(storyline_db: Path):
     client, _oauth = _client_for_db(storyline_db)
     diana_id = SAMPLE_AGENTS["diana"]["id"]
 
     with client.session_transaction() as sess:
         sess[SESSION_USER_ID] = diana_id
 
-    response = client.get("/unlock/HIDDEN%20UNLOCK")
+    response = client.get("/link/HIDDEN%20UNLOCK")
 
     assert response.status_code == 200
-    assert b"Apply mission unlock" in response.data
+    assert b"Submit data" in response.data
     assert b"Sign in with Google" not in response.data
     assert b'value="HIDDEN UNLOCK"' in response.data
+    assert b'name="data"' in response.data
 
 
-def test_unlock_signed_in_redeem_via_api(storyline_db: Path):
+def test_link_signed_in_submits_via_api(storyline_db: Path):
     client, _oauth = _client_for_db(storyline_db)
     diana_id = SAMPLE_AGENTS["diana"]["id"]
 
     with client.session_transaction() as sess:
         sess[SESSION_USER_ID] = diana_id
 
-    client.get("/unlock/EXAMPLE%20UNLOCK")
-    unlock = client.post("/api/unlock", json={"unlock_code": "EXAMPLE UNLOCK"})
+    client.get("/link/EXAMPLE%20UNLOCK")
+    submit = client.post("/api/submit", json={"data": "EXAMPLE UNLOCK"})
 
-    assert unlock.status_code == 200
-    assert unlock.get_json()["outcome"] == "success"
-    assert len(unlock.get_json()["new_missions"]) == 2
+    assert submit.status_code == 200
+    assert submit.get_json()["outcome"] == "success"
+    assert len(submit.get_json()["new_missions"]) == 2
 
 
-def test_oauth_returning_user_redeems_pending_unlock(storyline_db: Path):
+def test_oauth_returning_user_submits_pending_data(storyline_db: Path):
     oauth = FakeGoogleOAuth()
     client, _ = _client_for_db(storyline_db, oauth=oauth)
     diana = SAMPLE_AGENTS["diana"]
 
-    client.get("/unlock/EXAMPLE%20UNLOCK")
+    client.get("/link/EXAMPLE%20UNLOCK")
     client.get("/auth/google")
     oauth.returns(
         google_subject_id=diana["google_subject_id"],
@@ -103,23 +104,23 @@ def test_oauth_returning_user_redeems_pending_unlock(storyline_db: Path):
     assert response.status_code == 302
     assert response.location.endswith("/agent/dashboard")
     dashboard = client.get("/agent/dashboard")
-    assert b"RADSPION_POST_LOGIN_UNLOCK" in dashboard.data
+    assert b"RADSPION_STAGED_SUBMIT_RESULT" in dashboard.data
     assert b'"outcome": "success"' in dashboard.data or b'"outcome":"success"' in dashboard.data
     assert b"es-alpha" in dashboard.data
     assert b"es-beta" in dashboard.data
     with client.session_transaction() as sess:
-        assert SESSION_PENDING_UNLOCK not in sess
+        assert SESSION_PENDING_SUBMIT_DATA not in sess
 
     second_load = client.get("/agent/dashboard")
-    assert b"RADSPION_POST_LOGIN_UNLOCK" not in second_load.data
+    assert b"RADSPION_STAGED_SUBMIT_RESULT" not in second_load.data
 
 
-def test_second_login_without_unlock_link_skips_modal(storyline_db: Path):
+def test_second_login_without_link_skips_modal(storyline_db: Path):
     oauth = FakeGoogleOAuth()
     client, _ = _client_for_db(storyline_db, oauth=oauth)
     diana = SAMPLE_AGENTS["diana"]
 
-    client.get("/unlock/EXAMPLE%20UNLOCK")
+    client.get("/link/EXAMPLE%20UNLOCK")
     client.get("/auth/google")
     oauth.returns(
         google_subject_id=diana["google_subject_id"],
@@ -128,7 +129,7 @@ def test_second_login_without_unlock_link_skips_modal(storyline_db: Path):
     )
     complete_oauth_callback(client, oauth)
     first_dashboard = client.get("/agent/dashboard")
-    assert b"RADSPION_POST_LOGIN_UNLOCK" in first_dashboard.data
+    assert b"RADSPION_STAGED_SUBMIT_RESULT" in first_dashboard.data
 
     with client.session_transaction() as sess:
         sess.clear()
@@ -142,14 +143,14 @@ def test_second_login_without_unlock_link_skips_modal(storyline_db: Path):
     )
     complete_oauth_callback(client, oauth)
     second_dashboard = client.get("/agent/dashboard")
-    assert b"RADSPION_POST_LOGIN_UNLOCK" not in second_dashboard.data
+    assert b"RADSPION_STAGED_SUBMIT_RESULT" not in second_dashboard.data
 
 
-def test_oauth_new_user_redeems_unlock_without_access_gate(storyline_db: Path):
+def test_oauth_new_user_submits_data_without_access_gate(storyline_db: Path):
     oauth = FakeGoogleOAuth()
     client, _ = _client_for_db(storyline_db, oauth=oauth)
 
-    client.get("/unlock/HIDDEN%20UNLOCK")
+    client.get("/link/HIDDEN%20UNLOCK")
     client.get("/auth/google")
     oauth.returns(
         google_subject_id="google-new",
@@ -162,7 +163,12 @@ def test_oauth_new_user_redeems_unlock_without_access_gate(storyline_db: Path):
     assert response.status_code == 302
     assert response.location.endswith("/agent/dashboard")
     dashboard = client.get("/agent/dashboard")
-    assert b"RADSPION_POST_LOGIN_UNLOCK" in dashboard.data
+    assert b"RADSPION_STAGED_SUBMIT_RESULT" in dashboard.data
     assert b"es-hidden" in dashboard.data
     with client.session_transaction() as sess:
-        assert SESSION_PENDING_UNLOCK not in sess
+        assert SESSION_PENDING_SUBMIT_DATA not in sess
+
+
+def test_legacy_unlock_route_removed(storyline_db: Path):
+    client, _oauth = _client_for_db(storyline_db)
+    assert client.get("/unlock/EXAMPLE%20UNLOCK").status_code == 404

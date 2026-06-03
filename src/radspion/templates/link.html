@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
-{% block body_class %}page--landing page--unlock{% endblock %}
+{% block body_class %}page--landing page--link{% endblock %}
 
 {% block content %}
-  <div class="landing landing--unlock">
+  <div class="landing landing--link">
     <img
       class="landing__mark"
       src="{{ url_for('static', filename='img/radspion_mark_white.svg') }}"
@@ -11,21 +11,21 @@
       height="176"
       alt=""
     >
-    <h1 class="landing__title">Mission unlock</h1>
+    <h1 class="landing__title">Secure data link</h1>
     <p class="landing__briefing">
-      Command sent a <em>mission unlock</em> through a secure channel.
+      Command sent data through a secure channel.
       {% if signed_in %}
-        Confirm below to add matching missions to your dashboard.
+        Confirm below to submit it to the agency.
       {% else %}
-        Sign in to apply it to your account.
+        Sign in to submit it to the agency.
       {% endif %}
     </p>
 
     {% if signed_in %}
-      <section class="unlock-panel unlock-panel--confirm" aria-label="Confirm mission unlock">
-        <form class="unlock-form" action="#" method="post">
-          <input type="hidden" name="unlock_code" value="{{ unlock_code }}">
-          <button class="unlock-form__submit" type="submit">Apply mission unlock</button>
+      <section class="link-panel link-panel--confirm" aria-label="Confirm data submission">
+        <form class="data-submit-form data-submit-form--confirm" action="#" method="post">
+          <input type="hidden" name="data" value="{{ link_data }}">
+          <button class="link-form__submit" type="submit">Submit data</button>
         </form>
         <p class="access-panel__prompt access-panel__prompt--secondary">
           <a href="{{ url_for('agent.dashboard') }}">Return to Mission Dashboard</a>
@@ -35,7 +35,7 @@
       <section class="access-panel" aria-label="Agent authentication">
         <p class="access-panel__prompt access-panel__prompt--auth">Agent Authentication</p>
         <p class="access-panel__hint text-muted">
-          Sign in with Google to apply this mission unlock to your account.
+          Sign in with Google to submit this data to the agency.
         </p>
         <a href="{{ url_for('auth.google_login') }}" class="btn-google btn-google--agent-login">
           <svg class="btn-google__icon" viewBox="0 0 48 48" aria-hidden="true">
@@ -57,8 +57,5 @@
     window.RADSPION_AUTH_GOOGLE_URL = {{ url_for('auth.google_login') | tojson }};
   </script>
   <script src="{{ url_for('static', filename='js/transmission-modal.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/unlock-redeem.js') }}"></script>
-  {% if signed_in %}
-    <script src="{{ url_for('static', filename='js/dashboard-unlock.js') }}"></script>
-  {% endif %}
+  <script src="{{ url_for('static', filename='js/submit-data.js') }}"></script>
 {% endblock %}

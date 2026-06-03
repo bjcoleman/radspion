@@ -17,7 +17,7 @@ Mission packs are authored in **radspion-missions** (`storyline.yaml` + per-miss
 ./scripts/seed_storyline.sh orientation
 ```
 
-`seed_storyline.sh` reads `{pack}/{pack}.sql` from the missions repo path in `.env`. Seeds are insert-only and not idempotent.
+`seed_storyline.sh` reads `{pack}/{pack}.sql` from the missions repo path in `.env`. Before loading, it runs `scripts/validate_pack_sql.py` to ensure unlock and completion codes in the pack are disjoint and do not overlap codes already in the database. Seeds are insert-only and not idempotent.
 
 ## Testing seed
 

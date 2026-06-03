@@ -1,6 +1,6 @@
 # Radspion
 
-Secret-organization-themed mission platform for coursework. Agents complete **missions** in story **arcs** using unlock codes, prerequisites, Mission Briefs, and Debriefs. Operators configure missions via SQL seed, and agents sign in with Google OAuth (any account).
+Secret-organization-themed mission platform for coursework. Agents complete **missions** in story **arcs** by submitting **field data**, meeting prerequisites, and reading Mission Briefs and Debriefs. Operators configure missions via SQL seed; agents sign in with Google OAuth (any account).
 
 ## Documentation
 
@@ -9,7 +9,7 @@ Secret-organization-themed mission platform for coursework. Agents complete **mi
 | Design overview and reading order | [docs/README.md](docs/README.md) |
 | Use cases (build backlog) | [docs/design/use-cases.md](docs/design/use-cases.md) |
 | Agent UI rules + JSON endpoints | [docs/design/06-agent-experience.md](docs/design/06-agent-experience.md) |
-| JSON API (`/api/unlock`, mission submit) | [docs/api.yaml](docs/api.yaml) |
+| JSON API (`POST /api/submit`) | [docs/api.yaml](docs/api.yaml) |
 | UI mockups (not production JS) | [docs/ui/README.md](docs/ui/README.md) |
 | Dev setup, testing, Ruff, deploy | [docs/dev.md](docs/dev.md) |
 | Operator SQL workflow | [docs/design/07-operator-setup.md](docs/design/07-operator-setup.md) |
@@ -42,5 +42,5 @@ See [docs/dev.md](docs/dev.md) for OAuth, CI, and deployment.
 ## Stack
 
 - Python 3.12+, Flask + Jinja, SQLite 3
-- Google OAuth, session-backed JSON for unlock and mission submit
+- Google OAuth, session-backed **`POST /api/submit`** for field data
 - Ruff (lint/format), pytest + 90% coverage gate

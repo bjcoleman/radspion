@@ -11,19 +11,21 @@ tags:
     description: Session cookie required
 
 paths:
-  /api/unlock:
+  /api/submit:
     post:
       tags: [Agent]
-      summary: Redeem mission unlock code
+      summary: Submit field data
       description: |
-        Trims leading and trailing whitespace from `unlock_code`. Comparison is case-sensitive.
+        Trims leading and trailing whitespace from `data`. Comparison is case-sensitive.
 
-        Looks up all `mission_unlock_codes` rows with a matching value (the same code may gate
-        multiple missions). For each matching mission with `access_rule = unlock_code` that is not
-        yet on the agent's list, creates an `active` status row.
+        The server resolves `data` as listing data (`mission_unlock_codes`, checked first)
+        or completion data (`missions.completion_code` for an active listed mission).
+        Unlock success lists every matching mission not yet on the agent's dashboard.
+        Completion success marks the matching mission complete and runs listing sync.
 
-        Response shape matches `POST /api/missions/{slug}/submit` — see `MissionListResponse`.
-      operationId: redeemUnlock
+        Unknown data, completion data for a mission not on the agent's list, and wrong
+        data all return `outcome: invalid` with the same message.
+      operationId: submitData
       security:
         - sessionCookie: []
       requestBody:
@@ -31,31 +33,40 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UnlockRequest"
+              $ref: "#/components/schemas/DataRequest"
       responses:
         "200":
-          description: Redemption result
+          description: Submission result
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/MissionListResponse"
+                $ref: "#/components/schemas/SubmitDataResponse"
               examples:
-                success:
+                unlock_success:
                   value:
                     outcome: success
-                    new_missions:
-                      - title: "ES: Hidden"
-                        slug: es-hidden
-                        group_name: Testing Storyline
-                success_multiple:
-                  value:
-                    outcome: success
+                    kind: unlock
                     new_missions:
                       - title: "ES: Alpha"
                         slug: es-alpha
                         group_name: Testing Storyline
                       - title: "ES: Beta"
                         slug: es-beta
+                        group_name: Testing Storyline
+                complete_success:
+                  value:
+                    outcome: success
+                    kind: complete
+                    mission_slug: es-beta
+                    new_missions: []
+                complete_success_with_listings:
+                  value:
+                    outcome: success
+                    kind: complete
+                    mission_slug: es-alpha
+                    new_missions:
+                      - title: "ES: Gamma"
+                        slug: es-gamma
                         group_name: Testing Storyline
                 already_done:
                   value:
@@ -65,75 +76,11 @@ paths:
                 invalid:
                   value:
                     outcome: invalid
-                    message: We could not validate that unlock code against agency records.
+                    message: We could not validate that data against agency records.
         "400":
-          description: Missing or empty `unlock_code`
+          description: Missing or empty `data`
         "401":
           description: Not signed in
-
-  /api/missions/{slug}/submit:
-    post:
-      tags: [Agent]
-      summary: Submit mission completion code
-      description: |
-        Trims leading and trailing whitespace from `completion_code`. Comparison is
-        case-sensitive.
-
-        When `outcome` is `success`, the mission identified by `slug` is marked completed for
-        the signed-in agent and listing sync runs. `new_missions` lists missions that became
-        available afterward (may be empty).
-
-        Response shape matches `POST /api/unlock` — see `MissionListResponse`.
-      operationId: submitMission
-      security:
-        - sessionCookie: []
-      parameters:
-        - name: slug
-          in: path
-          required: true
-          schema:
-            type: string
-            pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SubmitRequest"
-      responses:
-        "200":
-          description: Submission result
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MissionListResponse"
-              examples:
-                success:
-                  value:
-                    outcome: success
-                    new_missions: []
-                success_with_listings:
-                  value:
-                    outcome: success
-                    new_missions:
-                      - title: "ES: Gamma"
-                        slug: es-gamma
-                        group_name: Testing Storyline
-                already_done:
-                  value:
-                    outcome: already_done
-                    new_missions: []
-                    message: This mission is already marked complete.
-                invalid:
-                  value:
-                    outcome: invalid
-                    message: We reviewed your transmission, and the recovered data does not match mission requirements.
-        "400":
-          description: Missing or empty `completion_code`
-        "401":
-          description: Not signed in
-        "404":
-          description: Unknown `slug`, or mission not on the agent's mission list
 
 components:
   securitySchemes:
@@ -144,12 +91,13 @@ components:
       description: Signed session cookie
 
   schemas:
-    UnlockRequest:
+    DataRequest:
       type: object
-      required: [unlock_code]
+      required: [data]
       properties:
-        unlock_code:
+        data:
           type: string
+          description: Field data submitted by the agent (unlock or completion code).
 
     MissionSummary:
       type: object
@@ -162,7 +110,7 @@ components:
         group_name:
           type: string
 
-    MissionListResponse:
+    SubmitDataResponse:
       type: object
       required: [outcome]
       properties:
@@ -172,19 +120,19 @@ components:
         message:
           type: string
           description: Optional agent-facing copy. Generic on invalid; explains already_done when present.
+        kind:
+          type: string
+          enum: [unlock, complete]
+          description: Present on success — how the data was applied.
+        mission_slug:
+          type: string
+          description: Present on complete success — mission marked completed.
         new_missions:
           type: array
           items:
             $ref: "#/components/schemas/MissionSummary"
           description: |
-            Missions newly added to the agent's list. On unlock success — each matching mission
-            that did not yet have a status row (at least one, or outcome is already_done instead).
-            On submit success — missions that became listable after completion sync (may be empty).
-            Empty array on already_done.
-
-    SubmitRequest:
-      type: object
-      required: [completion_code]
-      properties:
-        completion_code:
-          type: string
+            Missions newly added to the agent's list. On unlock success — each matching
+            mission that did not yet have a status row. On complete success — missions
+            that became listable after completion sync (may be empty). Empty array on
+            already_done.

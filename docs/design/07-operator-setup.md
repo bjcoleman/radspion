@@ -10,9 +10,9 @@ Set `users.is_operator = 1` for your account (SQLite stores booleans as integers
 2. Insert `missions` with `group_id`, `access_rule`, `completion_code`, `brief_markdown`, `debrief_markdown`, `title` (author in **radspion-missions**, then run `scripts/generate_storyline_sql.py`)  
 3. If `unlock_code` → row in `mission_unlock_codes` (typical arc entry). The same `unlock_code` string may appear on multiple missions if you want one redeem to list several entries.
 4. If `requires_complete` → rows in `mission_list_requires`  
-5. Trigger status **sync** for affected agents (app does this on login/unlock/complete when live; in SQL-only workflows, sign-in or a future CLI will reconcile)  
+5. Trigger status **sync** for affected agents (app does this on login/submit/complete when live; in SQL-only workflows, sign-in or a future CLI will reconcile)  
 
-Infrastructure: `schema.sql` in this repo. Storyline mission prose is authored in **radspion-missions** (`storyline.yaml` + markdown), generated to `{pack}/{pack}.sql`, and loaded with `./scripts/seed_storyline.sh`.
+Infrastructure: `schema.sql` in this repo. Storyline mission prose is authored in **radspion-missions** (`storyline.yaml` + markdown), generated to `{pack}/{pack}.sql`, validated for disjoint agency codes, and loaded with `./scripts/seed_storyline.sh`.
 
 ## Operator progress view
 

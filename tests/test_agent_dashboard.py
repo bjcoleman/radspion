@@ -75,28 +75,29 @@ def test_dashboard_group_order_descending_group_id(testing_storyline_db: Path):
     assert titles == ["Testing Storyline", "Orientation"]
 
 
-def test_dashboard_includes_unlock_form_and_transmission_modal(testing_storyline_db: Path):
+def test_dashboard_includes_header_submit_and_transmission_modal(testing_storyline_db: Path):
     client = _client_for_db(testing_storyline_db)
     with client.session_transaction() as sess:
         sess[SESSION_USER_ID] = SAMPLE_AGENTS["diana"]["id"]
 
     body = client.get("/agent/dashboard").data.decode()
 
-    assert 'name="unlock_code"' in body
-    assert "disabled" not in body.split("unlock-form")[1].split("</form>")[0]
+    assert 'name="data"' in body
+    assert "site-header__submit" in body
     assert "data-transmission-modal" in body
-    assert "dashboard-unlock.js" in body
+    assert "submit-data.js" in body
+    assert "submit-result.js" in body
     assert "transmission-modal.js" in body
 
 
-def test_unlock_then_dashboard_lists_storyline_missions(testing_storyline_db: Path):
+def test_submit_then_dashboard_lists_storyline_missions(testing_storyline_db: Path):
     client = _client_for_db(testing_storyline_db)
     with client.session_transaction() as sess:
         sess[SESSION_USER_ID] = SAMPLE_AGENTS["diana"]["id"]
 
-    unlock = client.post("/api/unlock", json={"unlock_code": "EXAMPLE UNLOCK"})
-    assert unlock.status_code == 200
-    assert unlock.get_json()["outcome"] == "success"
+    submit = client.post("/api/submit", json={"data": "EXAMPLE UNLOCK"})
+    assert submit.status_code == 200
+    assert submit.get_json()["outcome"] == "success"
 
     body = client.get("/agent/dashboard").data.decode()
     assert "es-alpha" in body

@@ -75,6 +75,9 @@ if ! sqlite3 "$DB_PATH" "SELECT 1 FROM sqlite_master WHERE type='table' AND name
     exit 1
 fi
 
+echo "Validating storyline pack $PACK_NAME..."
+.venv/bin/python scripts/validate_pack_sql.py "$PACK_SQL" "$DB_PATH"
+
 echo "Loading storyline pack $PACK_NAME from $PACK_SQL..."
 sqlite3 "$DB_PATH" < "$PACK_SQL"
 echo "Loaded storyline pack $PACK_NAME into $DB_PATH"

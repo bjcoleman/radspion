@@ -7,7 +7,7 @@ from markupsafe import Markup
 
 @dataclass(frozen=True)
 class MissionSummary:
-    """Mission newly listed after unlock or submit."""
+    """Mission newly listed after submit."""
 
     title: str
     slug: str
@@ -15,15 +15,17 @@ class MissionSummary:
 
 
 @dataclass(frozen=True)
-class UnlockRedeemResult:
-    """Result of redeeming a mission unlock code (UC-019 / UC-019b / UC-020)."""
+class SubmitDataResult:
+    """Result of submitting field data (unlock or mission completion)."""
 
     outcome: str  # success | invalid | already_done
     new_missions: tuple[MissionSummary, ...] = ()
     message: str | None = None
+    kind: str | None = None  # unlock | complete (success only)
+    mission_slug: str | None = None  # complete success only
 
     def to_api_dict(self) -> dict:
-        """Serialize for POST /api/unlock and submit responses."""
+        """Serialize for POST /api/submit."""
         data: dict = {"outcome": self.outcome}
         if self.message is not None:
             data["message"] = self.message
@@ -36,6 +38,10 @@ class UnlockRedeemResult:
                 }
                 for mission in self.new_missions
             ]
+            if self.kind is not None:
+                data["kind"] = self.kind
+            if self.mission_slug is not None:
+                data["mission_slug"] = self.mission_slug
         elif self.outcome == "already_done":
             data["new_missions"] = []
         return data

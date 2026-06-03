@@ -1,30 +1,25 @@
 /**
  * Secure transmission modal — progress animation + outcome panel.
  *
- * Usage (step 3+): RadspionTransmission.transmit({
- *   preset: RadspionTransmission.PRESET.UNLOCK_CODE,
+ * RadspionTransmission.transmitSerialized({
  *   request: () => fetch(...).then(r => r.json()),
  *   renderOutcome: (data, outcomeEl) => { ... },
+ *   redirectOnSuccess: true,
+ *   onSuccess: (data) => { window.location.assign(...); },
  * });
  */
 (function (global) {
   "use strict";
 
   const PRESET = {
-    UNLOCK_CODE: "unlockCode",
-    COMPLETION_DATA: "completionData",
+    SUBMIT_DATA: "submitData",
   };
 
   const PRESETS = {
-    [PRESET.UNLOCK_CODE]: {
-      title: "Secure channel",
-      introText: "Initializing secure channel…",
-      dataLabel: "unlock code",
-    },
-    [PRESET.COMPLETION_DATA]: {
+    [PRESET.SUBMIT_DATA]: {
       title: "Secure transmission",
       introText: "Initializing secure transmission…",
-      dataLabel: "completion data",
+      dataLabel: "field data",
     },
   };
 
@@ -39,8 +34,7 @@
 
   const STEP_WIDTHS = [22, 48, 72, 90];
 
-  /** Forms that submit unlock / completion data behind the modal. */
-  const SUBMIT_FORM_SELECTOR = ".unlock-form, .completion-form";
+  const SUBMIT_FORM_SELECTOR = ".data-submit-form";
 
   function prefersReducedMotion() {
     return global.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -207,37 +201,63 @@
     });
   };
 
+  TransmissionModal.prototype.presentOutcome = function (renderOutcome, result) {
+    if (!renderOutcome) {
+      return Promise.reject(new Error("presentOutcome requires renderOutcome"));
+    }
+    if (!this._requireElements() || this._busy) {
+      return Promise.resolve(result);
+    }
+
+    this._applyPreset(PRESET.SUBMIT_DATA);
+    this._busy = true;
+    this._setPageFormsDisabled(true);
+    global.document.addEventListener("keydown", this._boundKeydown, true);
+    this.root.hidden = false;
+    global.document.body.classList.add("has-transmission-modal");
+    this._showOutcome(renderOutcome, result);
+    return Promise.resolve(result);
+  };
+
   /**
-   * Run request and progress in parallel; reveal outcome only after both finish,
-   * and never before the progress animation completes (unless reduced motion).
+   * Run progress animation, then the request. On success with redirectOnSuccess,
+   * close the modal and call onSuccess without showing an outcome panel.
    */
-  TransmissionModal.prototype.transmit = function (options) {
-    const presetKey = options.preset;
+  TransmissionModal.prototype.transmitSerialized = function (options) {
     const requestFn = options.request;
     const renderOutcome = options.renderOutcome;
+    const redirectOnSuccess = Boolean(options.redirectOnSuccess);
+    const onSuccess = options.onSuccess;
 
     if (!requestFn || !renderOutcome) {
-      return Promise.reject(new Error("transmit requires request and renderOutcome"));
+      return Promise.reject(
+        new Error("transmitSerialized requires request and renderOutcome"),
+      );
     }
 
     if (this._busy) {
       return Promise.resolve();
     }
 
-    const preset = this._applyPreset(presetKey);
+    const preset = this._applyPreset(PRESET.SUBMIT_DATA);
     this.open(preset.introText);
 
-    const reduced = prefersReducedMotion();
-    const requestPromise = Promise.resolve().then(requestFn);
-    const progressPromise = reduced
-      ? Promise.resolve()
-      : this.runProgress(presetKey);
-
-    return Promise.all([requestPromise, progressPromise]).then(function (results) {
-      const result = results[0];
-      this._showOutcome(renderOutcome, result);
-      return result;
-    }.bind(this));
+    const self = this;
+    return this.runProgress(PRESET.SUBMIT_DATA)
+      .then(function () {
+        return Promise.resolve().then(requestFn);
+      })
+      .then(function (result) {
+        if (result.outcome === "success" && redirectOnSuccess) {
+          self.close();
+          if (onSuccess) {
+            onSuccess(result);
+          }
+          return result;
+        }
+        self._showOutcome(renderOutcome, result);
+        return result;
+      });
   };
 
   let instance = null;
@@ -254,18 +274,27 @@
     return instance;
   }
 
-  function transmit(options) {
+  function presentOutcome(options) {
     const modal = getModal();
     if (!modal) {
       return Promise.reject(new Error("Transmission modal markup not found"));
     }
-    return modal.transmit(options);
+    return modal.presentOutcome(options.renderOutcome, options.result);
+  }
+
+  function transmitSerialized(options) {
+    const modal = getModal();
+    if (!modal) {
+      return Promise.reject(new Error("Transmission modal markup not found"));
+    }
+    return modal.transmitSerialized(options);
   }
 
   global.RadspionTransmission = {
     PRESET: PRESET,
     PRESETS: PRESETS,
     getModal: getModal,
-    transmit: transmit,
+    presentOutcome: presentOutcome,
+    transmitSerialized: transmitSerialized,
   };
 })(typeof window !== "undefined" ? window : globalThis);

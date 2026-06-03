@@ -18,7 +18,7 @@ Ordered by **dependency** — build from the top down. Each case lists **Require
 | `agent_mission_status` | Keep table **in sync at all times** (login + unlock + complete); dashboard reads this table |
 | Debrief | Only after mission `completed` |
 | Error copy (UC-020, UC-022) | Wording TBD — you’ll review per case |
-| Web framework | **Flask + Jinja** SSR; JSON API at `/api/unlock`, `/api/missions/<slug>/submit` |
+| Web framework | **Flask + Jinja** SSR; JSON API at **`POST /api/submit`** |
 | Brief/Debrief bodies | `missions.brief_markdown` / `debrief_markdown` (seed SQL generated from **radspion-missions**) |
 | Operator config V1 | SQL/seed only — no in-app mission editor |
 | Operator progress V1 | Read-only UI: story arcs → missions → agent status |
@@ -195,43 +195,43 @@ After `completed`, agent sees the stored `completion_code` value for that missio
 
 ---
 
-## Unlock
+## Submit data
 
-### UC-019 — Redeem unlock code (success)
+Agents submit field data via the signed-in header or **`POST /api/submit`**. The server checks listing codes (`mission_unlock_codes`) before completion codes (`missions.completion_code`).
+
+### UC-019 — Submit listing data (success)
 
 **Actor:** Agent  
 **Requires:** UC-014  
-Valid unlock code → one or more matching missions appear on the list (`active`). API returns `outcome: success` and `new_missions` with summaries of missions newly listed (may be one or many). Example: `EXAMPLE UNLOCK` lists `es-alpha` and `es-beta`.
+Valid listing data → one or more matching missions appear on the list (`active`). API returns `outcome: success`, `kind: unlock`, and `new_missions` with summaries of missions newly listed (may be one or many). Example: `EXAMPLE UNLOCK` lists `es-alpha` and `es-beta`.
 
 ---
 
-### UC-019b — Redeem unlock code (already done)
+### UC-019b — Submit listing data (already done)
 
 **Actor:** Agent  
 **Requires:** UC-019  
-Valid unlock code, but every matching mission already has a status row for this agent → `outcome: already_done`, `new_missions: []`. Optional generic `message`.
+Valid listing data, but every matching mission already has a status row for this agent → `outcome: already_done`, `new_missions: []`. Optional generic `message`.
 
 ---
 
-### UC-020 — Redeem unlock code (failure)
+### UC-020 — Reject invalid data
 
 **Actor:** Agent  
 **Requires:** UC-019  
-No matching `mission_unlock_codes` row → `outcome: invalid`; clear error without revealing mission existence or codes. *(Wording TBD.)*
+No matching listing code and no valid completion for an active listed mission → `outcome: invalid` with the same message as wrong completion data or completion data for a mission not on the agent’s list (no mission hints).
 
 ---
 
-## Completion
-
-### UC-021 — Complete mission
+### UC-021 — Submit completion data (success)
 
 **Actor:** Agent  
 **Requires:** UC-016, UC-017  
-Agent submits correct `completion_code` while mission is `active` → `status = completed`; run listing sync (UC-024). API returns `outcome: success` and `new_missions` for missions that became listable (may be empty). Examples: basic-training; any listed mission with matching code.
+Agent submits correct completion data while mission is `active` → `status = completed`; run listing sync (UC-024). API returns `outcome: success`, `kind: complete`, `mission_slug`, and `new_missions` for missions that became listable (may be empty). Examples: `WELCOME-AGENT-OK`; `COMPLETE es-beta`.
 
 ---
 
-### UC-021b — Complete mission (already done)
+### UC-021b — Submit completion data (already done)
 
 **Actor:** Agent  
 **Requires:** UC-021  
@@ -239,11 +239,11 @@ Mission already `completed` for this agent (re-submit) → `outcome: already_don
 
 ---
 
-### UC-022 — Reject wrong completion code
+### UC-022 — Reject wrong completion data
 
 **Actor:** Agent  
 **Requires:** UC-021  
-Wrong code → “not recognized”. *(Wording TBD.)*
+Wrong completion data for a listed active mission → `outcome: invalid` (same message as UC-020).
 
 ---
 

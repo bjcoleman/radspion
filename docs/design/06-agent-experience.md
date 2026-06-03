@@ -12,89 +12,74 @@ The dashboard groups missions by story arc (`groups.name` via `missions.group_id
 
 ## Listing (`missions.access_rule`)
 
-A mission is added to the dashboard either by **redeeming an unlock code** (`unlock_code`) or **automatically after completing prerequisite missions** (`requires_complete`). Those two mechanisms are never combined on the same mission.
+A mission is added to the dashboard either by **submitting listing data** (`unlock_code` missions) or **automatically after completing prerequisite missions** (`requires_complete`). Those two mechanisms are never combined on the same mission.
 
 | Rule | Behavior |
 |------|----------|
 | `open` | On dashboard for any signed-in agent (sync ensures `active` row) |
-| `unlock_code` | After `mission_unlock_codes` redeemed |
+| `unlock_code` | After matching data is submitted via `mission_unlock_codes` |
 | `requires_complete` | After all `mission_list_requires` missions completed |
 
 Missions that are not yet listable are **not shown** on the dashboard.
 
 ## Mission detail
 
-- **Mission Brief** from `missions.brief_markdown` when the mission is on the agent’s list.
+- **Mission Brief** from `missions.brief_markdown` when the mission is on the agent’s list and `active`.
 - **Debrief** from `missions.debrief_markdown` only after **completed**.
 - After **completed**, show captured value from `missions.completion_code` (never expose to `active` missions in API).
 
-## Completion
+## Submitting data
 
-1. Mission on status list (`active`).
-2. Input matches **`completion_code`** — else “not recognized”.
-3. `agent_mission_status.status = completed`; sync list for other missions.
+Agents submit **field data** from the signed-in header on any agent page. The server resolves each string as either:
+
+1. **Listing data** — matches `mission_unlock_codes` (checked first), or
+2. **Completion data** — matches `missions.completion_code` for a mission that is **`active`** on the agent’s list.
+
+Unknown data, wrong data, and completion data for a mission not yet on the list all return the same **`invalid`** outcome (no mission hints).
+
+After a successful completion, listing sync runs for `requires_complete` missions (UC-024).
 
 ## Interactive actions (hybrid SSR + JSON)
 
-Pages are **Flask + Jinja** (dashboard, mission detail). Unlock and field submission call the **JSON API** under `/api/` with the same session cookie so the browser can run the secure-channel modal (progress animation) and render outcome-specific copy without a full page reload.
+Pages are **Flask + Jinja** (dashboard, mission detail). Data submission calls **`POST /api/submit`** with the session cookie. The browser runs a secure transmission modal (progress animation, then request), then either shows an outcome modal or redirects.
 
-Canonical request/response shapes: [`docs/api.yaml`](../api.yaml). Static mockups in `docs/ui/` **hard-code** modal outcomes (no `fetch`); production uses `RadspionTransmission.transmit()` against these endpoints.
+Canonical request/response shapes: [`docs/api.yaml`](../api.yaml). Static mockups in `docs/ui/` **hard-code** modal outcomes (no `fetch`).
 
-Business failures return **HTTP 200** with an `outcome` field (invalid code) so the modal always completes its animation before showing the result.
+Business failures return **HTTP 200** with `outcome: invalid` so the modal always completes its animation before showing the result.
 
-### Mission unlock links (`GET /unlock/<token>`)
+### Data links (`GET /link/<token>`)
 
-**Auth:** none to view; redemption requires a signed-in agent.
+**Auth:** none to view; submission requires a signed-in agent.
 
-QR codes and field handouts may link to `https://…/unlock/<token>` where `<token>` is the
-URL-encoded mission unlock code. The page stages `pending_unlock_code` in session (and in
-OAuth pending state for the Google redirect) until the user signs in.
+QR codes and handouts may link to `https://…/link/<token>` where `<token>` is URL-encoded field data. Anonymous visitors stage `pending_submit_data` in session (and in OAuth pending state) until they sign in.
 
-- **Signed in:** confirm on the unlock page → `POST /api/unlock` (transmission modal).
-- **Signed out:** Sign in with Google → after OAuth, the server redeems the pending unlock and redirects to the dashboard, which runs the same
-  secure-channel transmission modal as manual unlock.
+- **Signed in:** confirm on the link page → `POST /api/submit` (transmission modal).
+- **Signed out:** Sign in with Google → after OAuth, the server submits pending data and redirects to the dashboard with a staged modal result.
 
-### `POST /api/unlock`
+### `POST /api/submit`
 
 **Auth:** signed-in agent (session cookie).
 
-**Request:** `{ "unlock_code": "..." }`
+**Request:** `{ "data": "..." }`
 
-**Response:** same shape as submit — [`MissionListResponse`](../api.yaml) (`outcome`, optional `message`, `new_missions`).
+**Response:** [`SubmitDataResponse`](../api.yaml) — `outcome`, optional `message`, `new_missions`, and on success `kind` (`unlock` | `complete`) plus `mission_slug` when `kind` is `complete`.
 
 | `outcome` | When | Response body |
 |-----------|------|----------------|
-| `success` | Valid code; one or more matching missions newly listed | `new_missions`: array of `{ "title", "slug", "group_name" }` — one or many when the code is shared |
-| `already_done` | Valid code; every matching mission already on the agent's list (`active` or `completed`) | `new_missions`: `[]`; optional `message` |
-| `invalid` | Code not found | Optional `message` — no mission hints (UC-020) |
+| `success` | Valid listing data newly listed one or more missions, **or** valid completion data marked a mission complete | `kind`, `new_missions` (may be empty), `mission_slug` when complete |
+| `already_done` | Listing data but every matching mission already on the list, **or** completion data for an already completed mission | `new_missions`: `[]`; optional `message` |
+| `invalid` | Unknown data, wrong data, or completion data for a mission not on the agent’s list | `message` — generic; no mission hints |
 
 **HTTP 401** when not signed in.
 
-Redeem creates an `active` row for each matching `unlock_code` mission that has no status row yet. The same `unlock_code` value may appear on multiple missions.
+Listing success creates an `active` row for each matching `unlock_code` mission with no status row yet. The same unlock string may appear on multiple missions.
 
-### `POST /api/missions/<slug>/submit`
+### Success UX
 
-**Auth:** signed-in agent (session cookie).
+1. Progress animation runs, then `POST /api/submit`.
+2. On **`success`**, the server stages a one-shot result in session; the client navigates to the **dashboard** (`kind: unlock`) or **mission detail** (`kind: complete`).
+3. The destination page plays the transmission modal once with the staged outcome.
 
-**Path:** mission `slug` (e.g. `es-alpha`).
+### Error UX
 
-**Request:** `{ "completion_code": "..." }`
-
-**Response:** same shape as unlock — [`MissionListResponse`](../api.yaml).
-
-| `outcome` | When | Response body |
-|-----------|------|----------------|
-| `success` | Code matches; mission marked `completed`; listing sync ran | `new_missions`: array of missions that became listable (may be **empty**) |
-| `already_done` | Mission already `completed` for this agent (re-submit) | `new_missions`: `[]`; optional `message` |
-| `invalid` | Code wrong | Optional generic `message` |
-
-**HTTP 401** when not signed in. **HTTP 404** when the slug is unknown or the mission is not on the agent’s list.
-
-**Success UX fork** (unlock and submit share the same modal branches):
-
-- `new_missions` **empty** — unlock: confirm code accepted (nothing new); submit: congratulate completion; **OK** → dashboard refresh or mission detail **completed** view (debrief).
-- `new_missions` **non-empty** — list each new mission (title, slug, group name); **OK** → dashboard refresh (unlock) or completed view (submit).
-
-**Already done UX:** show optional `message`; **OK** dismisses without changing the list.
-
-Unlock and submit both return **`new_missions`** for missions newly added to the dashboard. A mission can only already be listed if the agent unlocked or completed it (or sync listed an `open` / `requires_complete` mission) — hence the shared `already_done` outcome.
+On **`invalid`** or **`already_done`**, show the outcome modal on the **current page**; dismiss without navigation.

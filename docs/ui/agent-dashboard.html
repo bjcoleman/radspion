@@ -22,6 +22,19 @@
       >
       <span class="site-header__title">Radspion</span>
     </div>
+    <form class="site-header__submit data-submit-form" action="#" method="post">
+      <label class="sr-only" for="header-data">Submit data</label>
+      <input
+        class="site-header__submit-input text-mono"
+        type="text"
+        id="header-data"
+        name="data"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="Submit data"
+      >
+      <button class="site-header__submit-button" type="button">Submit</button>
+    </form>
     <div class="site-header__agent">
       <span class="site-header__agent-label">Agent</span>
       <span class="site-header__agent-name">Alice</span>
@@ -35,26 +48,10 @@
       <header class="dashboard__intro">
         <h1 class="dashboard__heading">Mission Dashboard</h1>
         <p class="dashboard__lede text-muted">
-          Missions are assigned by Command, or added when you submit an unlock code
-          that confirms you are ready.
+          Missions are assigned by Command, or added when you submit data that confirms
+          you are ready.
         </p>
       </header>
-
-      <section class="unlock-panel dashboard__unlock" aria-label="Unlock mission">
-        <form class="unlock-form" action="#" method="post">
-          <label class="sr-only" for="unlock-code">Mission unlock code</label>
-          <input
-            class="unlock-form__input text-mono"
-            type="text"
-            id="unlock-code"
-            name="unlock_code"
-            autocomplete="off"
-            spellcheck="false"
-            placeholder="Enter Mission Unlock Code"
-          >
-          <button class="unlock-form__submit" type="button">Validate</button>
-        </form>
-      </section>
 
       <div class="dashboard__controls">
         <label class="dashboard__toggle">

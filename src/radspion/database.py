@@ -8,7 +8,7 @@ from radspion.missions import (
     DashboardMission,
     ListedMissionContent,
     MissionSummary,
-    UnlockRedeemResult,
+    SubmitDataResult,
 )
 from radspion.user import User
 
@@ -245,19 +245,15 @@ class DatabaseRadspionStorage:
             completion_code=recovered,
         )
 
-    def redeem_unlock_code(self, user_id: int, unlock_code: str) -> UnlockRedeemResult:
-        """
-        Redeem a mission unlock code (UC-014, UC-019).
-
-        ``unlock_code`` must be trimmed and non-empty. Comparison is case-sensitive.
-        """
+    def _submit_unlock(self, user_id: int, unlock_code: str) -> SubmitDataResult:
+        """Resolve a mission unlock code (internal; used by submit_data)."""
         try:
             known = self._conn.execute(
                 "SELECT 1 FROM mission_unlock_codes WHERE unlock_code = ? LIMIT 1",
                 (unlock_code,),
             ).fetchone()
             if known is None:
-                return UnlockRedeemResult(outcome="invalid")
+                return SubmitDataResult(outcome="invalid")
 
             rows = self._conn.execute(
                 """
@@ -280,7 +276,7 @@ class DatabaseRadspionStorage:
             ).fetchall()
 
             if not rows:
-                return UnlockRedeemResult(
+                return SubmitDataResult(
                     outcome="already_done",
                     message="Those missions are already on your dashboard.",
                 )
@@ -303,11 +299,12 @@ class DatabaseRadspionStorage:
                 )
             self._conn.commit()
         except sqlite3.Error as exc:
-            raise DatabaseError(f"Database error redeeming unlock code: {exc}") from exc
+            raise DatabaseError(f"Database error submitting unlock data: {exc}") from exc
 
-        return UnlockRedeemResult(
+        return SubmitDataResult(
             outcome="success",
             new_missions=tuple(new_missions),
+            kind="unlock",
         )
 
     def _listed_mission_summaries(self, user_id: int) -> dict[str, MissionSummary]:
@@ -332,39 +329,50 @@ class DatabaseRadspionStorage:
             for row in rows
         }
 
-    def submit_mission_completion(
-        self,
-        user_id: int,
-        slug: str,
-        completion_code: str,
-    ) -> UnlockRedeemResult | None:
+    def submit_data(self, user_id: int, data: str) -> SubmitDataResult:
         """
-        Submit a mission completion code (UC-021).
+        Submit field data for the signed-in agent.
 
-        ``completion_code`` must be trimmed and non-empty. Comparison is case-sensitive.
-        Returns None when the mission is not on the agent's list.
+        ``data`` must be trimmed and non-empty. Comparison is case-sensitive.
+        Unlock codes are checked before completion codes. Completion for a
+        mission that is not on the agent's list returns ``invalid``.
         """
         try:
-            row = self._conn.execute(
-                """
-                SELECT ams.status, m.id AS mission_id, m.completion_code
-                FROM agent_mission_status ams
-                JOIN missions m ON m.id = ams.mission_id
-                WHERE ams.user_id = ? AND m.slug = ?
-                """,
-                (user_id, slug),
+            known_unlock = self._conn.execute(
+                "SELECT 1 FROM mission_unlock_codes WHERE unlock_code = ? LIMIT 1",
+                (data,),
             ).fetchone()
-            if row is None:
-                return None
+            if known_unlock is not None:
+                return self._submit_unlock(user_id, data)
+
+            rows = self._conn.execute(
+                """
+                SELECT m.id AS mission_id,
+                       m.slug,
+                       ams.status
+                FROM missions m
+                LEFT JOIN agent_mission_status ams
+                  ON ams.mission_id = m.id AND ams.user_id = ?
+                WHERE m.completion_code = ?
+                """,
+                (user_id, data),
+            ).fetchall()
+
+            if not rows:
+                return SubmitDataResult(outcome="invalid")
+
+            if len(rows) > 1:
+                return SubmitDataResult(outcome="invalid")
+
+            row = rows[0]
+            if row["status"] is None:
+                return SubmitDataResult(outcome="invalid")
 
             if row["status"] == "completed":
-                return UnlockRedeemResult(
+                return SubmitDataResult(
                     outcome="already_done",
                     message="This mission is already marked complete.",
                 )
-
-            if row["completion_code"] != completion_code:
-                return UnlockRedeemResult(outcome="invalid")
 
             listed_before = self._listed_mission_summaries(user_id)
             self._conn.execute(
@@ -381,6 +389,11 @@ class DatabaseRadspionStorage:
             new_missions = tuple(listed_after[s] for s in new_slugs)
             self._conn.commit()
         except sqlite3.Error as exc:
-            raise DatabaseError(f"Database error submitting mission completion: {exc}") from exc
+            raise DatabaseError(f"Database error submitting data: {exc}") from exc
 
-        return UnlockRedeemResult(outcome="success", new_missions=new_missions)
+        return SubmitDataResult(
+            outcome="success",
+            new_missions=new_missions,
+            kind="complete",
+            mission_slug=row["slug"],
+        )

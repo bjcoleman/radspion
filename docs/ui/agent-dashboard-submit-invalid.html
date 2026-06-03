@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- Static dashboard mockup — unlock failed (invalid code, transmission modal outcome) -->
+<!-- Static dashboard mockup — submit invalid (transmission modal outcome) -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Mission Dashboard - Unlock Failed</title>
+  <title>Mission Dashboard - Submit Invalid</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -22,6 +22,19 @@
       >
       <span class="site-header__title">Radspion</span>
     </div>
+    <form class="site-header__submit data-submit-form" action="#" method="post">
+      <label class="sr-only" for="header-data">Submit data</label>
+      <input
+        class="site-header__submit-input text-mono"
+        type="text"
+        id="header-data"
+        name="data"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="Submit data"
+      >
+      <button class="site-header__submit-button" type="button">Submit</button>
+    </form>
     <div class="site-header__agent">
       <span class="site-header__agent-label">Agent</span>
       <span class="site-header__agent-name">Alice</span>
@@ -35,27 +48,10 @@
       <header class="dashboard__intro">
         <h1 class="dashboard__heading">Mission Dashboard</h1>
         <p class="dashboard__lede text-muted">
-          Missions are assigned by Command, or added when you submit an unlock code
-          that confirms you are ready.
+          Missions are assigned by Command, or added when you submit data that confirms
+          you are ready.
         </p>
       </header>
-
-      <section class="unlock-panel dashboard__unlock" aria-label="Unlock mission">
-        <form class="unlock-form" action="#" method="post">
-          <label class="sr-only" for="unlock-code">Mission unlock code</label>
-          <input
-            class="unlock-form__input text-mono"
-            type="text"
-            id="unlock-code"
-            name="unlock_code"
-            autocomplete="off"
-            spellcheck="false"
-            placeholder="Enter Mission Unlock Code"
-            value="ZZ-INVALID"
-          >
-          <button class="unlock-form__submit" type="button">Validate</button>
-        </form>
-      </section>
 
       <div class="dashboard__controls">
         <label class="dashboard__toggle">
@@ -152,20 +148,19 @@
       class="transmission-modal__dialog"
       role="dialog"
       aria-modal="true"
-      aria-labelledby="unlock-heading"
+      aria-labelledby="submit-heading"
     >
-      <div class="transmission-modal__progress" id="unlock-progress">
-        <h2 id="unlock-heading" class="transmission-modal__title text-mono">Secure channel</h2>
-        <p class="transmission-modal__step" id="unlock-step">Initializing secure channel...</p>
+      <div class="transmission-modal__progress" id="submit-progress">
+        <h2 id="submit-heading" class="transmission-modal__title text-mono">Secure transmission</h2>
+        <p class="transmission-modal__step" id="submit-step">Initializing secure transmission...</p>
         <div class="transmission-modal__bar" aria-hidden="true">
-          <div class="transmission-modal__bar-fill" id="unlock-bar-fill"></div>
+          <div class="transmission-modal__bar-fill" id="submit-bar-fill"></div>
         </div>
       </div>
-      <div class="transmission-modal__outcome" id="unlock-outcome" hidden>
+      <div class="transmission-modal__outcome" id="submit-outcome" hidden>
         <h2 class="transmission-modal__title">Verification failed</h2>
         <p class="transmission-modal__message">
-          We could not validate that unlock code against agency records.
-          Check the code and try again.
+          We could not validate that data against agency records.
         </p>
         <button type="button" class="transmission-modal__ok">OK</button>
       </div>
@@ -174,15 +169,15 @@
 
   <script>
     (function () {
-      var progress = document.getElementById("unlock-progress");
-      var outcome = document.getElementById("unlock-outcome");
-      var stepEl = document.getElementById("unlock-step");
-      var barEl = document.getElementById("unlock-bar-fill");
+      var progress = document.getElementById("submit-progress");
+      var outcome = document.getElementById("submit-outcome");
+      var stepEl = document.getElementById("submit-step");
+      var barEl = document.getElementById("submit-bar-fill");
       if (!progress || !outcome || !stepEl || !barEl) return;
 
       var prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       var steps = [
-        { text: "Encrypting unlock code...", width: 32, delay: 550 },
+        { text: "Transferring field data...", width: 32, delay: 550 },
         { text: "Checking agency records...", width: 88, delay: 800 }
       ];
 

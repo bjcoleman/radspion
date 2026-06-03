@@ -57,7 +57,7 @@ pip install -e .
 ./scripts/seed_storyline.sh orientation
 ```
 
-Pack SQL is generated in **radspion-missions** (`scripts/generate_storyline_sql.py PACK`), which writes `{pack}/{pack}.sql`. Run generation before `./scripts/seed_storyline.sh` (the seed script does not generate SQL).
+Pack SQL is generated in **radspion-missions** (`scripts/generate_storyline_sql.py PACK`), which writes `{pack}/{pack}.sql`. Run generation before `./scripts/seed_storyline.sh` (the seed script does not generate SQL). Seeding validates that unlock and completion codes are disjoint within the pack and against the target database before any inserts run (`scripts/validate_pack_sql.py`).
 
 **Test fixture database** (schema + Testing Storyline seed with sample agents — dev/test only):
 
@@ -249,19 +249,14 @@ Static prototypes live in `docs/ui/`. They inform Jinja templates and CSS; **moc
 
 ### Transmission modal (`static/js/transmission-modal.js`)
 
-Shared progress animation for mission unlock and field submission. Include `templates/_transmission_modal.html` in the page and load the script from `extra_body`.
+Shared progress animation for field data submission. Agent pages include `templates/_transmission_modal.html` and load `submit-data.js` / `submit-result.js` from `extra_body`.
 
-**Presets** (`RadspionTransmission.PRESET`):
+**Preset:** `RadspionTransmission.PRESET.SUBMIT_DATA` — title “Secure transmission”, step 3 label “field data”.
 
-| Preset | Modal title | Step 3 label |
-|--------|-------------|--------------|
-| `UNLOCK_CODE` | Secure channel | unlock code |
-| `COMPLETION_DATA` | Secure transmission | completion data |
+Four steps: initiating secure connection → establishing agent identity → transferring field data → checking agency records. Total duration targets **~3 seconds** with per-step jitter.
 
-All presets use the same four steps: initiating secure connection → establishing agent identity → transferring *&lt;data&gt;* → checking agency records. Total duration targets **~3 seconds** with per-step jitter.
+**`transmitSerialized({ request, renderOutcome, redirectOnSuccess, onSuccess })`** runs the progress animation **first**, then `request()` (typically `fetch` to `/api/submit`). On `outcome: success` with `redirectOnSuccess: true`, the modal closes and the client navigates; **`submit-result.js`** then calls **`presentOutcome`** on the destination page to show the success dialog **without** replaying the animation. On `invalid` or `already_done`, the outcome panel appears on the current page after the animation.
 
-**`transmit({ preset, request, renderOutcome })`** runs `request()` (typically `fetch`) **in parallel** with the progress animation. The outcome panel is shown only after **both** complete; a fast server response still waits for the animation (unless the user has **Reduce motion** enabled, in which case the outcome appears as soon as the request finishes).
+While the modal is open, data submit forms are disabled and a second transmission is ignored. On the outcome step, **Enter** activates **OK**.
 
-While the modal is open, unlock/completion forms are disabled and a second `transmit` is ignored. On the outcome step, **Enter** activates **OK** (same as click), including reload-on-success handlers wired by the page scripts.
-
-Manual check: open `docs/ui/transmission-modal-demo.html` in a browser (includes slow POST on unlock demo to verify animation wins the race).
+Manual check: open `docs/ui/transmission-modal-demo.html` in a browser.

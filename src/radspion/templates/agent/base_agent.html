@@ -10,3 +10,15 @@
 {% block content %}
   {% block agent_content %}{% endblock %}
 {% endblock %}
+
+{% block extra_body %}
+  {% include "_transmission_modal.html" %}
+  <script src="{{ url_for('static', filename='js/transmission-modal.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/submit-data.js') }}"></script>
+  {% if staged_submit_result %}
+    <script>
+      window.RADSPION_STAGED_SUBMIT_RESULT = {{ staged_submit_result | tojson }};
+    </script>
+  {% endif %}
+  <script src="{{ url_for('static', filename='js/submit-result.js') }}"></script>
+{% endblock %}

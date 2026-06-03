@@ -1,7 +1,12 @@
 """Application (business) layer for Radspion."""
 
 from radspion.markdown_render import render_mission_markdown
-from radspion.missions import DashboardGroup, DashboardMission, MissionDetail, UnlockRedeemResult
+from radspion.missions import (
+    DashboardGroup,
+    DashboardMission,
+    MissionDetail,
+    SubmitDataResult,
+)
 from radspion.oauth_types import GoogleProfile
 from radspion.user import User
 
@@ -67,30 +72,14 @@ class Radspion:
             recovered_code=content.completion_code,
         )
 
-    def redeem_unlock_code(self, user_id: int, raw_code: str) -> UnlockRedeemResult:
+    def submit_data(self, user_id: int, raw_data: str) -> SubmitDataResult:
         """
-        Redeem a mission unlock code for the signed-in agent.
+        Submit field data for the signed-in agent.
 
-        Trims whitespace; comparison is case-sensitive.
+        Trims whitespace; comparison is case-sensitive. Resolves unlock codes
+        before completion codes.
         """
-        code = raw_code.strip()
-        if not code:
-            return UnlockRedeemResult(outcome="invalid")
-        return self._storage.redeem_unlock_code(user_id, code)
-
-    def submit_mission_completion(
-        self,
-        user_id: int,
-        slug: str,
-        raw_code: str,
-    ) -> UnlockRedeemResult | None:
-        """
-        Submit a mission completion code for the signed-in agent.
-
-        Trims whitespace; comparison is case-sensitive.
-        Returns None when the mission is not on the agent's list.
-        """
-        code = raw_code.strip()
-        if not code:
-            return UnlockRedeemResult(outcome="invalid")
-        return self._storage.submit_mission_completion(user_id, slug, code)
+        data = raw_data.strip()
+        if not data:
+            return SubmitDataResult(outcome="invalid")
+        return self._storage.submit_data(user_id, data)

@@ -12,8 +12,8 @@ from radspion.radspion import Radspion
 from radspion.web.agent import agent_bp
 from radspion.web.api import api_bp
 from radspion.web.auth import auth_bp
+from radspion.web.link import link_bp
 from radspion.web.main import main_bp
-from radspion.web.unlock import unlock_bp
 
 
 def create_app(*, config: Config, radspion: Radspion, oauth) -> Flask:
@@ -32,7 +32,7 @@ def create_app(*, config: Config, radspion: Radspion, oauth) -> Flask:
     app.register_blueprint(api_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(agent_bp)
-    app.register_blueprint(unlock_bp)
+    app.register_blueprint(link_bp)
 
     @app.errorhandler(404)
     def not_found(_error):
