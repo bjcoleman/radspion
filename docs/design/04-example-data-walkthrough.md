@@ -1,4 +1,4 @@
-# Example Storyline: data in tables
+# Testing Storyline: data in tables
 
 Reference **local test** seed for development and acceptance scenarios. Not used in production.
 
@@ -6,7 +6,7 @@ Load with `./scripts/create_test_db.sh`, or let pytest build temporary databases
 
 SQL files run `PRAGMA foreign_keys = ON;` at the start of each script.
 
-**Story arcs:** `Orientation` (includes `basic-training`), `Example Storyline` (five test missions).
+**Story arcs:** `Orientation` (includes `basic-training`), `Testing Storyline` (five test missions).
 
 ## Mission graph
 
@@ -25,11 +25,11 @@ HIDDEN UNLOCK ──► es-hidden (dead end)     │
 | slug | title | group | access_rule | completion_code |
 |------|-------|-------|-------------|-----------------|
 | basic-training | Welcome to Radspion | Orientation | open | WELCOME-AGENT-OK |
-| es-alpha | ES: Alpha | Example Storyline | unlock_code | COMPLETE es-alpha |
-| es-beta | ES: Beta | Example Storyline | unlock_code | COMPLETE es-beta |
-| es-hidden | ES: Hidden | Example Storyline | unlock_code | COMPLETE es-hidden |
-| es-gamma | ES: Gamma | Example Storyline | requires_complete | COMPLETE es-gamma |
-| es-delta | ES: Delta | Example Storyline | requires_complete | COMPLETE es-delta |
+| es-alpha | ES: Alpha | Testing Storyline | unlock_code | COMPLETE es-alpha |
+| es-beta | ES: Beta | Testing Storyline | unlock_code | COMPLETE es-beta |
+| es-hidden | ES: Hidden | Testing Storyline | unlock_code | COMPLETE es-hidden |
+| es-gamma | ES: Gamma | Testing Storyline | requires_complete | COMPLETE es-gamma |
+| es-delta | ES: Delta | Testing Storyline | requires_complete | COMPLETE es-delta |
 
 ## mission_unlock_codes
 
@@ -59,16 +59,16 @@ When `status = completed`, the app shows `missions.completion_code` for that mis
 | Charlie | `es-beta` completed; `es-alpha` active; `es-gamma` not listed |
 | Bob | All storyline missions `completed` (including `es-hidden`) |
 
-See [05-example-storyline.md](05-example-storyline.md) for acceptance scenarios.
+See [05-testing-storyline.md](05-testing-storyline.md) for acceptance scenarios.
 
 ## Queries
 
-**Missions in the Example Storyline arc:**
+**Missions in the Testing Storyline arc:**
 
 ```sql
 SELECT slug, title, access_rule
 FROM missions
-WHERE group_id = (SELECT id FROM groups WHERE name = 'Example Storyline');
+WHERE group_id = (SELECT id FROM groups WHERE name = 'Testing Storyline');
 ```
 
 **List prereqs for es-delta:**

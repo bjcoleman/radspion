@@ -1,12 +1,12 @@
 # Radspion UI mockups (V1)
 
-Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snapshot—no backend. Modal animations use **inline scripts** on dedicated outcome pages; production will use server-rendered pages plus `fetch` to the JSON API ([06-agent-experience.md](../design/06-agent-experience.md), [api.yaml](../api.yaml)). Personas and seed states: [05-example-storyline.md](../design/05-example-storyline.md) (Alice mid-progress on **Example Storyline**).
+Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snapshot—no backend. Modal animations use **inline scripts** on dedicated outcome pages; production will use server-rendered pages plus `fetch` to the JSON API ([06-agent-experience.md](../design/06-agent-experience.md), [api.yaml](../api.yaml)). Personas and seed states: [05-testing-storyline.md](../design/05-testing-storyline.md) (Alice mid-progress on **Testing Storyline**).
 
-**Design reference:** [06-agent-experience.md](../design/06-agent-experience.md) (includes hybrid JSON endpoints) · [use-cases.md](../design/use-cases.md) · [05-example-storyline.md](../design/05-example-storyline.md) · [COLOR_USAGE.md](COLOR_USAGE.md)
+**Design reference:** [06-agent-experience.md](../design/06-agent-experience.md) (includes hybrid JSON endpoints) · [use-cases.md](../design/use-cases.md) · [05-testing-storyline.md](../design/05-testing-storyline.md) · [COLOR_USAGE.md](COLOR_USAGE.md)
 
 **Assets:** styles in [`css/radspion.css`](css/radspion.css) are kept in sync with production [`src/radspion/static/css/radspion.css`](../../src/radspion/static/css/radspion.css) (mockup rules + app-only rules for flash, content pages, disabled controls). Logos in [`logos/`](../../logos/). Mission brief and debrief copy is **inlined in HTML** on mission detail mockups (production loads markdown from the database).
 
-**Sample data alignment:** Story arcs **Orientation** and **Example Storyline** (`es-*` missions); **`unlock_code`** or **`requires_complete`** listing — never both on one mission.
+**Sample data alignment:** Story arcs **Orientation** and **Testing Storyline** (`es-*` missions); **`unlock_code`** or **`requires_complete`** listing — never both on one mission.
 
 **Mock vs production:** Modal outcome pages hard-code copy and animation; no `fetch`. Production will call `POST /api/unlock` and `POST /api/missions/<slug>/submit` per [`api.yaml`](../api.yaml). API `outcome` values for unlock and submit are `success`, `invalid`, `already_done` (shared [`MissionListResponse`](../api.yaml) with `new_missions`). Unlock success may list one or many missions; submit **success-unlocks** simulates `success` with a non-empty `new_missions` array.
 
@@ -39,7 +39,7 @@ Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snaps
 
 | File | Status | Persona / state | Use cases |
 |------|--------|-----------------|-----------|
-| [agent-dashboard.html](agent-dashboard.html) | done | Alice; Example Storyline expanded (`es-alpha` done, `es-beta`/`es-gamma` active) | UC-013, UC-019, UC-026 |
+| [agent-dashboard.html](agent-dashboard.html) | done | Alice; Testing Storyline expanded (`es-alpha` done, `es-beta`/`es-gamma` active) | UC-013, UC-019, UC-026 |
 | [agent-dashboard-hidden.html](agent-dashboard-hidden.html) | done | Same list; **Show completed missions** off | UC-013 |
 | [agent-dashboard-unlock-success.html](agent-dashboard-unlock-success.html) | done | Unlock success modal | UC-020, UC-027 |
 | [agent-dashboard-unlock-bad-code.html](agent-dashboard-unlock-bad-code.html) | done | Unlock invalid modal | UC-020 |

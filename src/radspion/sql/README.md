@@ -7,7 +7,17 @@
 
 ## Production storyline packs
 
-Mission packs are authored in **radspion-missions**. Each pack generates `{pack}/{pack}.sql` (e.g. `orientation/orientation.sql`). Load into an empty database with `./scripts/seed_storyline.sh` (requires `RADSPION_MISSIONS_ROOT` in `.env`).
+Mission packs are authored in **radspion-missions** (`storyline.yaml` + per-mission `brief.md` / `debrief.md`). Generate SQL in that repo, then load into a database that already has `schema.sql` applied:
+
+```bash
+# In radspion-missions (see that repo README)
+.venv/bin/python scripts/generate_storyline_sql.py orientation
+
+# In radspion (.env must set RADSPION_MISSIONS_ROOT)
+./scripts/seed_storyline.sh orientation
+```
+
+`seed_storyline.sh` reads `{pack}/{pack}.sql` from the missions repo path in `.env`. Seeds are insert-only and not idempotent.
 
 ## Testing seed
 

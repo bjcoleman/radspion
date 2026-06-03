@@ -22,4 +22,4 @@ Infrastructure: `schema.sql` in this repo. Storyline mission prose is authored i
 
 ## Example
 
-See [04-example-data-walkthrough.md](04-example-data-walkthrough.md) for the **Example Storyline** test graph. Production missions load from **radspion-missions** storyline packs via `./scripts/seed_storyline.sh`.
+See [04-example-data-walkthrough.md](04-example-data-walkthrough.md) for the **Testing Storyline** test graph. Production missions load from **radspion-missions** storyline packs via `./scripts/seed_storyline.sh` (set `RADSPION_MISSIONS_ROOT` in `.env`).

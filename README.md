@@ -35,7 +35,7 @@ pip install -r requirements.txt && pip install -e .
 make
 ```
 
-For an empty DB: `./scripts/create_empty_db.sh`, then load packs with `./scripts/seed_storyline.sh`. For dev/test with sample agents and `es-*` missions: `./scripts/create_test_db.sh`. See [05-testing-storyline.md](docs/design/05-testing-storyline.md).
+For an empty DB: `./scripts/create_empty_db.sh`, generate pack SQL in **radspion-missions**, set `RADSPION_MISSIONS_ROOT` in `.env`, then `./scripts/seed_storyline.sh PACK`. For dev/test with sample agents and `es-*` missions: `./scripts/create_test_db.sh`. See [05-testing-storyline.md](docs/design/05-testing-storyline.md).
 
 See [docs/dev.md](docs/dev.md) for OAuth, CI, and deployment.
 

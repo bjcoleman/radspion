@@ -57,7 +57,7 @@ pip install -e .
 ./scripts/seed_storyline.sh orientation
 ```
 
-Pack SQL is generated in **radspion-missions** (`scripts/generate_storyline_sql.py`). Each pack writes `{pack}/{pack}.sql`.
+Pack SQL is generated in **radspion-missions** (`scripts/generate_storyline_sql.py PACK`), which writes `{pack}/{pack}.sql`. Run generation before `./scripts/seed_storyline.sh` (the seed script does not generate SQL).
 
 **Test fixture database** (schema + Testing Storyline seed with sample agents — dev/test only):
 
