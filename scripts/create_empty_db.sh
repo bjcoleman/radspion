@@ -1,5 +1,5 @@
 #!/bin/bash
-# Create database/radspion.db with schema + default orientation seed (basic-training only).
+# Create database/radspion.db with schema only (no missions).
 
 set -euo pipefail
 
@@ -8,7 +8,6 @@ cd "$ROOT"
 
 DB_PATH="database/radspion.db"
 SCHEMA_FILE="src/radspion/sql/schema.sql"
-ORIENTATION_SEED="src/radspion/sql/seed_orientation.sql"
 
 if [ -f "$DB_PATH" ]; then
     echo "Warning: Database file already exists at $DB_PATH"
@@ -22,17 +21,12 @@ fi
 
 mkdir -p database
 
-for f in "$SCHEMA_FILE" "$ORIENTATION_SEED"; do
-    if [ ! -f "$f" ]; then
-        echo "Error: Missing $f"
-        exit 1
-    fi
-done
+if [ ! -f "$SCHEMA_FILE" ]; then
+    echo "Error: Missing $SCHEMA_FILE"
+    exit 1
+fi
 
 echo "Creating database with schema..."
 sqlite3 "$DB_PATH" < "$SCHEMA_FILE"
 
-echo "Loading orientation seed (basic-training)..."
-sqlite3 "$DB_PATH" < "$ORIENTATION_SEED"
-
-echo "Created database at $DB_PATH (Orientation + basic-training)."
+echo "Created database at $DB_PATH (schema only, no missions)."

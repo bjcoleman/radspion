@@ -2,7 +2,7 @@
 
 Reference **local test** seed for development and acceptance scenarios. Not used in production.
 
-Load with `./scripts/create_empty_db.sh` for orientation-only data, or a full Example Storyline test database (schema + orientation + storyline pack + four sample agents) via your operator bootstrap workflow.
+Load with `./scripts/create_test_db.sh`, or let pytest build temporary databases from `seed_testing_storyline.sql`.
 
 SQL files run `PRAGMA foreign_keys = ON;` at the start of each script.
 

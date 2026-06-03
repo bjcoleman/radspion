@@ -41,22 +41,18 @@ def execute_sql_file(connection: sqlite3.Connection, sql_path: Path) -> None:
     connection.executescript(sql_path.read_text(encoding="utf-8"))
 
 
-def load_orientation_database(db_path: Path) -> None:
-    """Schema + orientation seed (basic-training only)."""
+def load_testing_storyline_database(db_path: Path) -> None:
+    """Schema + Testing Storyline acceptance seed (includes Orientation fixture)."""
     with sqlite3.connect(db_path) as conn:
         conn.execute("PRAGMA foreign_keys = ON")
         execute_sql_file(conn, SQL_DIR / "schema.sql")
-        execute_sql_file(conn, SQL_DIR / "seed_orientation.sql")
-        conn.commit()
-
-
-def load_testing_storyline_database(db_path: Path) -> None:
-    """Schema + orientation + Testing Storyline acceptance seed."""
-    load_orientation_database(db_path)
-    with sqlite3.connect(db_path) as conn:
-        conn.execute("PRAGMA foreign_keys = ON")
         execute_sql_file(conn, SQL_DIR / "seed_testing_storyline.sql")
         conn.commit()
+
+
+def load_orientation_database(db_path: Path) -> None:
+    """Schema + orientation fixture via Testing Storyline seed."""
+    load_testing_storyline_database(db_path)
 
 
 def assert_mission_status(

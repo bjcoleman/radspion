@@ -1,6 +1,5 @@
 #!/bin/bash
-# Create database/radspion.db with schema, orientation,
-# and Testing Storyline seed (dev/test only — not for production).
+# Create database/radspion.db with schema and Testing Storyline seed (dev/test only).
 
 set -euo pipefail
 
@@ -9,7 +8,6 @@ cd "$ROOT"
 
 DB_PATH="database/radspion.db"
 SCHEMA_FILE="src/radspion/sql/schema.sql"
-ORIENTATION_SEED="src/radspion/sql/seed_orientation.sql"
 TESTING_STORYLINE_SEED="src/radspion/sql/seed_testing_storyline.sql"
 
 if [ -f "$DB_PATH" ]; then
@@ -24,7 +22,7 @@ fi
 
 mkdir -p database
 
-for f in "$SCHEMA_FILE" "$ORIENTATION_SEED" "$TESTING_STORYLINE_SEED"; do
+for f in "$SCHEMA_FILE" "$TESTING_STORYLINE_SEED"; do
     if [ ! -f "$f" ]; then
         echo "Error: Missing $f"
         exit 1
@@ -33,9 +31,6 @@ done
 
 echo "Creating database with schema..."
 sqlite3 "$DB_PATH" < "$SCHEMA_FILE"
-
-echo "Loading orientation seed (basic-training)..."
-sqlite3 "$DB_PATH" < "$ORIENTATION_SEED"
 
 echo "Loading Testing Storyline seed (dev/test)..."
 sqlite3 "$DB_PATH" < "$TESTING_STORYLINE_SEED"

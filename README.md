@@ -21,7 +21,7 @@ src/radspion/          Application package
 src/radspion/sql/      Schema and seeds (mission markdown inlined in SQL)
 deploy/                nginx vhost, systemd unit (production)
 docs/                  Design docs, API outline, UI mockups
-scripts/               DB bootstrap (create_empty_db.sh, create_test_db.sh)
+scripts/               DB bootstrap (create_empty_db.sh, create_test_db.sh, seed_storyline.sh)
 database/              SQLite file (gitignored)
 tests/                 Unit tests
 ```
@@ -35,7 +35,7 @@ pip install -r requirements.txt && pip install -e .
 make
 ```
 
-For production-like DB: `./scripts/create_empty_db.sh`. For dev/test with sample agents and `es-*` missions: `./scripts/create_test_db.sh`. See [05-testing-storyline.md](docs/design/05-testing-storyline.md) and [04-example-data-walkthrough.md](docs/design/04-example-data-walkthrough.md).
+For an empty DB: `./scripts/create_empty_db.sh`, then load packs with `./scripts/seed_storyline.sh`. For dev/test with sample agents and `es-*` missions: `./scripts/create_test_db.sh`. See [05-testing-storyline.md](docs/design/05-testing-storyline.md).
 
 See [docs/dev.md](docs/dev.md) for OAuth, CI, and deployment.
 

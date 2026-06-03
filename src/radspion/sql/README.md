@@ -3,24 +3,20 @@
 | File | Purpose |
 |------|---------|
 | `schema.sql` | Tables and indexes |
-| `seed_orientation.sql` | Orientation group + `basic-training` (production) |
-| `seed_testing_storyline.sql` | Testing Storyline + sample agents (dev/test only) |
+| `seed_testing_storyline.sql` | Dev/test fixture: Orientation placeholder + Testing Storyline + sample agents |
 
-## Mission markdown in seeds
+## Production storyline packs
 
-`seed_orientation.sql` and `seed_testing_storyline.sql` include **inlined** `brief_markdown` and `debrief_markdown`. Do not edit those bodies by hand.
+Mission packs are authored in **radspion-missions**. Each pack generates `{pack}/{pack}.sql` (e.g. `orientation/orientation.sql`). Load into an empty database with `./scripts/seed_storyline.sh` (requires `RADSPION_MISSIONS_ROOT` in `.env`).
 
-Author mission copy in the **radspion-missions** repo, then regenerate:
+## Testing seed
 
-```bash
-cd /path/to/radspion-missions
-python3 scripts/generate_radspion_sql.py
-```
+`seed_testing_storyline.sql` includes **inlined** `brief_markdown` and `debrief_markdown` for the test fixture. Do not edit those bodies by hand.
 
-Recreate local databases after schema or seed changes:
+Recreate local test database after schema or seed changes:
 
 ```bash
-./scripts/create_empty_db.sh
-# or
 ./scripts/create_test_db.sh
 ```
+
+Pytest builds its own temporary databases from this seed; you do not need `create_test_db.sh` before running tests.
