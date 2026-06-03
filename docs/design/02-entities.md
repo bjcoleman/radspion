@@ -4,7 +4,7 @@ SQLite. **Groups** are story arcs (organization for the dashboard and operator v
 
 ## Groups
 
-- `groups` — named story arcs (e.g. **Orientation**, **Example Storyline**)
+- `groups` — named story arcs (e.g. **Orientation**, **Testing Storyline**, **Last Transmission**)
 - `missions.group_id` — which arc a mission belongs to (UI sections, operator reports)
 - Groups do **not** gate access; any signed-in agent is evaluated against each mission’s `access_rule`
 

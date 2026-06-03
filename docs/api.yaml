@@ -46,17 +46,17 @@ paths:
                     new_missions:
                       - title: "ES: Hidden"
                         slug: es-hidden
-                        group_name: Example Storyline
+                        group_name: Testing Storyline
                 success_multiple:
                   value:
                     outcome: success
                     new_missions:
                       - title: "ES: Alpha"
                         slug: es-alpha
-                        group_name: Example Storyline
+                        group_name: Testing Storyline
                       - title: "ES: Beta"
                         slug: es-beta
-                        group_name: Example Storyline
+                        group_name: Testing Storyline
                 already_done:
                   value:
                     outcome: already_done
@@ -118,7 +118,7 @@ paths:
                     new_missions:
                       - title: "ES: Gamma"
                         slug: es-gamma
-                        group_name: Example Storyline
+                        group_name: Testing Storyline
                 already_done:
                   value:
                     outcome: already_done

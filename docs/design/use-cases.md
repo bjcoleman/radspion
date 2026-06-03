@@ -1,8 +1,8 @@
 # Use cases (V1)
 
-Ordered by **dependency** — build from the top down. Each case lists **Requires** (other UC ids that must work first). Agent scenarios at the end assume the **Example Storyline** test seed ([04-example-data-walkthrough.md](04-example-data-walkthrough.md)).
+Ordered by **dependency** — build from the top down. Each case lists **Requires** (other UC ids that must work first). Agent scenarios at the end assume the **Testing Storyline** test seed ([04-example-data-walkthrough.md](04-example-data-walkthrough.md)).
 
-**Reference agents:** Alice, Bob, Charlie, Diana — [05-example-storyline.md](05-example-storyline.md). Mission names are **slugs** everywhere (e.g. `es-alpha`, not numeric ids).
+**Reference agents:** Alice, Bob, Charlie, Diana — [05-testing-storyline.md](05-testing-storyline.md). Mission names are **slugs** everywhere (e.g. `es-alpha`, not numeric ids).
 
 ## Resolved decisions
 
@@ -42,11 +42,11 @@ Apply [`src/radspion/sql/schema.sql`](../../src/radspion/sql/schema.sql) so all 
 
 ---
 
-### UC-002 — Load Example Storyline test seed
+### UC-002 — Load Testing Storyline test seed
 
 **Actor:** Operator (dev)  
 **Requires:** UC-001  
-Load schema, orientation (`basic-training`), **Example Storyline** missions (`es-*`), unlock/list constraints, and sample progress for Alice, Bob, Charlie, Diana ([04-example-data-walkthrough.md](04-example-data-walkthrough.md)).
+Load schema, orientation (`basic-training`), **Testing Storyline** missions (`es-*`), unlock/list constraints, and sample progress for Alice, Bob, Charlie, Diana ([04-example-data-walkthrough.md](04-example-data-walkthrough.md)).
 
 ---
 
@@ -265,13 +265,13 @@ For `access_rule = requires_complete`, mission appears on the dashboard when all
 
 ## Canonical agent scenarios (acceptance)
 
-These validate the full stack against the Example Storyline test seed. See [05-example-storyline.md](05-example-storyline.md).
+These validate the full stack against the Testing Storyline test seed. See [05-testing-storyline.md](05-testing-storyline.md).
 
 ### UC-025 — Diana: orientation only
 
 **Actor:** Diana  
 **Requires:** UC-013, UC-011  
-Sees `basic-training` (`active` or `completed`); no Example Storyline missions listed (no unlock redeemed).
+Sees `basic-training` (`active` or `completed`); no Testing Storyline missions listed (no unlock redeemed).
 
 ---
 
@@ -369,7 +369,7 @@ For a selected mission, list agents with status on missions in that arc (or all 
 
 **Actor:** Operator  
 **Requires:** UC-036  
-Diana has no Example Storyline status rows until she redeems storyline unlock codes.
+Diana has no Testing Storyline status rows until she redeems storyline unlock codes.
 
 ---
 
