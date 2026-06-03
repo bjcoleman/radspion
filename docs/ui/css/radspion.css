@@ -982,6 +982,13 @@ a:hover {
   margin-bottom: var(--space-lg);
 }
 
+.mission-detail__nav--bottom {
+  margin-top: var(--space-2xl);
+  margin-bottom: 0;
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
 .mission-detail__back {
   font-size: 0.875rem;
   color: var(--color-text-muted);
@@ -1293,6 +1300,10 @@ a:hover {
   position: relative;
 }
 
+.recovered-data__block .code-block {
+  margin: 0;
+}
+
 .recovered-data__value {
   margin: 0;
   padding: var(--space-md);
@@ -1305,6 +1316,10 @@ a:hover {
   border-radius: var(--radius-sm);
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+.recovered-data__block .code-block > .recovered-data__value {
+  padding-top: 2.25rem;
 }
 
 /* Collapsed Mission Brief (completed mission) */

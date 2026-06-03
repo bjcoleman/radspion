@@ -1,5 +1,5 @@
 /**
- * Mission detail: copy buttons on brief/debrief code blocks.
+ * Mission detail: copy buttons on brief/debrief code blocks and recovered data.
  */
 (function () {
   "use strict";
@@ -14,7 +14,7 @@
     return (code || block).textContent;
   }
 
-  function wrapBlock(block) {
+  function wrapBlock(block, ariaLabel) {
     if (block.closest(".code-block")) {
       return;
     }
@@ -27,7 +27,7 @@
     var btn = document.createElement("button");
     btn.type = "button";
     btn.className = "copy-btn";
-    btn.setAttribute("aria-label", "Copy code to clipboard");
+    btn.setAttribute("aria-label", ariaLabel || "Copy code to clipboard");
     btn.innerHTML = COPY_ICON;
     wrapper.insertBefore(btn, block);
 
@@ -56,6 +56,10 @@
           wrapBlock(pre);
         }
       });
+    });
+
+    document.querySelectorAll(".recovered-data__block pre.recovered-data__value").forEach(function (pre) {
+      wrapBlock(pre, "Copy recovered data to clipboard");
     });
   }
 
