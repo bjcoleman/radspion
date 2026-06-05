@@ -1,7 +1,12 @@
 openapi: 3.0.3
 info:
   title: Radspion API
-  description: JSON endpoints under `/api/`.
+  description: |
+    JSON endpoints under `/api/`.
+
+    **Agent vocabulary:** clearance codes are submitted as `unlock_code` on `POST /api/unlock`.
+    Mission data is submitted as `completion_code` on `POST /api/missions/{slug}/submit`.
+    See `docs/design/06-agent-experience.md`.
   version: 0.1.0
   contact:
     name: Moravian University CS Department
@@ -14,7 +19,7 @@ paths:
   /api/unlock:
     post:
       tags: [Agent]
-      summary: Redeem mission unlock code
+      summary: Request clearance
       description: |
         Trims leading and trailing whitespace from `unlock_code`. Comparison is case-sensitive.
 
@@ -34,7 +39,7 @@ paths:
               $ref: "#/components/schemas/UnlockRequest"
       responses:
         "200":
-          description: Redemption result
+          description: Clearance request result
           content:
             application/json:
               schema:
@@ -65,7 +70,7 @@ paths:
                 invalid:
                   value:
                     outcome: invalid
-                    message: We could not validate that unlock code against agency records.
+                    message: We could not validate that clearance code against agency records.
         "400":
           description: Missing or empty `unlock_code`
         "401":
@@ -74,10 +79,10 @@ paths:
   /api/missions/{slug}/submit:
     post:
       tags: [Agent]
-      summary: Submit mission completion code
+      summary: Submit mission data
       description: |
         Trims leading and trailing whitespace from `completion_code`. Comparison is
-        case-sensitive.
+        case-sensitive. Internal newlines and spacing must match exactly.
 
         When `outcome` is `success`, the mission identified by `slug` is marked completed for
         the signed-in agent and listing sync runs. `new_missions` lists missions that became
@@ -102,7 +107,7 @@ paths:
               $ref: "#/components/schemas/SubmitRequest"
       responses:
         "200":
-          description: Submission result
+          description: Data submission result
           content:
             application/json:
               schema:
@@ -127,7 +132,7 @@ paths:
                 invalid:
                   value:
                     outcome: invalid
-                    message: We reviewed your transmission, and the recovered data does not match mission requirements.
+                    message: We reviewed your transmission, and the data does not match mission requirements.
         "400":
           description: Missing or empty `completion_code`
         "401":
@@ -150,6 +155,7 @@ components:
       properties:
         unlock_code:
           type: string
+          description: Clearance code
 
     MissionSummary:
       type: object
@@ -177,9 +183,9 @@ components:
           items:
             $ref: "#/components/schemas/MissionSummary"
           description: |
-            Missions newly added to the agent's list. On unlock success — each matching mission
+            Missions newly added to the agent's list. On clearance success — each matching mission
             that did not yet have a status row (at least one, or outcome is already_done instead).
-            On submit success — missions that became listable after completion sync (may be empty).
+            On data submit success — missions that became listable after completion sync (may be empty).
             Empty array on already_done.
 
     SubmitRequest:
@@ -188,3 +194,4 @@ components:
       properties:
         completion_code:
           type: string
+          description: Mission data (may include newlines)

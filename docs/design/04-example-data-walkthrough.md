@@ -8,6 +8,8 @@ SQL files run `PRAGMA foreign_keys = ON;` at the start of each script.
 
 **Story arcs:** `Orientation` (includes `basic-training`), `Testing Storyline` (five test missions).
 
+**Agent vocabulary:** seed strings like `EXAMPLE UNLOCK` are clearance codes in `mission_unlock_codes`. Values in `completion_code` are mission **data**. See [06-agent-experience.md](06-agent-experience.md).
+
 ## Mission graph
 
 ```text
@@ -17,7 +19,7 @@ EXAMPLE UNLOCK ──► es-alpha ──► es-gamma ──┐
 HIDDEN UNLOCK ──► es-hidden (dead end)     │
 ```
 
-- **`unlock_code`** — agent redeems `mission_unlock_codes` (no `mission_list_requires` on the same mission).
+- **`unlock_code`** — clearance granted via `mission_unlock_codes` (no `mission_list_requires` on the same mission).
 - **`requires_complete`** — mission lists after all `mission_list_requires` targets are `completed`.
 
 ## missions
@@ -39,7 +41,7 @@ HIDDEN UNLOCK ──► es-hidden (dead end)     │
 | es-beta | EXAMPLE UNLOCK |
 | es-hidden | HIDDEN UNLOCK |
 
-Redeeming **EXAMPLE UNLOCK** lists both **es-alpha** and **es-beta** (same code, two missions).
+Clearance **EXAMPLE UNLOCK** lists both **es-alpha** and **es-beta** (same code, two missions).
 
 ## mission_list_requires
 

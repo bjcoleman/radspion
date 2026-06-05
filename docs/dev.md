@@ -249,19 +249,21 @@ Static prototypes live in `docs/ui/`. They inform Jinja templates and CSS; **moc
 
 ### Transmission modal (`static/js/transmission-modal.js`)
 
-Shared progress animation for mission unlock and field submission. Include `templates/_transmission_modal.html` in the page and load the script from `extra_body`.
+Distinct progress animations for clearance and data submission. Include `templates/_transmission_modal.html` in the page and load the script from `extra_body`.
 
 **Presets** (`RadspionTransmission.PRESET`):
 
-| Preset | Modal title | Step 3 label |
-|--------|-------------|--------------|
-| `UNLOCK_CODE` | Secure channel | unlock code |
-| `COMPLETION_DATA` | Secure transmission | completion data |
+| Preset | Modal title (target) | Step 3 label (target) |
+|--------|----------------------|------------------------|
+| `UNLOCK_CODE` | Clearance channel | clearance code |
+| `COMPLETION_DATA` | Secure transmission | field data |
 
-All presets use the same four steps: initiating secure connection → establishing agent identity → transferring *&lt;data&gt;* → checking agency records. Total duration targets **~3 seconds** with per-step jitter.
+Presets use the same four-step timing (initiating secure connection → establishing agent identity → transferring payload → checking agency records) but **differ in title, step copy, and outcome styling**. Total duration targets **~3 seconds** with per-step jitter.
 
 **`transmit({ preset, request, renderOutcome })`** runs `request()` (typically `fetch`) **in parallel** with the progress animation. The outcome panel is shown only after **both** complete; a fast server response still waits for the animation (unless the user has **Reduce motion** enabled, in which case the outcome appears as soon as the request finishes).
 
-While the modal is open, unlock/completion forms are disabled and a second `transmit` is ignored. On the outcome step, **Enter** activates **OK** (same as click), including reload-on-success handlers wired by the page scripts.
+While the modal is open, clearance and data forms are disabled and a second `transmit` is ignored. On the outcome step, **Enter** activates **OK** (same as click), including reload-on-success handlers wired by the page scripts.
 
-Manual check: open `docs/ui/transmission-modal-demo.html` in a browser (includes slow POST on unlock demo to verify animation wins the race).
+See [06-agent-experience.md](design/06-agent-experience.md) for layout and multi-line data input.
+
+Manual check: open `docs/ui/transmission-modal-demo.html` in a browser (demo both presets; clearance demo may use a slow POST to verify animation wins the race).
