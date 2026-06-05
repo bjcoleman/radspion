@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<!-- Static dashboard mockup — unlock failed (invalid code, transmission modal outcome) -->
+<!-- Static dashboard mockup — invalid clearance code (transmission modal outcome) -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Mission Dashboard - Unlock Failed</title>
+  <title>Mission Dashboard - Clearance Failed</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/radspion.css">
 </head>
 <body class="page page--dashboard has-transmission-modal">
-  <header class="site-header">
-    <div class="site-header__brand">
+  <header class="site-header site-header--sticky">
+    <a class="site-header__brand" href="agent-dashboard.html">
       <img
         class="site-header__mark"
         src="../../logos/radspion_mark_white.svg"
@@ -21,48 +21,48 @@
         alt=""
       >
       <span class="site-header__title">Radspion</span>
+    </a>
+
+    <form class="clearance-form site-header__clearance" action="#" method="post">
+      <label class="sr-only" for="clearance-code">Clearance code</label>
+      <input
+        class="clearance-form__input text-mono"
+        type="text"
+        id="clearance-code"
+        name="clearance_code"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="Clearance code"
+        value="ZZ-INVALID"
+      >
+      <button class="clearance-form__submit" type="button">Request Access</button>
+    </form>
+
+    <div class="site-header__end">
+      <div class="site-header__agent">
+        <span class="site-header__agent-label">Agent</span>
+        <span class="site-header__agent-name">Alice</span>
+        <span class="site-header__agent-email text-mono">alice@moravian.edu</span>
+      </div>
+      <button type="button" class="site-header__action">Sign out</button>
     </div>
-    <div class="site-header__agent">
-      <span class="site-header__agent-label">Agent</span>
-      <span class="site-header__agent-name">Alice</span>
-      <span class="site-header__agent-email text-mono">alice@moravian.edu</span>
-    </div>
-    <span class="site-header__action">Sign out</span>
   </header>
 
   <main class="page__main page__main--dashboard">
     <div class="dashboard">
       <header class="dashboard__intro">
-        <h1 class="dashboard__heading">Mission Dashboard</h1>
+        <div class="dashboard__title-row">
+          <h1 class="dashboard__heading">Mission Dashboard</h1>
+          <label class="dashboard__toggle">
+            <input type="checkbox" class="dashboard__toggle-input" checked>
+            <span class="dashboard__toggle-label">Show completed missions</span>
+          </label>
+        </div>
         <p class="dashboard__lede text-muted">
-          Missions are assigned by Command, or added when you submit an unlock code
-          that confirms you are ready.
+          Missions are assigned by Command, or listed when you are granted clearance
+          for a new assignment.
         </p>
       </header>
-
-      <section class="unlock-panel dashboard__unlock" aria-label="Unlock mission">
-        <form class="unlock-form" action="#" method="post">
-          <label class="sr-only" for="unlock-code">Mission unlock code</label>
-          <input
-            class="unlock-form__input text-mono"
-            type="text"
-            id="unlock-code"
-            name="unlock_code"
-            autocomplete="off"
-            spellcheck="false"
-            placeholder="Enter Mission Unlock Code"
-            value="ZZ-INVALID"
-          >
-          <button class="unlock-form__submit" type="button">Validate</button>
-        </form>
-      </section>
-
-      <div class="dashboard__controls">
-        <label class="dashboard__toggle">
-          <input type="checkbox" class="dashboard__toggle-input" checked>
-          <span class="dashboard__toggle-label">Show completed missions</span>
-        </label>
-      </div>
 
       <details class="mission-group mission-group--collapsible" open>
         <summary class="mission-group__summary">
@@ -136,14 +136,12 @@
     </div>
   </main>
 
-  <footer class="page__footer site-footer">
-    <p class="site-footer__about">
-      <a href="about.html">What is Radspion?</a>
-    </p>
-    <ul class="site-footer__legal">
-      <li><a href="privacy.html">Privacy Policy</a></li>
-    </ul>
-    <p class="site-footer__meta">Moravian University · Educational Use</p>
+  <footer class="page__footer site-footer site-footer--inline">
+    <div class="site-footer__inline">
+      <a class="site-footer__link" href="about.html">What is Radspion?</a>
+      <span class="site-footer__meta">Moravian University · Educational Use</span>
+      <a class="site-footer__link" href="privacy.html">Privacy Policy</a>
+    </div>
   </footer>
 
   <div class="transmission-modal">
@@ -152,19 +150,31 @@
       class="transmission-modal__dialog"
       role="dialog"
       aria-modal="true"
-      aria-labelledby="unlock-heading"
+      aria-labelledby="clearance-heading"
     >
-      <div class="transmission-modal__progress" id="unlock-progress">
-        <h2 id="unlock-heading" class="transmission-modal__title text-mono">Secure channel</h2>
-        <p class="transmission-modal__step" id="unlock-step">Initializing secure channel...</p>
+      <div class="transmission-modal__progress" id="clearance-progress">
+        <h2 id="clearance-heading" class="transmission-modal__title transmission-modal__title--phase text-mono">Requesting clearance</h2>
+        <p class="transmission-modal__step" id="clearance-step">Initializing secure channel…</p>
         <div class="transmission-modal__bar" aria-hidden="true">
-          <div class="transmission-modal__bar-fill" id="unlock-bar-fill"></div>
+          <div class="transmission-modal__bar-fill" id="clearance-bar-fill"></div>
         </div>
       </div>
-      <div class="transmission-modal__outcome" id="unlock-outcome" hidden>
-        <h2 class="transmission-modal__title">Verification failed</h2>
+      <div class="transmission-modal__outcome" id="clearance-outcome" hidden>
+        <div class="transmission-modal__outcome-header">
+          <img
+            class="transmission-modal__outcome-mark transmission-modal__outcome-mark--failure"
+            src="../../logos/radspion_mark_white.svg"
+            width="48"
+            height="48"
+            alt=""
+          >
+          <h2 class="transmission-modal__outcome-heading">
+            <span class="transmission-modal__outcome-heading-line">Verification</span>
+            <span class="transmission-modal__outcome-heading-line">Failed</span>
+          </h2>
+        </div>
         <p class="transmission-modal__message">
-          We could not validate that unlock code against agency records.
+          Command could not verify this clearance code against agency records.
           Check the code and try again.
         </p>
         <button type="button" class="transmission-modal__ok">OK</button>
@@ -174,16 +184,18 @@
 
   <script>
     (function () {
-      var progress = document.getElementById("unlock-progress");
-      var outcome = document.getElementById("unlock-outcome");
-      var stepEl = document.getElementById("unlock-step");
-      var barEl = document.getElementById("unlock-bar-fill");
+      var progress = document.getElementById("clearance-progress");
+      var outcome = document.getElementById("clearance-outcome");
+      var stepEl = document.getElementById("clearance-step");
+      var barEl = document.getElementById("clearance-bar-fill");
       if (!progress || !outcome || !stepEl || !barEl) return;
 
       var prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       var steps = [
-        { text: "Encrypting unlock code...", width: 32, delay: 550 },
-        { text: "Checking agency records...", width: 88, delay: 800 }
+        { text: "Initiating secure connection…", width: 22, delay: 500 },
+        { text: "Establishing agent identity…", width: 48, delay: 500 },
+        { text: "Transferring clearance code…", width: 72, delay: 500 },
+        { text: "Checking agency records…", width: 90, delay: 400 }
       ];
 
       if (prefersReducedMotion) {
@@ -201,7 +213,7 @@
               progress.hidden = true;
               outcome.hidden = false;
             }, 220);
-          }, 650);
+          }, 400);
           return;
         }
         var step = steps[i];

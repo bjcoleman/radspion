@@ -2,11 +2,22 @@
 
 SQLite. **Groups** are story arcs (organization for the dashboard and operator views). **Missions** belong to one group. **Constraints** are keyed by `mission_id`. Mission availability is controlled by `access_rule` and constraint tables — not group membership.
 
+## Agent vocabulary
+
+Agents work with **clearance** and **data**. The database and API use the names below.
+
+| Agent term | Database / API | UI label |
+|------------|----------------|----------|
+| Clearance code | `mission_clearance_codes.clearance_code`, `POST /api/clearance` → `clearance_code` | Header placeholder **Clearance code**; button **Request Access** |
+| Recovered data | `missions.completion_data`, `POST /api/missions/<slug>/submit` → `completion_data` | **Recovered Data** panel (active and completed); button **Submit data** on active missions |
+
+Format rules, layout, and modal copy: [06-agent-experience.md](06-agent-experience.md). Mockups: [`docs/ui/README.md`](../ui/README.md).
+
 ## Groups
 
 - `groups` — named story arcs (e.g. **Orientation**, **Testing Storyline**, **Last Transmission**)
 - `missions.group_id` — which arc a mission belongs to (UI sections, operator reports)
-- Groups do **not** gate access; any signed-in agent is evaluated against each mission’s `access_rule`
+- Groups do **not** gate access; any signed-in agent is evaluated against each mission's `access_rule`
 
 ## Missions
 
@@ -16,24 +27,26 @@ SQLite. **Groups** are story arcs (organization for the dashboard and operator v
 | `title` | Agent-visible name |
 | `brief_markdown`, `debrief_markdown` | Mission Brief / Debrief markdown |
 | `group_id` | Story arc for dashboard grouping |
-| `access_rule` | How the mission gets on the agent’s list |
-| `completion_code` | Secret to mark completed |
+| `access_rule` | How the mission gets on the agent's list |
+| `completion_data` | Completion data — exact text required to mark the mission completed (may be multi-line) |
 
 ### `access_rule` (one per mission)
 
-A mission is surfaced by **unlock code** or **automatic listing after completions**, not both: `unlock_code` missions have no `mission_list_requires`.
+A mission is surfaced by **clearance**, by **`open`** listing, or **automatic listing after completions**. A mission with `clearance_code` access has no `mission_list_requires` rows.
 
 | Value | Listed when |
 |-------|-------------|
 | `open` | Any signed-in agent (sync creates `active` row) |
-| `unlock_code` | Agent redeems `mission_unlock_codes` |
+| `clearance_code` | Agent requests matching clearance (`mission_clearance_codes`) |
 | `requires_complete` | Agent completed all `mission_list_requires` missions |
 
 ## Constraint tables
 
-### `mission_unlock_codes` (one row per mission)
+### `mission_clearance_codes` (one row per mission)
 
-Each `unlock_code` mission has exactly one row in this table (`mission_id` PK). The **`unlock_code` string is not unique** across rows — the same value may gate multiple missions; redeeming it lists every matching mission not yet on the agent's dashboard. Codes are mutually exclusive with automatic listing (**`mission_list_requires`**) on the same mission.
+Each `clearance_code` mission has exactly one row in this table (`mission_id` PK). The **`clearance_code` string is not unique** across rows — the same clearance code may gate multiple missions; granting it lists every matching mission not yet on the agent's dashboard. Clearance gating is mutually exclusive with automatic listing (**`mission_list_requires`**) on the same mission.
+
+**Authoring convention:** clearance codes use letters, digits, and hyphens only; human-readable strings are encouraged.
 
 ### `mission_list_requires` (1:many)
 
@@ -49,8 +62,8 @@ Used with `requires_complete`. Prereqs may span story arcs if you design them th
 
 **`agent_mission_status`**: `(user_id, mission_id, status)` — `active` | `completed`.
 
-- Completed missions may display `missions.completion_code`; never expose it for `active` missions
-- **No row** means not listable yet (`unlock_code` not redeemed, or list prereqs not met). Missions that are not listable are **hidden** from the agent dashboard — not shown as locked placeholders
+- Completed missions may display `missions.completion_data` (data); never expose it for `active` missions
+- **No row** means not listable yet (clearance not granted, or list prereqs not met). Missions that are not listable are **hidden** from the agent dashboard — not shown as locked placeholders
 - For listable `open` missions, a missing row is a **sync error**
 
 ## Operator progress (V1, read-only)
@@ -65,11 +78,11 @@ Organize by story arc (`groups` → `missions`). For each mission, show agents w
 
 ## Runtime (summary)
 
-Keep **`agent_mission_status` current immediately** on login, unlock, and complete — agent dashboard and operator views read this table.
+Keep **`agent_mission_status` current immediately** on login, clearance grant, and data submit — agent dashboard and operator views read this table.
 
 1. Signed-in agent  
 2. **List:** per `access_rule` + `mission_list_requires` → ensure `active` row exists when listable  
-3. **Complete:** mission is `active` and input matches `completion_code` → `completed`  
+3. **Complete:** mission is `active` and submitted data matches `completion_data` → `completed`  
 4. On complete → sync: create `active` rows for missions whose `mission_list_requires` are now satisfied  
 
 ## Diagram
@@ -77,7 +90,7 @@ Keep **`agent_mission_status` current immediately** on login, unlock, and comple
 ```mermaid
 erDiagram
     groups ||--o{ missions : contains
-    missions ||--o| mission_unlock_codes : optional_unlock
+    missions ||--o| mission_clearance_codes : optional_clearance
     missions ||--o{ mission_list_requires : lists_after
     users ||--o{ agent_mission_status : progress
     missions ||--o{ agent_mission_status : on

@@ -27,7 +27,7 @@ def _client_for_db(db_path: Path):
     return app.test_client()
 
 
-def test_active_mission_shows_brief_and_enabled_completion_form(storyline_db: Path):
+def test_active_mission_shows_brief_and_enabled_recovered_data_form(storyline_db: Path):
     client = _client_for_db(storyline_db)
     with client.session_transaction() as sess:
         sess[SESSION_USER_ID] = SAMPLE_AGENTS["alice"]["id"]
@@ -39,13 +39,16 @@ def test_active_mission_shows_brief_and_enabled_completion_form(storyline_db: Pa
     assert "ES: Beta" in body
     assert "Mission Brief" in body
     assert "overview for the mission called ES: Beta" in body
-    assert 'class="completion-form"' in body
+    assert "recovered-data-form--multiline" in body
     assert 'data-mission-slug="es-beta"' in body
-    assert 'name="completion_code"' in body
-    assert "completion-form__input" in body
+    assert 'name="completion_data"' in body
+    assert "recovered-data-form__textarea" in body
+    assert "Submit data" in body
+    assert ">Recovered Data</h2>" in body
+    assert "Enter the data you recovered from this mission" in body
     assert "mission-detail-submit.js" in body
-    assert 'id="completion-code"' in body
-    assert "disabled" not in body.split('id="completion-code"')[1].split("</form>")[0]
+    assert 'id="recovered-data-input"' in body
+    assert "disabled" not in body.split('id="recovered-data-input"')[1].split("</form>")[0]
     assert "recovered-data__value" not in body
 
 
@@ -64,7 +67,7 @@ def test_completed_mission_shows_recovered_data_debrief_and_brief(storyline_db: 
     assert "Mission Debrief" in body
     assert "Congratulations, you completed ES: Alpha" in body
     assert "Mission Brief" in body
-    assert "completion-form" not in body
+    assert "recovered-data-form" not in body
 
 
 def test_mission_detail_404_when_not_listed(storyline_db: Path):

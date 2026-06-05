@@ -10,25 +10,30 @@ Ordered by **dependency** — build from the top down. Each case lists **Require
 |-------|----------|
 | Who can sign in | Google OAuth (any account); first sign-in auto-creates `users` row |
 | Story arcs | `groups` organize missions on the dashboard; **do not** gate access |
-| Mission visibility | `access_rule` + `mission_unlock_codes` + `mission_list_requires` |
-| Welcome | Seed includes `basic-training` (`open`) in **Orientation** arc |
-| Code vs automatic listing | A mission never mixes **`unlock_code`** with **`mission_list_requires`** |
-| Unlock codes | One row per mission in `mission_unlock_codes`; **same code string may gate multiple missions** |
+| Mission visibility | `access_rule` + `mission_clearance_codes` + `mission_list_requires` |
+| Agent channels | **Clearance** (`POST /api/clearance`) and **data** (`POST /api/missions/<slug>/submit`); separate UI controls |
+| Clearance format | Letters, digits, hyphen only; human-readable strings encouraged |
+| Data format | Any text (including newlines); exact match after outer trim |
+| `open` missions | Rare — walk-up puzzle content with minimal prerequisites |
+| Code vs automatic listing | A mission never mixes **`clearance_code`** with **`mission_list_requires`** |
+| Clearance codes | One row per mission in `mission_clearance_codes`; **same code string may gate multiple missions** |
 | Mission list UX | Dashboard shows missions with `agent_mission_status` rows, grouped by story arc |
-| `agent_mission_status` | Keep table **in sync at all times** (login + unlock + complete); dashboard reads this table |
+| `agent_mission_status` | Keep table **in sync at all times** (login + clearance + data submit); dashboard reads this table |
 | Debrief | Only after mission `completed` |
-| Error copy (UC-020, UC-022) | Wording TBD — you’ll review per case |
-| Web framework | **Flask + Jinja** SSR; JSON API at `/api/unlock`, `/api/missions/<slug>/submit` |
+| Transmission modals | Distinct presets for clearance request vs data submission; canonical copy in [06-agent-experience.md](06-agent-experience.md) |
+| Agent UI copy | Mockups in `docs/ui/`; header **Request Access**, active **Data** panel, completed **Recovered Data** archives |
+| Error copy (UC-020, UC-022) | Modal strings in [06-agent-experience.md](06-agent-experience.md); API `message` examples in [api.yaml](../api.yaml) |
+| Web framework | **Flask + Jinja** SSR; JSON API at `/api/clearance`, `/api/missions/<slug>/submit` |
 | Brief/Debrief bodies | `missions.brief_markdown` / `debrief_markdown` (seed SQL generated from **radspion-missions**) |
 | Operator config V1 | SQL/seed only — no in-app mission editor |
 | Operator progress V1 | Read-only UI: story arcs → missions → agent status |
 | `users.is_operator` | SQLite `INTEGER` `0`/`1`; gates operator routes |
-| Sync timing | **Immediate** on login, unlock, complete — never deferred |
+| Sync timing | **Immediate** on login, clearance grant, data submit — never deferred |
 | Operator arc list | All groups; **Orientation** section at the **bottom** |
 
 **Sync invariant:** If a mission is listable (`open`, or `requires_complete` with prereqs met), an `active` row **must** exist for that agent. Missing row in that case is a **bug**, not a UI edge case.
 
-**Why eager sync?** Dashboard and operator views read `agent_mission_status` directly. `unlock_code` missions intentionally have **no row** until redeem.
+**Why eager sync?** Dashboard and operator views read `agent_mission_status` directly. `clearance_code` missions intentionally have **no row** until clearance is granted.
 
 ---
 
@@ -46,7 +51,7 @@ Apply [`src/radspion/sql/schema.sql`](../../src/radspion/sql/schema.sql) so all 
 
 **Actor:** Operator (dev)  
 **Requires:** UC-001  
-Load schema, orientation (`basic-training`), **Testing Storyline** missions (`es-*`), unlock/list constraints, and sample progress for Alice, Bob, Charlie, Diana ([04-example-data-walkthrough.md](04-example-data-walkthrough.md)).
+Load schema, orientation (`basic-training`), **Testing Storyline** missions (`es-*`), clearance/list constraints, and sample progress for Alice, Bob, Charlie, Diana ([04-example-data-walkthrough.md](04-example-data-walkthrough.md)).
 
 ---
 
@@ -72,7 +77,7 @@ Models (or equivalent data layer) for `users` (including `is_operator`), `groups
 
 **Actor:** Operator  
 **Requires:** UC-001  
-Create group (arc), missions, unlock/list constraints, and optional seed progress per [07-operator-setup.md](07-operator-setup.md). No in-app wizard in V1.
+Create group (arc), missions, clearance/list constraints, and optional seed progress per [07-operator-setup.md](07-operator-setup.md). No in-app wizard in V1.
 
 ---
 
@@ -129,7 +134,7 @@ Agent can view the Debrief only when `agent_mission_status.status = completed` f
 
 **Actor:** System  
 **Requires:** UC-007  
-For each mission, determine listability from `access_rule`, unlock redemption, and `mission_list_requires` — independent of group membership. Non-listable missions are hidden from the agent dashboard.
+For each mission, determine listability from `access_rule`, clearance grants, and `mission_list_requires` — independent of group membership. Non-listable missions are hidden from the agent dashboard.
 
 ---
 
@@ -140,14 +145,14 @@ For each mission, determine listability from `access_rule`, unlock redemption, a
 Keep status rows aligned with listing rules. Run **immediately** when:
 
 - Agent signs in (UC-007)
-- Unlock redeemed (UC-019)
+- Clearance granted (UC-019)
 - Mission completed (UC-024)
 
 | `access_rule` | Sync behavior |
 |---------------|---------------|
 | `open` | `active` row if not yet `completed` — **required**; absence is an error |
 | `requires_complete` | `active` row when all `mission_list_requires` are `completed` |
-| `unlock_code` | **No row** until redeem (UC-019) |
+| `clearance_code` | **No row** until clearance granted (UC-019) |
 
 Do not remove rows for completed missions.
 
@@ -161,11 +166,11 @@ After login (post-sync), dashboard lists all `agent_mission_status` rows (`activ
 
 ---
 
-### UC-014 — List missions after `unlock_code` redeemed
+### UC-014 — List missions after clearance granted
 
 **Actor:** Agent  
 **Requires:** UC-013  
-For each mission with `access_rule = unlock_code` whose `mission_unlock_codes.unlock_code` matches the submitted value, create an `active` status row if the agent has no row yet. A single code may match multiple missions. Skip missions already listed (`active` or `completed`).
+For each mission with `access_rule = clearance_code` whose `mission_clearance_codes.clearance_code` matches the clearance code, create an `active` status row if the agent has no row yet. A single code may match multiple missions. Skip missions already listed (`active` or `completed`).
 
 ---
 
@@ -179,55 +184,55 @@ Agent opens a listed mission: title, Brief link/body, status, completion UI as a
 
 ---
 
-### UC-017 — Hide completion code while `active`
+### UC-017 — Hide mission data while `active`
 
 **Actor:** System  
 **Requires:** UC-016  
-API/UI never returns `missions.completion_code` for missions where the agent’s status is `active` ([06-agent-experience.md](06-agent-experience.md)).
+API/UI never returns `missions.completion_data` for missions where the agent’s status is `active` ([06-agent-experience.md](06-agent-experience.md)).
 
 ---
 
-### UC-018 — Show captured completion code after `completed`
+### UC-018 — Show captured data after `completed`
 
 **Actor:** Agent  
 **Requires:** UC-017, UC-021  
-After `completed`, agent sees the stored `completion_code` value for that mission (the “captured” secret).
+After `completed`, agent sees the stored `completion_data` value for that mission in agency archives.
 
 ---
 
-## Unlock
+## Clearance request
 
-### UC-019 — Redeem unlock code (success)
+### UC-019 — Request clearance (success)
 
 **Actor:** Agent  
 **Requires:** UC-014  
-Valid unlock code → one or more matching missions appear on the list (`active`). API returns `outcome: success` and `new_missions` with summaries of missions newly listed (may be one or many). Example: `EXAMPLE UNLOCK` lists `es-alpha` and `es-beta`.
+Valid clearance code → one or more matching missions appear on the list (`active`). API returns `outcome: success` and `new_missions` with summaries of missions newly listed (may be one or many). Example: `EXAMPLE-CLEARANCE` lists `es-alpha` and `es-beta`.
 
 ---
 
-### UC-019b — Redeem unlock code (already done)
+### UC-019b — Request clearance (already done)
 
 **Actor:** Agent  
 **Requires:** UC-019  
-Valid unlock code, but every matching mission already has a status row for this agent → `outcome: already_done`, `new_missions: []`. Optional generic `message`.
+Valid clearance code, but every matching mission already has a status row for this agent → `outcome: already_done`, `new_missions: []`. Modal: **Previously Granted**; body *You have already been granted this clearance.*
 
 ---
 
-### UC-020 — Redeem unlock code (failure)
+### UC-020 — Request clearance (failure)
 
 **Actor:** Agent  
 **Requires:** UC-019  
-No matching `mission_unlock_codes` row → `outcome: invalid`; clear error without revealing mission existence or codes. *(Wording TBD.)*
+No matching `mission_clearance_codes` row → `outcome: invalid`; generic error without revealing mission existence or codes (see [api.yaml](../api.yaml)). Modal: **Verification Failed**; no mission hints.
 
 ---
 
 ## Completion
 
-### UC-021 — Complete mission
+### UC-021 — Submit mission data
 
 **Actor:** Agent  
 **Requires:** UC-016, UC-017  
-Agent submits correct `completion_code` while mission is `active` → `status = completed`; run listing sync (UC-024). API returns `outcome: success` and `new_missions` for missions that became listable (may be empty). Examples: basic-training; any listed mission with matching code.
+Agent submits correct data (`completion_data`) while mission is `active` → `status = completed`; run listing sync (UC-024). API returns `outcome: success` and `new_missions` for missions that became listable (may be empty). Data may be multi-line. Examples: basic-training; any listed mission with matching data.
 
 ---
 
@@ -239,11 +244,11 @@ Mission already `completed` for this agent (re-submit) → `outcome: already_don
 
 ---
 
-### UC-022 — Reject wrong completion code
+### UC-022 — Reject wrong mission data
 
 **Actor:** Agent  
 **Requires:** UC-021  
-Wrong code → “not recognized”. *(Wording TBD.)*
+Wrong data → `outcome: invalid`. Modal: **Verification Failed**; *We received your transmission, but the recovered data does not match mission parameters.* Continue fieldwork; no answer hints.
 
 ---
 
@@ -271,7 +276,7 @@ These validate the full stack against the Testing Storyline test seed. See [05-t
 
 **Actor:** Diana  
 **Requires:** UC-013, UC-011  
-Sees `basic-training` (`active` or `completed`); no Testing Storyline missions listed (no unlock redeemed).
+Sees `basic-training` (`active` or `completed`); no Testing Storyline missions listed (no clearance granted).
 
 ---
 
@@ -283,11 +288,11 @@ Sees `basic-training` (`active` or `completed`); no Testing Storyline missions l
 
 ---
 
-### UC-027 — Agent: Unlock es-hidden
+### UC-027 — Agent: Request clearance for es-hidden
 
 **Actor:** Agent  
 **Requires:** UC-019  
-Submit `HIDDEN UNLOCK` → `es-hidden` appears `active` (hint on ES: Beta brief). Re-submitting when already listed → UC-019b (`already_done`).
+Clearance `HIDDEN-CLEARANCE` → `es-hidden` appears `active` (hint on ES: Beta brief). Re-submitting when already listed → UC-019b (`already_done`).
 
 ---
 
@@ -311,7 +316,7 @@ Can complete **es-beta** when listed; submit `COMPLETE es-beta`.
 
 **Actor:** Bob  
 **Requires:** UC-013, UC-018  
-All `es-*` missions `completed`; can view all captured completion codes.
+All `es-*` missions `completed`; can view all captured data in agency archives.
 
 ---
 
@@ -369,7 +374,7 @@ For a selected mission, list agents with status on missions in that arc (or all 
 
 **Actor:** Operator  
 **Requires:** UC-036  
-Diana has no Testing Storyline status rows until she redeems storyline unlock codes.
+Diana has no Testing Storyline status rows until she grants storyline clearance.
 
 ---
 

@@ -11,8 +11,8 @@
   <link rel="stylesheet" href="css/radspion.css">
 </head>
 <body class="page page--dashboard">
-  <header class="site-header">
-    <div class="site-header__brand">
+  <header class="site-header site-header--sticky">
+    <a class="site-header__brand" href="agent-dashboard.html">
       <img
         class="site-header__mark"
         src="../../logos/radspion_mark_white.svg"
@@ -21,47 +21,47 @@
         alt=""
       >
       <span class="site-header__title">Radspion</span>
+    </a>
+
+    <form class="clearance-form site-header__clearance" action="#" method="post">
+      <label class="sr-only" for="clearance-code">Clearance code</label>
+      <input
+        class="clearance-form__input text-mono"
+        type="text"
+        id="clearance-code"
+        name="clearance_code"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="Clearance code"
+      >
+      <button class="clearance-form__submit" type="button">Request Access</button>
+    </form>
+
+    <div class="site-header__end">
+      <div class="site-header__agent">
+        <span class="site-header__agent-label">Agent</span>
+        <span class="site-header__agent-name">Alice</span>
+        <span class="site-header__agent-email text-mono">alice@moravian.edu</span>
+      </div>
+      <button type="button" class="site-header__action">Sign out</button>
     </div>
-    <div class="site-header__agent">
-      <span class="site-header__agent-label">Agent</span>
-      <span class="site-header__agent-name">Alice</span>
-      <span class="site-header__agent-email text-mono">alice@moravian.edu</span>
-    </div>
-    <span class="site-header__action">Sign out</span>
   </header>
 
   <main class="page__main page__main--dashboard">
     <div class="dashboard">
       <header class="dashboard__intro">
-        <h1 class="dashboard__heading">Mission Dashboard</h1>
+        <div class="dashboard__title-row">
+          <h1 class="dashboard__heading">Mission Dashboard</h1>
+          <label class="dashboard__toggle">
+            <input type="checkbox" class="dashboard__toggle-input">
+            <span class="dashboard__toggle-label">Show completed missions</span>
+          </label>
+        </div>
         <p class="dashboard__lede text-muted">
-          Missions are assigned by Command, or added when you submit an unlock code
-          that confirms you are ready.
+          Missions are assigned by Command, or listed when you are granted clearance
+          for a new assignment.
         </p>
       </header>
-
-      <section class="unlock-panel dashboard__unlock" aria-label="Unlock mission">
-        <form class="unlock-form" action="#" method="post">
-          <label class="sr-only" for="unlock-code">Mission unlock code</label>
-          <input
-            class="unlock-form__input text-mono"
-            type="text"
-            id="unlock-code"
-            name="unlock_code"
-            autocomplete="off"
-            spellcheck="false"
-            placeholder="Enter Mission Unlock Code"
-          >
-          <button class="unlock-form__submit" type="button">Validate</button>
-        </form>
-      </section>
-
-      <div class="dashboard__controls">
-        <label class="dashboard__toggle">
-          <input type="checkbox" class="dashboard__toggle-input">
-          <span class="dashboard__toggle-label">Show completed missions</span>
-        </label>
-      </div>
 
       <!-- Expanded: has active missions; completed hidden -->
       <details class="mission-group mission-group--collapsible" open>
@@ -117,14 +117,12 @@
     </div>
   </main>
 
-  <footer class="page__footer site-footer">
-    <p class="site-footer__about">
-      <a href="about.html">What is Radspion?</a>
-    </p>
-    <ul class="site-footer__legal">
-      <li><a href="privacy.html">Privacy Policy</a></li>
-    </ul>
-    <p class="site-footer__meta">Moravian University · Educational Use</p>
+  <footer class="page__footer site-footer site-footer--inline">
+    <div class="site-footer__inline">
+      <a class="site-footer__link" href="about.html">What is Radspion?</a>
+      <span class="site-footer__meta">Moravian University · Educational Use</span>
+      <a class="site-footer__link" href="privacy.html">Privacy Policy</a>
+    </div>
   </footer>
 </body>
 </html>

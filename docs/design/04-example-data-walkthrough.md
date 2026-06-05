@@ -8,38 +8,40 @@ SQL files run `PRAGMA foreign_keys = ON;` at the start of each script.
 
 **Story arcs:** `Orientation` (includes `basic-training`), `Testing Storyline` (five test missions).
 
+**Agent vocabulary:** strings in `mission_clearance_codes` are **clearance codes** (letters, digits, hyphen only — e.g. `EXAMPLE-CLEARANCE`). Values in `completion_data` are mission **data**. See [06-agent-experience.md](06-agent-experience.md).
+
 ## Mission graph
 
 ```text
-EXAMPLE UNLOCK ──► es-alpha ──► es-gamma ──┐
-              └──► es-beta ────────────────┼──► es-delta (finale)
-                                           │
-HIDDEN UNLOCK ──► es-hidden (dead end)     │
+EXAMPLE-CLEARANCE ──► es-alpha ──► es-gamma ──┐
+               └──► es-beta ────────────────┼──► es-delta (finale)
+                                            │
+HIDDEN-CLEARANCE ──► es-hidden (dead end)      │
 ```
 
-- **`unlock_code`** — agent redeems `mission_unlock_codes` (no `mission_list_requires` on the same mission).
+- **`clearance_code`** — clearance granted via `mission_clearance_codes` (no `mission_list_requires` on the same mission).
 - **`requires_complete`** — mission lists after all `mission_list_requires` targets are `completed`.
 
 ## missions
 
-| slug | title | group | access_rule | completion_code |
+| slug | title | group | access_rule | completion_data |
 |------|-------|-------|-------------|-----------------|
 | basic-training | Welcome to Radspion | Orientation | open | WELCOME-AGENT-OK |
-| es-alpha | ES: Alpha | Testing Storyline | unlock_code | COMPLETE es-alpha |
-| es-beta | ES: Beta | Testing Storyline | unlock_code | COMPLETE es-beta |
-| es-hidden | ES: Hidden | Testing Storyline | unlock_code | COMPLETE es-hidden |
+| es-alpha | ES: Alpha | Testing Storyline | clearance_code | COMPLETE es-alpha |
+| es-beta | ES: Beta | Testing Storyline | clearance_code | COMPLETE es-beta |
+| es-hidden | ES: Hidden | Testing Storyline | clearance_code | COMPLETE es-hidden |
 | es-gamma | ES: Gamma | Testing Storyline | requires_complete | COMPLETE es-gamma |
 | es-delta | ES: Delta | Testing Storyline | requires_complete | COMPLETE es-delta |
 
-## mission_unlock_codes
+## mission_clearance_codes
 
-| mission slug | unlock_code |
+| mission slug | clearance_code |
 |--------------|-------------|
-| es-alpha | EXAMPLE UNLOCK |
-| es-beta | EXAMPLE UNLOCK |
-| es-hidden | HIDDEN UNLOCK |
+| es-alpha | EXAMPLE-CLEARANCE |
+| es-beta | EXAMPLE-CLEARANCE |
+| es-hidden | HIDDEN-CLEARANCE |
 
-Redeeming **EXAMPLE UNLOCK** lists both **es-alpha** and **es-beta** (same code, two missions).
+Clearance **EXAMPLE-CLEARANCE** lists both **es-alpha** and **es-beta** (same code, two missions).
 
 ## mission_list_requires
 
@@ -50,7 +52,7 @@ Redeeming **EXAMPLE UNLOCK** lists both **es-alpha** and **es-beta** (same code,
 
 ## agent_mission_status (seed personas)
 
-When `status = completed`, the app shows `missions.completion_code` for that mission.
+When `status = completed`, the app shows `missions.completion_data` for that mission.
 
 | user | Storyline state (summary) |
 |------|---------------------------|

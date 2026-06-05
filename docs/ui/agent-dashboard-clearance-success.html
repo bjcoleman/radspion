@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<!-- Static dashboard mockup — clearance granted (EXAMPLE-CLEARANCE → es-alpha, es-beta) -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mission Dashboard - Clearance Granted</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/radspion.css">
+</head>
+<body class="page page--dashboard has-transmission-modal">
+  <header class="site-header site-header--sticky">
+    <a class="site-header__brand" href="agent-dashboard.html">
+      <img
+        class="site-header__mark"
+        src="../../logos/radspion_mark_white.svg"
+        width="36"
+        height="36"
+        alt=""
+      >
+      <span class="site-header__title">Radspion</span>
+    </a>
+
+    <form class="clearance-form site-header__clearance" action="#" method="post">
+      <label class="sr-only" for="clearance-code">Clearance code</label>
+      <input
+        class="clearance-form__input text-mono"
+        type="text"
+        id="clearance-code"
+        name="clearance_code"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="Clearance code"
+        value="EXAMPLE-CLEARANCE"
+      >
+      <button class="clearance-form__submit" type="button">Request Access</button>
+    </form>
+
+    <div class="site-header__end">
+      <div class="site-header__agent">
+        <span class="site-header__agent-label">Agent</span>
+        <span class="site-header__agent-name">Diana</span>
+        <span class="site-header__agent-email text-mono">diana@moravian.edu</span>
+      </div>
+      <button type="button" class="site-header__action">Sign out</button>
+    </div>
+  </header>
+
+  <main class="page__main page__main--dashboard">
+    <div class="dashboard">
+      <header class="dashboard__intro">
+        <div class="dashboard__title-row">
+          <h1 class="dashboard__heading">Mission Dashboard</h1>
+          <label class="dashboard__toggle">
+            <input type="checkbox" class="dashboard__toggle-input" checked>
+            <span class="dashboard__toggle-label">Show completed missions</span>
+          </label>
+        </div>
+        <p class="dashboard__lede text-muted">
+          Missions are assigned by Command, or listed when you are granted clearance
+          for a new assignment.
+        </p>
+      </header>
+
+      <details class="mission-group mission-group--collapsible" open>
+        <summary class="mission-group__summary">
+          <span class="mission-group__chevron" aria-hidden="true">
+            <svg class="mission-group__chevron-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <polyline class="mission-group__chevron-path mission-group__chevron-path--closed" points="12,6 18,12 12,18" />
+              <polyline class="mission-group__chevron-path mission-group__chevron-path--open" points="6,10 12,16 18,10" />
+            </svg>
+          </span>
+          <span class="mission-group__title">Orientation</span>
+          <span class="mission-group__counts text-muted">1 completed</span>
+        </summary>
+        <ul class="mission-list">
+          <li class="mission-list__item mission-list__item--completed">
+            <div class="mission-card mission-card--completed" data-slug="basic-training" data-status="completed">
+              <span class="mission-card__body">
+                <span class="mission-card__title">Welcome to Radspion</span>
+                <span class="mission-card__slug text-mono">basic-training</span>
+                <span class="status-badge status-badge--completed">completed</span>
+              </span>
+              <span class="mission-card__arrow" aria-hidden="true">→</span>
+            </div>
+          </li>
+        </ul>
+      </details>
+    </div>
+  </main>
+
+  <footer class="page__footer site-footer site-footer--inline">
+    <div class="site-footer__inline">
+      <a class="site-footer__link" href="about.html">What is Radspion?</a>
+      <span class="site-footer__meta">Moravian University · Educational Use</span>
+      <a class="site-footer__link" href="privacy.html">Privacy Policy</a>
+    </div>
+  </footer>
+
+  <div class="transmission-modal">
+    <div class="transmission-modal__backdrop"></div>
+    <section
+      class="transmission-modal__dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="clearance-heading"
+    >
+      <div class="transmission-modal__progress" id="clearance-progress">
+        <h2 id="clearance-heading" class="transmission-modal__title transmission-modal__title--phase text-mono">Requesting clearance</h2>
+        <p class="transmission-modal__step" id="clearance-step">Initializing secure channel…</p>
+        <div class="transmission-modal__bar" aria-hidden="true">
+          <div class="transmission-modal__bar-fill" id="clearance-bar-fill"></div>
+        </div>
+      </div>
+      <div class="transmission-modal__outcome" id="clearance-outcome" hidden>
+        <div class="transmission-modal__outcome-header">
+          <img
+            class="transmission-modal__outcome-mark transmission-modal__outcome-mark--success"
+            src="../../logos/radspion_mark_white.svg"
+            width="48"
+            height="48"
+            alt=""
+          >
+          <h2 class="transmission-modal__outcome-heading">
+            <span class="transmission-modal__outcome-heading-line">Clearance</span>
+            <span class="transmission-modal__outcome-heading-line">Granted</span>
+          </h2>
+        </div>
+        <p class="transmission-modal__message">
+          Your request for further clearance was approved, and Command has added the
+          following missions to your dashboard:
+        </p>
+        <div class="outcome-missions-groups">
+          <section class="outcome-missions-group">
+            <h3 class="outcome-missions-group__heading">Testing Storyline</h3>
+            <ul class="outcome-missions">
+              <li class="outcome-missions__item">
+                ES: Alpha <span class="outcome-missions__slug text-mono">(es-alpha)</span>
+              </li>
+              <li class="outcome-missions__item">
+                ES: Beta <span class="outcome-missions__slug text-mono">(es-beta)</span>
+              </li>
+            </ul>
+          </section>
+        </div>
+        <button type="button" class="transmission-modal__ok">OK</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      var progress = document.getElementById("clearance-progress");
+      var outcome = document.getElementById("clearance-outcome");
+      var stepEl = document.getElementById("clearance-step");
+      var barEl = document.getElementById("clearance-bar-fill");
+      if (!progress || !outcome || !stepEl || !barEl) return;
+
+      var prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var steps = [
+        { text: "Initiating secure connection…", width: 22, delay: 500 },
+        { text: "Establishing agent identity…", width: 48, delay: 500 },
+        { text: "Transferring clearance code…", width: 72, delay: 500 },
+        { text: "Checking agency records…", width: 90, delay: 400 }
+      ];
+
+      if (prefersReducedMotion) {
+        progress.hidden = true;
+        outcome.hidden = false;
+        return;
+      }
+
+      var i = 0;
+      function runStep() {
+        if (i >= steps.length) {
+          setTimeout(function () {
+            barEl.style.width = "100%";
+            setTimeout(function () {
+              progress.hidden = true;
+              outcome.hidden = false;
+            }, 220);
+          }, 400);
+          return;
+        }
+        var step = steps[i];
+        stepEl.textContent = step.text;
+        barEl.style.width = step.width + "%";
+        i += 1;
+        setTimeout(runStep, step.delay);
+      }
+
+      setTimeout(runStep, 800);
+    })();
+  </script>
+</body>
+</html>

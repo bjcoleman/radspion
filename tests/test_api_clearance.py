@@ -1,10 +1,10 @@
-"""Tests for POST /api/unlock."""
+"""Tests for POST /api/clearance."""
 
 from pathlib import Path
 
 import pytest
 
-from radspion.web.api import INVALID_UNLOCK_MESSAGE
+from radspion.web.api import INVALID_CLEARANCE_MESSAGE
 from radspion.web.session_keys import SESSION_USER_ID
 from tests.helpers import SAMPLE_AGENTS, load_testing_storyline_database
 
@@ -28,12 +28,12 @@ def _client_for_db(db_path: Path):
     return create_app(config=config, radspion=radspion, oauth=FakeGoogleOAuth()).test_client()
 
 
-def test_unlock_success_returns_new_missions(storyline_db: Path):
+def test_clearance_success_returns_new_missions(storyline_db: Path):
     client = _client_for_db(storyline_db)
     with client.session_transaction() as sess:
         sess[SESSION_USER_ID] = SAMPLE_AGENTS["diana"]["id"]
 
-    response = client.post("/api/unlock", json={"unlock_code": "EXAMPLE UNLOCK"})
+    response = client.post("/api/clearance", json={"clearance_code": "EXAMPLE-CLEARANCE"})
     assert response.status_code == 200
     data = response.get_json()
     assert data["outcome"] == "success"
@@ -42,23 +42,23 @@ def test_unlock_success_returns_new_missions(storyline_db: Path):
     assert data["new_missions"][0]["group_name"] == "Testing Storyline"
 
 
-def test_unlock_invalid_returns_message(storyline_db: Path):
+def test_clearance_invalid_returns_message(storyline_db: Path):
     client = _client_for_db(storyline_db)
     with client.session_transaction() as sess:
         sess[SESSION_USER_ID] = SAMPLE_AGENTS["diana"]["id"]
 
-    response = client.post("/api/unlock", json={"unlock_code": "ZZ-INVALID"})
+    response = client.post("/api/clearance", json={"clearance_code": "ZZ-INVALID"})
     assert response.status_code == 200
     data = response.get_json()
-    assert data == {"outcome": "invalid", "message": INVALID_UNLOCK_MESSAGE}
+    assert data == {"outcome": "invalid", "message": INVALID_CLEARANCE_MESSAGE}
 
 
-def test_unlock_already_done(storyline_db: Path):
+def test_clearance_already_done(storyline_db: Path):
     client = _client_for_db(storyline_db)
     with client.session_transaction() as sess:
         sess[SESSION_USER_ID] = SAMPLE_AGENTS["alice"]["id"]
 
-    response = client.post("/api/unlock", json={"unlock_code": "EXAMPLE UNLOCK"})
+    response = client.post("/api/clearance", json={"clearance_code": "EXAMPLE-CLEARANCE"})
     assert response.status_code == 200
     data = response.get_json()
     assert data["outcome"] == "already_done"
@@ -66,42 +66,42 @@ def test_unlock_already_done(storyline_db: Path):
     assert "message" in data
 
 
-def test_unlock_rejects_missing_code(storyline_db: Path):
+def test_clearance_rejects_missing_code(storyline_db: Path):
     client = _client_for_db(storyline_db)
     with client.session_transaction() as sess:
         sess[SESSION_USER_ID] = SAMPLE_AGENTS["diana"]["id"]
 
-    response = client.post("/api/unlock", json={})
+    response = client.post("/api/clearance", json={})
     assert response.status_code == 400
-    assert response.get_json() == {"error": "missing unlock_code"}
+    assert response.get_json() == {"error": "missing clearance_code"}
 
 
-def test_unlock_rejects_empty_code(storyline_db: Path):
+def test_clearance_rejects_empty_code(storyline_db: Path):
     client = _client_for_db(storyline_db)
     with client.session_transaction() as sess:
         sess[SESSION_USER_ID] = SAMPLE_AGENTS["diana"]["id"]
 
-    response = client.post("/api/unlock", json={"unlock_code": "   "})
+    response = client.post("/api/clearance", json={"clearance_code": "   "})
     assert response.status_code == 400
 
 
-def test_unlock_rejects_non_json_body(storyline_db: Path):
+def test_clearance_rejects_non_json_body(storyline_db: Path):
     client = _client_for_db(storyline_db)
     with client.session_transaction() as sess:
         sess[SESSION_USER_ID] = SAMPLE_AGENTS["diana"]["id"]
 
     response = client.post(
-        "/api/unlock",
+        "/api/clearance",
         data="not json",
         content_type="application/json",
     )
     assert response.status_code == 400
-    assert response.get_json() == {"error": "missing unlock_code"}
+    assert response.get_json() == {"error": "missing clearance_code"}
 
 
-def test_unlock_requires_sign_in(storyline_db: Path):
+def test_clearance_requires_sign_in(storyline_db: Path):
     client = _client_for_db(storyline_db)
 
-    response = client.post("/api/unlock", json={"unlock_code": "EXAMPLE UNLOCK"})
+    response = client.post("/api/clearance", json={"clearance_code": "EXAMPLE-CLEARANCE"})
     assert response.status_code == 401
     assert response.get_json() == {"error": "Unauthorized"}

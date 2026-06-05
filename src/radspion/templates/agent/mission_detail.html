@@ -12,72 +12,7 @@
   <div class="mission-detail">
     {% include "agent/_mission_back_nav.html" %}
 
-    <header class="mission-detail__header">
-      <h1 class="mission-detail__title">{{ mission.title }}</h1>
-      <p class="mission-detail__meta text-mono">
-        {{ mission.slug }} ·
-        <span class="status-badge status-badge--{{ mission.status }}">{{ mission.status }}</span>
-      </p>
-    </header>
-
-    {% if mission.status == 'active' %}
-      <section class="mission-detail__section" aria-labelledby="brief-heading">
-        <h2 id="brief-heading" class="mission-detail__section-title text-mono">Mission Brief</h2>
-        <article class="markdown">{{ mission.brief_html }}</article>
-      </section>
-
-      <section class="mission-detail__section completion-panel" aria-labelledby="recovered-data-heading">
-        <header class="completion-panel__header">
-          <h2 id="recovered-data-heading" class="completion-panel__title">Recovered Data</h2>
-          <p class="completion-panel__lede text-muted">
-            Enter the data you recovered during fieldwork.
-          </p>
-        </header>
-        <form class="completion-form" action="#" method="post" data-mission-slug="{{ mission.slug }}">
-          <label class="sr-only" for="completion-code">Recovered data from fieldwork</label>
-          <input
-            class="completion-form__input text-mono"
-            type="text"
-            id="completion-code"
-            name="completion_code"
-            autocomplete="off"
-            spellcheck="false"
-            placeholder="Recovered data"
-          >
-          <button class="completion-form__submit" type="submit">Submit</button>
-        </form>
-      </section>
-    {% else %}
-      <section class="mission-detail__section recovered-data-panel" aria-labelledby="recovered-data-heading">
-        <h2 id="recovered-data-heading" class="recovered-data-panel__title">Recovered Data</h2>
-        <p class="recovered-data-panel__lede text-muted">
-          The following data is secured in agency archives.
-        </p>
-        <div class="recovered-data__block">
-          <pre class="recovered-data__value text-mono">{{ mission.recovered_code }}</pre>
-        </div>
-      </section>
-
-      <section class="mission-detail__section" aria-labelledby="debrief-heading">
-        <details class="mission-group mission-group--collapsible" open>
-          <summary class="mission-group__summary">
-            {% include "agent/_mission_chevron.html" %}
-            <span id="debrief-heading" class="mission-detail__section-title text-mono">Mission Debrief</span>
-          </summary>
-          <article class="markdown">{{ mission.debrief_html }}</article>
-        </details>
-      </section>
-
-      <section class="mission-detail__section" aria-labelledby="brief-heading">
-        <details class="mission-group mission-group--collapsible">
-          <summary class="mission-group__summary">
-            {% include "agent/_mission_chevron.html" %}
-            <span id="brief-heading" class="mission-detail__section-title text-mono">Mission Brief</span>
-          </summary>
-          <article class="markdown">{{ mission.brief_html }}</article>
-        </details>
-      </section>
-    {% endif %}
+    {% include "agent/_mission_detail_body.html" %}
 
     {% with bottom=true %}
       {% include "agent/_mission_back_nav.html" %}
@@ -85,11 +20,9 @@
   </div>
 {% endblock %}
 
-{% block extra_body %}
-  <script src="{{ url_for('static', filename='js/mission-detail-copy-code.js') }}" defer></script>
+{% block agent_extra_body %}
+  <script src="{{ url_for('static', filename='js/mission-detail-copy-data.js') }}" defer></script>
   {% if mission.status == 'active' %}
-    {% include "_transmission_modal.html" %}
-    <script src="{{ url_for('static', filename='js/transmission-modal.js') }}"></script>
     <script src="{{ url_for('static', filename='js/mission-detail-submit.js') }}"></script>
   {% endif %}
 {% endblock %}

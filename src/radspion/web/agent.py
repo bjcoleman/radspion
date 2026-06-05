@@ -2,8 +2,8 @@
 
 from flask import Blueprint, abort, current_app, g, render_template, session
 
+from radspion.web.clearance_flow import pop_post_login_clearance_result
 from radspion.web.guards import login_required
-from radspion.web.unlock_flow import pop_post_login_unlock_result
 
 agent_bp = Blueprint("agent", __name__, url_prefix="/agent")
 
@@ -19,7 +19,7 @@ def dashboard():
         "agent/dashboard.html",
         user=g.user,
         dashboard_groups=dashboard_groups,
-        post_login_unlock_result=pop_post_login_unlock_result(session),
+        post_login_clearance_result=pop_post_login_clearance_result(session),
     )
 
 

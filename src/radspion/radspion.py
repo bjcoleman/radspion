@@ -1,7 +1,7 @@
 """Application (business) layer for Radspion."""
 
 from radspion.markdown_render import render_mission_markdown
-from radspion.missions import DashboardGroup, DashboardMission, MissionDetail, UnlockRedeemResult
+from radspion.missions import DashboardGroup, DashboardMission, MissionDetail, MissionListResult
 from radspion.oauth_types import GoogleProfile
 from radspion.user import User
 
@@ -64,33 +64,33 @@ class Radspion:
             status=content.status,
             brief_html=render_mission_markdown(content.brief_markdown),
             debrief_html=render_mission_markdown(content.debrief_markdown),
-            recovered_code=content.completion_code,
+            recovered_data=content.completion_data,
         )
 
-    def redeem_unlock_code(self, user_id: int, raw_code: str) -> UnlockRedeemResult:
+    def grant_clearance(self, user_id: int, raw_code: str) -> MissionListResult:
         """
-        Redeem a mission unlock code for the signed-in agent.
+        Grant clearance for the signed-in agent.
 
         Trims whitespace; comparison is case-sensitive.
         """
         code = raw_code.strip()
         if not code:
-            return UnlockRedeemResult(outcome="invalid")
-        return self._storage.redeem_unlock_code(user_id, code)
+            return MissionListResult(outcome="invalid")
+        return self._storage.grant_clearance(user_id, code)
 
-    def submit_mission_completion(
+    def submit_mission_data(
         self,
         user_id: int,
         slug: str,
-        raw_code: str,
-    ) -> UnlockRedeemResult | None:
+        raw_data: str,
+    ) -> MissionListResult | None:
         """
-        Submit a mission completion code for the signed-in agent.
+        Submit recovered mission data for the signed-in agent.
 
         Trims whitespace; comparison is case-sensitive.
         Returns None when the mission is not on the agent's list.
         """
-        code = raw_code.strip()
-        if not code:
-            return UnlockRedeemResult(outcome="invalid")
-        return self._storage.submit_mission_completion(user_id, slug, code)
+        data = raw_data.strip()
+        if not data:
+            return MissionListResult(outcome="invalid")
+        return self._storage.submit_mission_data(user_id, slug, data)

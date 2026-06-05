@@ -10,22 +10,20 @@ BEGIN;
 INSERT INTO groups (id, name) VALUES
     (1, 'Orientation');
 
-INSERT INTO missions (id, slug, title, brief_markdown, debrief_markdown, group_id, access_rule, completion_code) VALUES
+INSERT INTO missions (id, slug, title, brief_markdown, debrief_markdown, group_id, access_rule, completion_data) VALUES
     (1, 'basic-training', 'Welcome to Radspion', '# Welcome to Radspion — Brief
 
-Placeholder mission content. Replace with operator-authored markdown.
+## Overview
 
-```bash
-echo "orientation example"
+This is the orientation mission for agents new to Radspion. Complete it to practice submitting recovered data.
+
+## Data
+
+Submit the following data exactly:
+
 ```
-
-1. Review the briefing, then run:
-
-   ```bash
-   echo "step one"
-   ```
-
-2. Continue when ready.
+WELCOME-AGENT-OK
+```
 ', '# Welcome to Radspion — Debrief
 
 Placeholder. Shown after completion only.
@@ -39,70 +37,86 @@ INSERT INTO users (id, email, google_subject_id, display_name) VALUES
     (3, 'charlie@moravian.edu', 'google-charlie', 'Charlie'),
     (4, 'diana@moravian.edu', 'google-diana', 'Diana');
 
-INSERT INTO missions (slug, title, brief_markdown, debrief_markdown, group_id, access_rule, completion_code) VALUES
+INSERT INTO missions (slug, title, brief_markdown, debrief_markdown, group_id, access_rule, completion_data) VALUES
     ('es-alpha', 'ES: Alpha', '# ES: Alpha — Brief
 
 ## Overview
 
 This is the overview for the mission called ES: Alpha.
 
-## Completion Code
+## Data
 
-The completion code for this mission is `COMPLETE es-alpha`.
+Submit the following data exactly:
+
+```
+COMPLETE es-alpha
+```
 ', '# ES: Alpha — Debrief
 
 Congratulations, you completed ES: Alpha.
 
-Completing this mission unlocks ES: Gamma on your dashboard.
-', (SELECT id FROM groups WHERE name = 'Testing Storyline'), 'unlock_code', 'COMPLETE es-alpha'),
+Completing this mission lists ES: Gamma on your dashboard.
+', (SELECT id FROM groups WHERE name = 'Testing Storyline'), 'clearance_code', 'COMPLETE es-alpha'),
     ('es-beta', 'ES: Beta', '# ES: Beta — Brief
 
 ## Overview
 
 This is the overview for the mission called ES: Beta.
 
-## Completion Code
+## Data
 
-The completion code for this mission is `COMPLETE es-beta`.
+Submit the following data exactly:
+
+```
+COMPLETE es-beta
+```
 
 ## Hidden Mission
 
-This mission provides the unlock code for another mission: `HIDDEN UNLOCK`.
+This mission provides a clearance code for another mission: `HIDDEN-CLEARANCE`.
 ', '# ES: Beta — Debrief
 
 Congratulations, you completed ES: Beta.
 
-Completing this mission is one of two prerequisites for unlocking ES: Delta (you also need ES: Gamma).
-', (SELECT id FROM groups WHERE name = 'Testing Storyline'), 'unlock_code', 'COMPLETE es-beta'),
+Completing this mission is one of two prerequisites for listing ES: Delta (you also need ES: Gamma).
+', (SELECT id FROM groups WHERE name = 'Testing Storyline'), 'clearance_code', 'COMPLETE es-beta'),
     ('es-hidden', 'ES: Hidden', '# ES: Hidden — Brief
 
 ## Overview
 
 This is the overview for the mission called ES: Hidden.
 
-## Completion Code
+## Data
 
-The completion code for this mission is `COMPLETE es-hidden`.
+Submit the following data exactly:
+
+```
+COMPLETE es-hidden
+```
 ', '# ES: Hidden — Debrief
 
 Congratulations, you completed ES: Hidden.
 
-This mission does not unlock any other missions (dead end).
-', (SELECT id FROM groups WHERE name = 'Testing Storyline'), 'unlock_code', 'COMPLETE es-hidden'),
+This mission does not list any other missions (dead end).
+', (SELECT id FROM groups WHERE name = 'Testing Storyline'), 'clearance_code', 'COMPLETE es-hidden'),
     ('es-gamma', 'ES: Gamma', '# ES: Gamma — Brief
 
 ## Overview
 
 This is the overview for the mission called ES: Gamma.
 
-## Completion Code
+## Data
 
-The completion code for this mission is `COMPLETE es-gamma`.
+Submit the following data exactly:
+
+```
+COMPLETE es-gamma
+```
 ', '# ES: Gamma — Debrief
 
 Congratulations, you completed ES: Gamma.
 
-Completing this mission is one of two prerequisites for unlocking ES: Delta (you also need ES: Beta).
+Completing this mission is one of two prerequisites for listing ES: Delta (you also need ES: Beta).
 ', (SELECT id FROM groups WHERE name = 'Testing Storyline'), 'requires_complete', 'COMPLETE es-gamma'),
     ('es-delta', 'ES: Delta', '# ES: Delta — Brief
 
@@ -110,21 +124,25 @@ Completing this mission is one of two prerequisites for unlocking ES: Delta (you
 
 This is the overview for the mission called ES: Delta.
 
-## Completion Code
+## Data
 
-The completion code for this mission is `COMPLETE es-delta`.
+Submit the following data exactly:
+
+```
+COMPLETE es-delta
+```
 ', '# ES: Delta — Debrief
 
 Congratulations, you completed ES: Delta.
 
-This mission does not unlock any other missions (finale).
+This mission does not list any other missions (finale).
 ', (SELECT id FROM groups WHERE name = 'Testing Storyline'), 'requires_complete', 'COMPLETE es-delta');
 
-INSERT INTO mission_unlock_codes (mission_id, unlock_code)
-SELECT id, 'EXAMPLE UNLOCK' FROM missions WHERE slug IN ('es-alpha', 'es-beta');
+INSERT INTO mission_clearance_codes (mission_id, clearance_code)
+SELECT id, 'EXAMPLE-CLEARANCE' FROM missions WHERE slug IN ('es-alpha', 'es-beta');
 
-INSERT INTO mission_unlock_codes (mission_id, unlock_code)
-SELECT id, 'HIDDEN UNLOCK' FROM missions WHERE slug = 'es-hidden';
+INSERT INTO mission_clearance_codes (mission_id, clearance_code)
+SELECT id, 'HIDDEN-CLEARANCE' FROM missions WHERE slug = 'es-hidden';
 
 INSERT INTO mission_list_requires (mission_id, required_mission_id)
 SELECT child.id, parent.id
@@ -144,11 +162,11 @@ FROM missions child
 JOIN missions parent ON parent.slug = 'es-gamma'
 WHERE child.slug = 'es-delta';
 
--- Diana: orientation only (no storyline unlocks).
+-- Diana: orientation only (no storyline clearance granted).
 INSERT INTO agent_mission_status (user_id, mission_id, status)
 SELECT 4, id, 'active' FROM missions WHERE slug = 'basic-training';
 
--- Alice: EXAMPLE UNLOCK path — alpha complete, beta active, gamma active.
+-- Alice: EXAMPLE-CLEARANCE path — alpha complete, beta active, gamma active.
 INSERT INTO agent_mission_status (user_id, mission_id, status)
 SELECT 1, id, 'completed' FROM missions WHERE slug = 'basic-training';
 INSERT INTO agent_mission_status (user_id, mission_id, status)

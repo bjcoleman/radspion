@@ -2,7 +2,7 @@
  * Secure transmission modal — progress animation + outcome panel.
  *
  * Usage (step 3+): RadspionTransmission.transmit({
- *   preset: RadspionTransmission.PRESET.UNLOCK_CODE,
+ *   preset: RadspionTransmission.PRESET.CLEARANCE_CODE,
  *   request: () => fetch(...).then(r => r.json()),
  *   renderOutcome: (data, outcomeEl) => { ... },
  * });
@@ -11,20 +11,20 @@
   "use strict";
 
   const PRESET = {
-    UNLOCK_CODE: "unlockCode",
+    CLEARANCE_CODE: "clearanceCode",
     COMPLETION_DATA: "completionData",
   };
 
   const PRESETS = {
-    [PRESET.UNLOCK_CODE]: {
-      title: "Secure channel",
+    [PRESET.CLEARANCE_CODE]: {
+      title: "Requesting clearance",
       introText: "Initializing secure channel…",
-      dataLabel: "unlock code",
+      dataLabel: "clearance code",
     },
     [PRESET.COMPLETION_DATA]: {
-      title: "Secure transmission",
-      introText: "Initializing secure transmission…",
-      dataLabel: "completion data",
+      title: "Transmitting field data",
+      introText: "Compressing and Encrypting data",
+      dataLabel: "field data",
     },
   };
 
@@ -39,8 +39,9 @@
 
   const STEP_WIDTHS = [22, 48, 72, 90];
 
-  /** Forms that submit unlock / completion data behind the modal. */
-  const SUBMIT_FORM_SELECTOR = ".unlock-form, .completion-form";
+  /** Forms that submit clearance / data behind the modal. */
+  const SUBMIT_FORM_SELECTOR =
+    ".clearance-form, .clearance-confirm-form, .recovered-data-form";
 
   function prefersReducedMotion() {
     return global.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -173,6 +174,45 @@
     }
   };
 
+  TransmissionModal.prototype._runDataPrepPhase = function () {
+    const self = this;
+    const prepText = PRESETS[PRESET.COMPLETION_DATA].introText;
+
+    return new Promise(function (resolve) {
+      self.stepEl.textContent = prepText;
+      self.barEl.style.transition = "width 0.6s ease";
+      self.barEl.style.width = "0%";
+
+      global.setTimeout(function () {
+        self.barEl.style.width = "100%";
+        global.setTimeout(function () {
+          self.barEl.style.transition = "width 0.2s ease";
+          self.barEl.style.width = "0%";
+          global.setTimeout(resolve, 150);
+        }, 600);
+      }, 400);
+    });
+  };
+
+  TransmissionModal.prototype._runProgressSteps = function (steps) {
+    const self = this;
+
+    return (async function () {
+      await delay(jitter(TIMING.introHoldMs));
+
+      for (let i = 0; i < steps.length; i += 1) {
+        const step = steps[i];
+        self.stepEl.textContent = step.text;
+        self.barEl.style.width = step.width + "%";
+        await delay(jitter(TIMING.stepMs));
+      }
+
+      await delay(jitter(TIMING.tailMs));
+      self.barEl.style.width = "100%";
+      await delay(TIMING.finalizeMs);
+    })();
+  };
+
   TransmissionModal.prototype.runProgress = function (presetKey) {
     const self = this;
     const preset = this._applyPreset(presetKey);
@@ -190,18 +230,12 @@
       }
 
       (async function () {
-        await delay(jitter(TIMING.introHoldMs));
-
-        for (let i = 0; i < steps.length; i += 1) {
-          const step = steps[i];
-          self.stepEl.textContent = step.text;
-          self.barEl.style.width = step.width + "%";
-          await delay(jitter(TIMING.stepMs));
+        if (presetKey === PRESET.COMPLETION_DATA) {
+          await self._runDataPrepPhase();
         }
 
-        await delay(jitter(TIMING.tailMs));
-        self.barEl.style.width = "100%";
-        await delay(TIMING.finalizeMs);
+        self.barEl.style.transition = "";
+        await self._runProgressSteps(steps);
         resolve();
       })();
     });

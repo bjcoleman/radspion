@@ -1,5 +1,10 @@
 {# Shared secure-channel modal — driven by static/js/transmission-modal.js #}
-<div class="transmission-modal" data-transmission-modal hidden>
+<div
+  class="transmission-modal"
+  data-transmission-modal
+  data-mark-src="{{ url_for('static', filename='img/radspion_mark_white.svg') }}"
+  hidden
+>
   <div class="transmission-modal__backdrop"></div>
   <section
     class="transmission-modal__dialog"
@@ -8,7 +13,11 @@
     aria-labelledby="transmission-heading"
   >
     <div class="transmission-modal__progress" data-transmission-progress>
-      <h2 id="transmission-heading" class="transmission-modal__title text-mono" data-transmission-heading>
+      <h2
+        id="transmission-heading"
+        class="transmission-modal__title transmission-modal__title--phase text-mono"
+        data-transmission-heading
+      >
         Secure channel
       </h2>
       <p class="transmission-modal__step" data-transmission-step aria-live="polite">
