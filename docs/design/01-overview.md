@@ -12,8 +12,8 @@ A web app where students act as **agents** in a spy-agency fiction. **Missions**
 | SQLite data model below | Story templates / publish pipeline |
 | **Groups** as story arcs (dashboard organization) | Audit log, timestamps |
 | Mission Brief / Debrief (markdown paths) | Per-agent keyed codes |
-| `access_rule`: open, unlock_code, requires_complete | |
-| `mission_unlock_codes`, `mission_list_requires` | |
+| `access_rule`: open, clearance_code, requires_complete | |
+| `mission_clearance_codes`, `mission_list_requires` | |
 | **Operator** (you)—configure via SQL seed | |
 | Operator **progress** UI (`is_operator`, read-only) | |
 
@@ -26,7 +26,7 @@ A web app where students act as **agents** in a spy-agency fiction. **Missions**
 
 ## Stack
 
-- **Flask + Jinja** for server-rendered pages; JSON API at `/api/unlock` and `/api/missions/<slug>/submit` — see [api.yaml](../api.yaml). Agent UI copy: [06-agent-experience.md](06-agent-experience.md); mockups: [ui/README.md](../ui/README.md)
+- **Flask + Jinja** for server-rendered pages; JSON API at `/api/clearance` and `/api/missions/<slug>/submit` — see [api.yaml](../api.yaml). Agent UI copy: [06-agent-experience.md](06-agent-experience.md); mockups: [ui/README.md](../ui/README.md)
 - SQLite 3
 - Mission Brief/Debrief markdown in DB (`brief_markdown` / `debrief_markdown`), seeded from **radspion-missions**; UI mockups in `docs/ui/` inline HTML for layout review
 
@@ -34,7 +34,7 @@ A web app where students act as **agents** in a spy-agency fiction. **Missions**
 
 - **Group** — story arc (`missions.group_id`); organizes the dashboard, does not gate access
 - **Mission** — one group, `access_rule`, `completion_code` (data), story paths
-- **Constraints** — clearance codes in `mission_unlock_codes` (strings may be shared across missions), list prereqs (`mission_list_requires`)
+- **Constraints** — clearance codes in `mission_clearance_codes` (strings may be shared across missions), list prereqs (`mission_list_requires`)
 - **AgentMissionStatus** — per agent per mission: `active` or `completed`
 
 Details: [02-entities.md](02-entities.md), [03-database-schema.md](03-database-schema.md). Agent UI: [06-agent-experience.md](06-agent-experience.md).

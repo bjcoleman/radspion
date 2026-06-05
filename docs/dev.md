@@ -255,7 +255,7 @@ Distinct progress animations for clearance and data submission. Include `templat
 
 | Preset | Modal title (target) | Step 3 label (target) |
 |--------|----------------------|------------------------|
-| `UNLOCK_CODE` | Clearance channel | clearance code |
+| `CLEARANCE_CODE` | Clearance channel | clearance code |
 | `COMPLETION_DATA` | Secure transmission | field data |
 
 Presets use the same four-step timing (initiating secure connection → establishing agent identity → transferring payload → checking agency records) but **differ in title, step copy, and outcome styling**. Total duration targets **~3 seconds** with per-step jitter.

@@ -1,4 +1,4 @@
-"""Tests for mission unlock code redemption in storage."""
+"""Tests for granting clearance in storage."""
 
 from pathlib import Path
 
@@ -16,11 +16,11 @@ def storyline_db(tmp_path: Path) -> Path:
     return db_path
 
 
-def test_redeem_example_unlock_lists_two_missions_for_diana(storyline_db: Path):
+def test_redeem_example_clearance_lists_two_missions_for_diana(storyline_db: Path):
     storage = DatabaseRadspionStorage(storyline_db)
     diana_id = SAMPLE_AGENTS["diana"]["id"]
 
-    result = storage.redeem_unlock_code(diana_id, "EXAMPLE-UNLOCK")
+    result = storage.grant_clearance(diana_id, "EXAMPLE-CLEARANCE")
 
     assert result.outcome == "success"
     assert len(result.new_missions) == 2
@@ -35,17 +35,17 @@ def test_redeem_trims_whitespace(storyline_db: Path):
     storage = DatabaseRadspionStorage(storyline_db)
     diana_id = SAMPLE_AGENTS["diana"]["id"]
 
-    result = Radspion(storage).redeem_unlock_code(diana_id, "  EXAMPLE-UNLOCK  ")
+    result = Radspion(storage).grant_clearance(diana_id, "  EXAMPLE-CLEARANCE  ")
 
     assert result.outcome == "success"
     assert len(result.new_missions) == 2
 
 
-def test_redeem_hidden_unlock_lists_one_mission(storyline_db: Path):
+def test_redeem_hidden_clearance_lists_one_mission(storyline_db: Path):
     storage = DatabaseRadspionStorage(storyline_db)
     diana_id = SAMPLE_AGENTS["diana"]["id"]
 
-    result = storage.redeem_unlock_code(diana_id, "HIDDEN-UNLOCK")
+    result = storage.grant_clearance(diana_id, "HIDDEN-CLEARANCE")
 
     assert result.outcome == "success"
     assert len(result.new_missions) == 1
@@ -55,7 +55,7 @@ def test_redeem_hidden_unlock_lists_one_mission(storyline_db: Path):
 def test_redeem_invalid_code(storyline_db: Path):
     storage = DatabaseRadspionStorage(storyline_db)
 
-    result = storage.redeem_unlock_code(SAMPLE_AGENTS["diana"]["id"], "ZZ-INVALID")
+    result = storage.grant_clearance(SAMPLE_AGENTS["diana"]["id"], "ZZ-INVALID")
 
     assert result.outcome == "invalid"
     assert result.new_missions == ()
@@ -65,7 +65,7 @@ def test_redeem_invalid_code(storyline_db: Path):
 def test_redeem_case_sensitive(storyline_db: Path):
     storage = DatabaseRadspionStorage(storyline_db)
 
-    result = storage.redeem_unlock_code(SAMPLE_AGENTS["diana"]["id"], "example-unlock")
+    result = storage.grant_clearance(SAMPLE_AGENTS["diana"]["id"], "example-clearance")
 
     assert result.outcome == "invalid"
 
@@ -74,7 +74,7 @@ def test_redeem_already_done_when_all_matching_listed(storyline_db: Path):
     storage = DatabaseRadspionStorage(storyline_db)
     alice_id = SAMPLE_AGENTS["alice"]["id"]
 
-    result = storage.redeem_unlock_code(alice_id, "EXAMPLE-UNLOCK")
+    result = storage.grant_clearance(alice_id, "EXAMPLE-CLEARANCE")
 
     assert result.outcome == "already_done"
     assert result.new_missions == ()
@@ -84,6 +84,6 @@ def test_redeem_already_done_when_all_matching_listed(storyline_db: Path):
 def test_redeem_already_done_for_bob_with_all_storyline_completed(storyline_db: Path):
     storage = DatabaseRadspionStorage(storyline_db)
 
-    result = storage.redeem_unlock_code(SAMPLE_AGENTS["bob"]["id"], "EXAMPLE-UNLOCK")
+    result = storage.grant_clearance(SAMPLE_AGENTS["bob"]["id"], "EXAMPLE-CLEARANCE")
 
     assert result.outcome == "already_done"

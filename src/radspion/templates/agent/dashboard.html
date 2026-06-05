@@ -64,10 +64,10 @@
 {% endblock %}
 
 {% block agent_extra_body %}
-  {% if post_login_unlock_result %}
+  {% if post_login_clearance_result %}
     <script>
-      window.RADSPION_POST_LOGIN_UNLOCK = {{ post_login_unlock_result | tojson }};
+      window.RADSPION_POST_LOGIN_CLEARANCE = {{ post_login_clearance_result | tojson }};
     </script>
-    <script src="{{ url_for('static', filename='js/dashboard-post-login-unlock.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dashboard-post-login-clearance.js') }}"></script>
   {% endif %}
 {% endblock %}

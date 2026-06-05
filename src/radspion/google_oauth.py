@@ -14,7 +14,7 @@ from radspion.oauth_types import (
     OAuthStateError,
     OAuthVerificationError,
 )
-from radspion.web.session_keys import SESSION_PENDING_UNLOCK
+from radspion.web.session_keys import SESSION_PENDING_CLEARANCE
 
 SESSION_OAUTH_STATE = "oauth_state"
 SESSION_OAUTH_CODE_VERIFIER = "oauth_code_verifier"
@@ -73,7 +73,7 @@ class GoogleOAuth:
             "code_verifier": flow.code_verifier,
             # Move out of the browser session so a stale QR visit cannot re-redeem
             # on every later Sign in with Google from the landing page.
-            "pending_unlock": session.pop(SESSION_PENDING_UNLOCK, None),
+            "pending_clearance": session.pop(SESSION_PENDING_CLEARANCE, None),
         }
         session[SESSION_OAUTH_STATE] = state
         if flow.code_verifier:
@@ -83,9 +83,9 @@ class GoogleOAuth:
         return authorization_url
 
     def _restore_pending_session_flags(self, session, pending: dict[str, Any]) -> None:
-        pending_unlock = pending.get("pending_unlock")
-        if pending_unlock:
-            session[SESSION_PENDING_UNLOCK] = pending_unlock
+        pending_clearance = pending.get("pending_clearance")
+        if pending_clearance:
+            session[SESSION_PENDING_CLEARANCE] = pending_clearance
 
     def _resolve_callback_context(self, session, *, state: str | None) -> str | None:
         """Return the PKCE verifier for callback validation."""

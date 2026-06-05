@@ -1,5 +1,5 @@
 /**
- * Clearance transmission modal (header form, unlock landing, post-login QR redeem).
+ * Clearance transmission modal (header form, clearance landing, post-login QR grant).
  */
 (function (global) {
   "use strict";
@@ -10,11 +10,14 @@
     "Command could not verify this clearance code against agency records. Check the code and try again.";
 
   function renderSuccess(outcomeEl, newMissions) {
+    var missionWord = newMissions.length === 1 ? "mission" : "missions";
     outcomeEl.innerHTML =
       Outcome.outcomeHeaderHtml("Clearance", "Granted", "success") +
       '<p class="transmission-modal__message">' +
       "Your request for further clearance was approved, and Command has added the " +
-      "following missions to your dashboard:" +
+      "following " +
+      missionWord +
+      " to your dashboard:" +
       "</p>" +
       Outcome.missionGroupsHtml(newMissions) +
       Outcome.okButton;
@@ -41,7 +44,7 @@
       Outcome.okButton;
   }
 
-  function renderUnlockOutcome(data, outcomeEl) {
+  function renderClearanceOutcome(data, outcomeEl) {
     if (data.outcome === "success") {
       renderSuccess(outcomeEl, data.new_missions || []);
       return;
@@ -53,12 +56,12 @@
     renderInvalid(outcomeEl, data.message);
   }
 
-  function postUnlock(unlockCode) {
-    return fetch("/api/unlock", {
+  function postClearance(clearanceCode) {
+    return fetch("/api/clearance", {
       method: "POST",
       credentials: "same-origin",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ unlock_code: unlockCode }),
+      body: JSON.stringify({ clearance_code: clearanceCode }),
     }).then(function (response) {
       return response.json().then(function (data) {
         if (response.status === 401) {
@@ -66,26 +69,26 @@
           return { outcome: "invalid", message: INVALID_FALLBACK };
         }
         if (!response.ok) {
-          throw new Error("unlock request failed");
+          throw new Error("clearance request failed");
         }
         return data;
       });
     });
   }
 
-  function runUnlockTransmission(requestFn) {
+  function runClearanceTransmission(requestFn) {
     if (!global.RadspionTransmission) {
       return;
     }
     global.RadspionTransmission.transmit({
-      preset: global.RadspionTransmission.PRESET.UNLOCK_CODE,
+      preset: global.RadspionTransmission.PRESET.CLEARANCE_CODE,
       request: requestFn,
-      renderOutcome: renderUnlockOutcome,
+      renderOutcome: renderClearanceOutcome,
     });
   }
 
-  function showUnlockResult(data) {
-    runUnlockTransmission(function () {
+  function showClearanceResult(data) {
+    runClearanceTransmission(function () {
       return Promise.resolve(data);
     });
   }
@@ -93,20 +96,19 @@
   function wireClearanceForm(form) {
     form.addEventListener("submit", function (event) {
       event.preventDefault();
-      var input = form.querySelector('[name="unlock_code"]');
-      var unlockCode = input ? input.value : "";
+      var input = form.querySelector('[name="clearance_code"]');
+      var clearanceCode = input ? input.value : "";
 
-      runUnlockTransmission(function () {
-        return postUnlock(unlockCode).catch(function () {
+      runClearanceTransmission(function () {
+        return postClearance(clearanceCode).catch(function () {
           return { outcome: "invalid", message: INVALID_FALLBACK };
         });
       });
     });
   }
 
-  global.RadspionUnlockRedeem = {
-    showUnlockResult: showUnlockResult,
+  global.RadspionClearanceRedeem = {
+    showClearanceResult: showClearanceResult,
     wireClearanceForm: wireClearanceForm,
-    wireDashboardForm: wireClearanceForm,
   };
 })(window);

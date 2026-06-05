@@ -2,7 +2,7 @@
  * Secure transmission modal — progress animation + outcome panel.
  *
  * Usage (step 3+): RadspionTransmission.transmit({
- *   preset: RadspionTransmission.PRESET.UNLOCK_CODE,
+ *   preset: RadspionTransmission.PRESET.CLEARANCE_CODE,
  *   request: () => fetch(...).then(r => r.json()),
  *   renderOutcome: (data, outcomeEl) => { ... },
  * });
@@ -11,12 +11,12 @@
   "use strict";
 
   const PRESET = {
-    UNLOCK_CODE: "unlockCode",
+    CLEARANCE_CODE: "clearanceCode",
     COMPLETION_DATA: "completionData",
   };
 
   const PRESETS = {
-    [PRESET.UNLOCK_CODE]: {
+    [PRESET.CLEARANCE_CODE]: {
       title: "Requesting clearance",
       introText: "Initializing secure channel…",
       dataLabel: "clearance code",
@@ -41,7 +41,7 @@
 
   /** Forms that submit clearance / data behind the modal. */
   const SUBMIT_FORM_SELECTOR =
-    ".clearance-form, .unlock-confirm-form, .completion-form";
+    ".clearance-form, .clearance-confirm-form, .completion-form";
 
   function prefersReducedMotion() {
     return global.matchMedia("(prefers-reduced-motion: reduce)").matches;

@@ -89,17 +89,18 @@ def test_dashboard_includes_clearance_form_and_transmission_modal(testing_storyl
     assert "data-transmission-modal" in body
     assert "clearance-form.js" in body
     assert "transmission-modal.js" in body
-    assert "unlock-panel" not in body
+    assert 'name="clearance_code"' in body
+    assert "clearance-redeem.js" in body
 
 
-def test_unlock_then_dashboard_lists_storyline_missions(testing_storyline_db: Path):
+def test_clearance_then_dashboard_lists_storyline_missions(testing_storyline_db: Path):
     client = _client_for_db(testing_storyline_db)
     with client.session_transaction() as sess:
         sess[SESSION_USER_ID] = SAMPLE_AGENTS["diana"]["id"]
 
-    unlock = client.post("/api/unlock", json={"unlock_code": "EXAMPLE-UNLOCK"})
-    assert unlock.status_code == 200
-    assert unlock.get_json()["outcome"] == "success"
+    clearance = client.post("/api/clearance", json={"clearance_code": "EXAMPLE-CLEARANCE"})
+    assert clearance.status_code == 200
+    assert clearance.get_json()["outcome"] == "success"
 
     body = client.get("/agent/dashboard").data.decode()
     assert "es-alpha" in body

@@ -8,9 +8,9 @@ Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snaps
 
 **Target layout:** Sticky site header with **Clearance** field + **Request Access**; Mission Dashboard **without** a body clearance field; mission detail **Data** panel with **textarea** + **Submit data**; distinct clearance vs data transmission modals.
 
-**Sample data alignment:** Story arcs **Orientation** and **Testing Storyline** (`es-*` missions); **`unlock_code`** or **`requires_complete`** listing — never both on one mission.
+**Sample data alignment:** Story arcs **Orientation** and **Testing Storyline** (`es-*` missions); **`clearance_code`** or **`requires_complete`** listing — never both on one mission.
 
-**Mock vs production:** Modal outcome pages hard-code copy and animation; no `fetch`. Production will call `POST /api/unlock` (clearance) and `POST /api/missions/<slug>/submit` (data) per [`api.yaml`](../api.yaml). API `outcome` values are `success`, `invalid`, `already_done` (shared [`MissionListResponse`](../api.yaml) with `new_missions`). Clearance success may list one or many missions; data submit **success-unlocks** simulates `success` with a non-empty `new_missions` array.
+**Mock vs production:** Modal outcome pages hard-code copy and animation; no `fetch`. Production will call `POST /api/clearance` (clearance) and `POST /api/missions/<slug>/submit` (data) per [`api.yaml`](../api.yaml). API `outcome` values are `success`, `invalid`, `already_done` (shared [`MissionListResponse`](../api.yaml) with `new_missions`). Clearance success may list one or many missions; data submit **success-lists** simulates `success` with a non-empty `new_missions` array.
 
 ---
 
@@ -42,9 +42,9 @@ Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snaps
 |------|--------|-----------------|-----------|
 | [agent-dashboard.html](agent-dashboard.html) | done | Alice; sticky header clearance; title-row toggle | UC-013, UC-019, UC-026 |
 | [agent-dashboard-hidden.html](agent-dashboard-hidden.html) | done | Same list; **Show completed missions** off | UC-013 |
-| [agent-dashboard-clearance-success.html](agent-dashboard-clearance-success.html) | done | Diana; **EXAMPLE-UNLOCK** granted modal | UC-020, UC-027 |
+| [agent-dashboard-clearance-success.html](agent-dashboard-clearance-success.html) | done | Diana; **EXAMPLE-CLEARANCE** granted modal | UC-020, UC-027 |
 | [agent-dashboard-clearance-invalid.html](agent-dashboard-clearance-invalid.html) | done | Invalid clearance modal | UC-020 |
-| [agent-dashboard-clearance-already-done.html](agent-dashboard-clearance-already-done.html) | done | **EXAMPLE-UNLOCK** re-submitted (Alice) | UC-020 |
+| [agent-dashboard-clearance-already-done.html](agent-dashboard-clearance-already-done.html) | done | **EXAMPLE-CLEARANCE** re-submitted (Alice) | UC-020 |
 
 ### Mission detail
 
@@ -53,7 +53,7 @@ Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snaps
 | [mission-detail-active.html](mission-detail-active.html) | done | **Alice / es-beta** active: Brief, Data textarea | UC-009, UC-016, UC-017 |
 | [mission-detail-completed.html](mission-detail-completed.html) | done | **Alice / es-alpha** completed; agency archives + Debrief | UC-010, UC-018, UC-021 |
 | [mission-detail-submit-success.html](mission-detail-submit-success.html) | done | **es-beta** data accepted (no new missions) | UC-021 |
-| [mission-detail-submit-success-unlocks.html](mission-detail-submit-success-unlocks.html) | done | **es-alpha** success + **es-gamma** listed | UC-021, UC-032 |
+| [mission-detail-submit-success-lists.html](mission-detail-submit-success-lists.html) | done | **es-alpha** success + **es-gamma** listed | UC-021, UC-032 |
 | [mission-detail-submit-invalid.html](mission-detail-submit-invalid.html) | done | Invalid data (**es-beta**) | UC-022 |
 
 ### Operator (read-only)

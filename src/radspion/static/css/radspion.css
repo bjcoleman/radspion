@@ -797,13 +797,15 @@ a:hover {
   user-select: none;
 }
 
-.dashboard__unlock {
-  margin-bottom: var(--space-lg);
+.clearance-form__input:disabled,
+.clearance-form__submit:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
-/* Unlock code (agent dashboard) */
+/* Clearance landing confirm panel */
 
-.unlock-panel {
+.clearance-panel {
   margin-bottom: var(--space-2xl);
   padding: var(--space-lg);
   background: var(--color-bg-panel);
@@ -811,70 +813,10 @@ a:hover {
   border-radius: var(--radius-md);
 }
 
-.unlock-panel__heading {
-  margin: 0 0 var(--space-md);
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-text-faint);
-}
-
-.unlock-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
-  align-items: stretch;
-}
-
-.unlock-form__input {
-  flex: 1 1 12rem;
-  min-width: 0;
-  padding: 0.625rem 0.75rem;
-  font-size: 0.875rem;
-  color: var(--color-text);
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-}
-
-.unlock-form__input::placeholder {
-  color: var(--color-text-faint);
-}
-
-.unlock-form__input:focus {
-  outline: none;
-  border-color: var(--color-accent-dim);
-  box-shadow: 0 0 0 2px rgba(196, 163, 90, 0.2);
-}
-
-.unlock-form__submit {
-  flex-shrink: 0;
-  padding: 0.625rem 1.25rem;
-  font-family: var(--font-sans);
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-bg);
-  background: var(--color-accent);
-  border: none;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.unlock-form__submit:hover {
-  background: #d4b56a;
-}
-
-.unlock-form__submit:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
-}
-
-.unlock-form__input:disabled,
-.unlock-form__submit:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
+.clearance-panel--confirm {
+  max-width: 28rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .flash-messages {

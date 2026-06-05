@@ -1,8 +1,8 @@
 -- Radspion SQLite schema (simplified v2)
 -- See docs/design/03-database-schema.md
 --
--- Listing rule (V1): each mission exposes exactly one of open | unlock_code | requires_complete.
--- Never combine redeemable unlock codes (mission_unlock_codes) with automatic listing (mission_list_requires).
+-- Listing rule (V1): each mission exposes exactly one of open | clearance_code | requires_complete.
+-- Never combine clearance codes (mission_clearance_codes) with automatic listing (mission_list_requires).
 
 PRAGMA foreign_keys = ON;
 
@@ -40,16 +40,16 @@ CREATE TABLE missions (
     brief_markdown    TEXT NOT NULL,
     debrief_markdown  TEXT NOT NULL,
     group_id          INTEGER NOT NULL REFERENCES groups (id) ON DELETE CASCADE,
-    access_rule     TEXT NOT NULL CHECK (access_rule IN ('open', 'unlock_code', 'requires_complete')),
+    access_rule     TEXT NOT NULL CHECK (access_rule IN ('open', 'clearance_code', 'requires_complete')),
     completion_code TEXT NOT NULL
 );
 
 CREATE INDEX idx_missions_group_id ON missions (group_id);
 
--- Unlock secret when access_rule = unlock_code (one row per mission; unlock_code values may repeat)
-CREATE TABLE mission_unlock_codes (
+-- Clearance code when access_rule = clearance_code (one row per mission; values may repeat)
+CREATE TABLE mission_clearance_codes (
     mission_id      INTEGER PRIMARY KEY REFERENCES missions (id) ON DELETE CASCADE,
-    unlock_code     TEXT NOT NULL
+    clearance_code  TEXT NOT NULL
 );
 
 -- Listing: mission appears after required missions are completed

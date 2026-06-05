@@ -6,29 +6,29 @@ from radspion.web.guards import api_login_required
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
-INVALID_UNLOCK_MESSAGE = "Command could not verify this clearance code against agency records."
+INVALID_CLEARANCE_MESSAGE = "Command could not verify this clearance code against agency records."
 INVALID_SUBMIT_MESSAGE = (
     "We received your transmission, but the recovered data does not match mission parameters."
 )
 
 
-@api_bp.post("/unlock")
+@api_bp.post("/clearance")
 @api_login_required
-def redeem_unlock():
-    """Redeem a mission unlock code (POST /api/unlock)."""
+def grant_clearance():
+    """Grant clearance for matching missions (POST /api/clearance)."""
     payload = request.get_json(silent=True)
     if not isinstance(payload, dict):
-        return jsonify({"error": "missing unlock_code"}), 400
+        return jsonify({"error": "missing clearance_code"}), 400
 
-    raw_code = payload.get("unlock_code")
+    raw_code = payload.get("clearance_code")
     if not isinstance(raw_code, str) or not raw_code.strip():
-        return jsonify({"error": "missing unlock_code"}), 400
+        return jsonify({"error": "missing clearance_code"}), 400
 
     radspion = current_app.extensions["radspion"]
-    result = radspion.redeem_unlock_code(g.user.id, raw_code)
+    result = radspion.grant_clearance(g.user.id, raw_code)
     if result.outcome == "invalid":
         return jsonify(
-            {"outcome": "invalid", "message": INVALID_UNLOCK_MESSAGE},
+            {"outcome": "invalid", "message": INVALID_CLEARANCE_MESSAGE},
         )
 
     return jsonify(result.to_api_dict())
@@ -37,7 +37,7 @@ def redeem_unlock():
 @api_bp.post("/missions/<slug>/submit")
 @api_login_required
 def submit_mission(slug: str):
-    """Submit a mission completion code (POST /api/missions/<slug>/submit)."""
+    """Submit mission data (POST /api/missions/<slug>/submit)."""
     payload = request.get_json(silent=True)
     if not isinstance(payload, dict):
         return jsonify({"error": "missing completion_code"}), 400

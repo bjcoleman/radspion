@@ -41,8 +41,8 @@
         Toggle <strong>Reduce motion</strong> in OS settings to skip the animation.
       </p>
       <div class="demo__actions">
-        <button type="button" id="demo-unlock-ok">Unlock code · success (slow POST)</button>
-        <button type="button" id="demo-completion-ok">Completion data · success</button>
+        <button type="button" id="demo-clearance-ok">Clearance · success (slow POST)</button>
+        <button type="button" id="demo-completion-ok">Data · success</button>
       </div>
     </div>
   </main>
@@ -51,7 +51,7 @@
     <div class="transmission-modal__backdrop"></div>
     <section class="transmission-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="transmission-heading">
       <div class="transmission-modal__progress" data-transmission-progress>
-        <h2 id="transmission-heading" class="transmission-modal__title text-mono" data-transmission-heading>Secure channel</h2>
+        <h2 id="transmission-heading" class="transmission-modal__title transmission-modal__title--phase text-mono" data-transmission-heading>Secure channel</h2>
         <p class="transmission-modal__step" data-transmission-step aria-live="polite">Initiating secure connection…</p>
         <div class="transmission-modal__bar" aria-hidden="true">
           <div class="transmission-modal__bar-fill" data-transmission-bar-fill></div>
@@ -62,41 +62,47 @@
   </div>
 
   <script src="../../src/radspion/static/js/transmission-modal.js"></script>
+  <script src="../../src/radspion/static/js/transmission-outcome.js"></script>
   <script>
     (function () {
       var P = window.RadspionTransmission.PRESET;
+      var Outcome = window.RadspionTransmissionOutcome;
 
-      function renderUnlockSuccess(data, el) {
+      function renderClearanceSuccess(data, el) {
+        var missionWord = data.missionCount === 1 ? "mission" : "missions";
         el.innerHTML =
-          '<h2 class="transmission-modal__title">Verification succeeded</h2>' +
-          '<p class="transmission-modal__message">The following mission was added to your dashboard:</p>' +
-          '<p class="transmission-modal__message"><strong>' + data.missionTitle + '</strong></p>' +
-          '<button type="button" class="transmission-modal__ok">OK</button>';
+          Outcome.outcomeHeaderHtml("Clearance", "Granted", "success") +
+          '<p class="transmission-modal__message">Your request for further clearance was approved, and Command has added the following ' +
+          missionWord +
+          ' to your dashboard:</p>' +
+          Outcome.missionGroupsHtml([{ title: data.missionTitle, slug: "es-gamma", group_name: "Testing Storyline" }]) +
+          Outcome.okButton;
       }
 
-      function renderCompletionSuccess(data, el) {
+      function renderDataSuccess(_data, el) {
         el.innerHTML =
-          '<h2 class="transmission-modal__title">Transmission accepted</h2>' +
+          Outcome.outcomeHeaderHtml("Data", "Accepted", "success") +
           '<p class="transmission-modal__message">Lab verification confirmed your field data. This mission is now marked as completed.</p>' +
-          '<button type="button" class="transmission-modal__ok">OK</button>';
+          '<p class="transmission-modal__message">Read the debrief for your after-action summary.</p>' +
+          Outcome.okButton;
       }
 
       function transmit(preset, request, renderOutcome) {
         window.RadspionTransmission.transmit({ preset: preset, request: request, renderOutcome: renderOutcome });
       }
 
-      document.getElementById("demo-unlock-ok").addEventListener("click", function () {
-        transmit(P.UNLOCK_CODE, function () {
+      document.getElementById("demo-clearance-ok").addEventListener("click", function () {
+        transmit(P.CLEARANCE_CODE, function () {
           return new Promise(function (r) {
-            setTimeout(function () { r({ missionTitle: "ES: Gamma" }); }, 4000);
+            setTimeout(function () { r({ missionTitle: "ES: Gamma", missionCount: 1 }); }, 4000);
           });
-        }, renderUnlockSuccess);
+        }, renderClearanceSuccess);
       });
 
       document.getElementById("demo-completion-ok").addEventListener("click", function () {
         transmit(P.COMPLETION_DATA, function () {
           return new Promise(function (r) { setTimeout(function () { r({ ok: true }); }, 200); });
-        }, renderCompletionSuccess);
+        }, renderDataSuccess);
       });
     })();
   </script>

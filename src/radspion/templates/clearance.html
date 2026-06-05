@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
-{% block body_class %}page--landing page--unlock{% endblock %}
+{% block body_class %}page--landing page--clearance{% endblock %}
 
 {% block content %}
-  <div class="landing landing--unlock">
+  <div class="landing landing--clearance">
     <img
       class="landing__mark"
       src="{{ url_for('static', filename='img/radspion_mark_white.svg') }}"
@@ -22,10 +22,10 @@
     </p>
 
     {% if signed_in %}
-      <section class="unlock-panel unlock-panel--confirm" aria-label="Confirm clearance">
-        <form class="unlock-confirm-form" action="#" method="post">
-          <input type="hidden" name="unlock_code" value="{{ unlock_code }}">
-          <button class="unlock-form__submit" type="submit">Request Access</button>
+      <section class="clearance-panel clearance-panel--confirm" aria-label="Confirm clearance">
+        <form class="clearance-confirm-form" action="#" method="post">
+          <input type="hidden" name="clearance_code" value="{{ clearance_code }}">
+          <button class="clearance-form__submit" type="submit">Request Access</button>
         </form>
         <p class="access-panel__prompt access-panel__prompt--secondary">
           <a href="{{ url_for('agent.dashboard') }}">Return to Mission Dashboard</a>
@@ -58,7 +58,7 @@
   </script>
   <script src="{{ url_for('static', filename='js/transmission-modal.js') }}"></script>
   <script src="{{ url_for('static', filename='js/transmission-outcome.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/unlock-redeem.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/clearance-redeem.js') }}"></script>
   {% if signed_in %}
     <script src="{{ url_for('static', filename='js/clearance-form.js') }}"></script>
   {% endif %}

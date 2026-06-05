@@ -4,7 +4,7 @@ info:
   description: |
     JSON endpoints under `/api/`.
 
-    **Agent vocabulary:** clearance codes are submitted as `unlock_code` on `POST /api/unlock`.
+    **Agent vocabulary:** clearance codes are submitted as `clearance_code` on `POST /api/clearance`.
     Mission data is submitted as `completion_code` on `POST /api/missions/{slug}/submit`.
     See `docs/design/06-agent-experience.md`.
   version: 0.1.0
@@ -16,19 +16,19 @@ tags:
     description: Session cookie required
 
 paths:
-  /api/unlock:
+  /api/clearance:
     post:
       tags: [Agent]
       summary: Request clearance
       description: |
-        Trims leading and trailing whitespace from `unlock_code`. Comparison is case-sensitive.
+        Trims leading and trailing whitespace from `clearance_code`. Comparison is case-sensitive.
 
-        Looks up all `mission_unlock_codes` rows with a matching value (the same code may gate
-        multiple missions). For each matching mission with `access_rule = unlock_code` that is not
+        Looks up all `mission_clearance_codes` rows with a matching value (the same code may gate
+        multiple missions). For each matching mission with `access_rule = clearance_code` that is not
         yet on the agent's list, creates an `active` status row.
 
         Response shape matches `POST /api/missions/{slug}/submit` — see `MissionListResponse`.
-      operationId: redeemUnlock
+      operationId: grantClearance
       security:
         - sessionCookie: []
       requestBody:
@@ -36,7 +36,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UnlockRequest"
+              $ref: "#/components/schemas/ClearanceRequest"
       responses:
         "200":
           description: Clearance request result
@@ -72,7 +72,7 @@ paths:
                     outcome: invalid
                     message: Command could not verify this clearance code against agency records.
         "400":
-          description: Missing or empty `unlock_code`
+          description: Missing or empty `clearance_code`
         "401":
           description: Not signed in
 
@@ -88,7 +88,7 @@ paths:
         the signed-in agent and listing sync runs. `new_missions` lists missions that became
         available afterward (may be empty).
 
-        Response shape matches `POST /api/unlock` — see `MissionListResponse`.
+        Response shape matches `POST /api/clearance` — see `MissionListResponse`.
       operationId: submitMission
       security:
         - sessionCookie: []
@@ -149,11 +149,11 @@ components:
       description: Signed session cookie
 
   schemas:
-    UnlockRequest:
+    ClearanceRequest:
       type: object
-      required: [unlock_code]
+      required: [clearance_code]
       properties:
-        unlock_code:
+        clearance_code:
           type: string
           description: Clearance code
 

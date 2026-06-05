@@ -37,4 +37,4 @@ sqlite3 "$DB_PATH" < "$TESTING_STORYLINE_SEED"
 
 echo "Created test database at $DB_PATH"
 echo "  Sample agents: Alice, Bob, Charlie, Diana (see docs/design/05-testing-storyline.md)"
-echo "  Storyline clearance: EXAMPLE-UNLOCK"
+echo "  Storyline clearance: EXAMPLE-CLEARANCE"

@@ -4,10 +4,10 @@ from radspion.radspion import Radspion
 from tests.fakes.storage import InMemoryRadspionStorage
 
 
-def test_redeem_unlock_code_rejects_empty_after_trim():
+def test_grant_clearance_rejects_empty_after_trim():
     app = Radspion(InMemoryRadspionStorage())
 
-    result = app.redeem_unlock_code(1, "   ")
+    result = app.grant_clearance(1, "   ")
 
     assert result.outcome == "invalid"
     assert result.new_missions == ()

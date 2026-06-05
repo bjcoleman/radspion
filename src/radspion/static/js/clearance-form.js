@@ -1,13 +1,13 @@
 /**
- * Wire clearance forms (sticky header + unlock landing confirm) to POST /api/unlock.
+ * Wire clearance forms (sticky header + clearance landing confirm) to POST /api/clearance.
  */
 (function () {
   "use strict";
 
-  if (!window.RadspionUnlockRedeem) {
+  if (!window.RadspionClearanceRedeem) {
     return;
   }
 
-  var wire = window.RadspionUnlockRedeem.wireClearanceForm;
-  document.querySelectorAll(".clearance-form, .unlock-confirm-form").forEach(wire);
+  var wire = window.RadspionClearanceRedeem.wireClearanceForm;
+  document.querySelectorAll(".clearance-form, .clearance-confirm-form").forEach(wire);
 })();

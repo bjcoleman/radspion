@@ -6,7 +6,7 @@ Agents interact with Radspion through **two channels** — clearance and data. T
 
 | Channel | Purpose | API |
 |---------|---------|-----|
-| **Clearance** | List new mission(s) on the dashboard | `POST /api/unlock` with `unlock_code` |
+| **Clearance** | List new mission(s) on the dashboard | `POST /api/clearance` with `clearance_code` |
 | **Data** | Mark an **active** mission **completed** | `POST /api/missions/<slug>/submit` with `completion_code` |
 
 ### Clearance codes
@@ -96,12 +96,12 @@ A story arc's **first mission** (clear title, e.g. `LT: Overview`) carries arc o
 
 ## Listing (`missions.access_rule`)
 
-A mission is added to the dashboard by **granting clearance** (`unlock_code` in the database), by **`open`** listing, or **automatically after completing prerequisite missions** (`requires_complete`). Those mechanisms are never combined on the same mission.
+A mission is added to the dashboard by **granting clearance** (`clearance_code` in the database), by **`open`** listing, or **automatically after completing prerequisite missions** (`requires_complete`). Those mechanisms are never combined on the same mission.
 
 | Rule | Behavior |
 |------|----------|
 | `open` | On dashboard for any signed-in agent (sync ensures `active` row). Used sparingly — walk-up / escape-room style content with minimal prerequisites. |
-| `unlock_code` | After clearance is granted via `mission_unlock_codes` |
+| `clearance_code` | After clearance is granted via `mission_clearance_codes` |
 | `requires_complete` | After all `mission_list_requires` missions completed |
 
 Missions that are not yet listable are **not shown** on the dashboard.
@@ -122,7 +122,7 @@ Business failures return **HTTP 200** with an `outcome` field (invalid) so the m
 
 ### Transmission modals
 
-Clearance and data use **distinct** modal presets — different progress titles, step copy, outcome headers, and messages. Agent-facing copy uses **clearance** / **data** vocabulary (not “unlock” or “validate”). Honor `prefers-reduced-motion` (skip animation; show outcome immediately).
+Clearance and data use **distinct** modal presets — different progress titles, step copy, outcome headers, and messages. Agent-facing copy uses **clearance** / **data** vocabulary (not legacy terms or “validate”). Honor `prefers-reduced-motion` (skip animation; show outcome immediately).
 
 **Shared outcome chrome**
 
@@ -159,20 +159,20 @@ Clearance and data use **distinct** modal presets — different progress titles,
 | Invalid header | **Verification** / **Failed** |
 | Invalid body | We received your transmission, but the recovered data does not match mission parameters. Continue your fieldwork and submit again when you have the correct value. |
 
-### Clearance links (`GET /unlock/<token>`)
+### Clearance links (`GET /clearance/<token>`)
 
 **Auth:** none to view; granting clearance requires a signed-in agent.
 
-QR codes and field handouts link to `https://…/unlock/<token>` where `<token>` is the URL-encoded clearance code. The landing page confirms clearance before calling `POST /api/unlock`.
+QR codes and field handouts link to `https://…/clearance/<token>` where `<token>` is the URL-encoded clearance code. The landing page confirms clearance before calling `POST /api/clearance`.
 
 - **Signed in:** confirm → clearance transmission modal.
 - **Signed out:** Sign in with Google → after OAuth, the server grants the staged clearance and redirects to the dashboard with the same clearance modal.
 
-### `POST /api/unlock`
+### `POST /api/clearance`
 
 **Auth:** signed-in agent (session cookie).
 
-**Request:** `{ "unlock_code": "..." }`
+**Request:** `{ "clearance_code": "..." }`
 
 **Response:** [`MissionListResponse`](../api.yaml) (`outcome`, optional `message`, `new_missions`).
 
@@ -184,7 +184,7 @@ QR codes and field handouts link to `https://…/unlock/<token>` where `<token>`
 
 **HTTP 401** when not signed in.
 
-Granting clearance creates an `active` row for each matching `unlock_code` mission that has no status row yet. The same `unlock_code` value may appear on multiple missions.
+Granting clearance creates an `active` row for each matching `clearance_code` mission that has no status row yet. The same `clearance_code` value may appear on multiple missions.
 
 ### `POST /api/missions/<slug>/submit`
 

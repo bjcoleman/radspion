@@ -7,8 +7,8 @@ from radspion.missions import (
     DashboardGroup,
     DashboardMission,
     ListedMissionContent,
+    MissionListResult,
     MissionSummary,
-    UnlockRedeemResult,
 )
 from radspion.user import User
 
@@ -96,7 +96,7 @@ class DatabaseRadspionStorage:
 
         - open: ensure an active row exists (never downgrade completed).
         - requires_complete: active row when all list prerequisites are completed.
-        - unlock_code: no row until redeem (handled elsewhere).
+        - clearance_code: no row until clearance is granted (handled elsewhere).
         """
         try:
             self._conn.execute(
@@ -245,19 +245,19 @@ class DatabaseRadspionStorage:
             completion_code=recovered,
         )
 
-    def redeem_unlock_code(self, user_id: int, unlock_code: str) -> UnlockRedeemResult:
+    def grant_clearance(self, user_id: int, clearance_code: str) -> MissionListResult:
         """
-        Redeem a mission unlock code (UC-014, UC-019).
+        Grant clearance for matching missions (UC-014, UC-019).
 
-        ``unlock_code`` must be trimmed and non-empty. Comparison is case-sensitive.
+        ``clearance_code`` must be trimmed and non-empty. Comparison is case-sensitive.
         """
         try:
             known = self._conn.execute(
-                "SELECT 1 FROM mission_unlock_codes WHERE unlock_code = ? LIMIT 1",
-                (unlock_code,),
+                "SELECT 1 FROM mission_clearance_codes WHERE clearance_code = ? LIMIT 1",
+                (clearance_code,),
             ).fetchone()
             if known is None:
-                return UnlockRedeemResult(outcome="invalid")
+                return MissionListResult(outcome="invalid")
 
             rows = self._conn.execute(
                 """
@@ -265,22 +265,22 @@ class DatabaseRadspionStorage:
                        m.slug,
                        m.title,
                        g.name AS group_name
-                FROM mission_unlock_codes muc
-                JOIN missions m ON m.id = muc.mission_id
+                FROM mission_clearance_codes mcc
+                JOIN missions m ON m.id = mcc.mission_id
                 JOIN groups g ON g.id = m.group_id
-                WHERE muc.unlock_code = ?
-                  AND m.access_rule = 'unlock_code'
+                WHERE mcc.clearance_code = ?
+                  AND m.access_rule = 'clearance_code'
                   AND NOT EXISTS (
                     SELECT 1 FROM agent_mission_status ams
                     WHERE ams.user_id = ? AND ams.mission_id = m.id
                   )
                 ORDER BY m.slug ASC
                 """,
-                (unlock_code, user_id),
+                (clearance_code, user_id),
             ).fetchall()
 
             if not rows:
-                return UnlockRedeemResult(
+                return MissionListResult(
                     outcome="already_done",
                     message="You have already been granted this clearance.",
                 )
@@ -303,9 +303,9 @@ class DatabaseRadspionStorage:
                 )
             self._conn.commit()
         except sqlite3.Error as exc:
-            raise DatabaseError(f"Database error redeeming unlock code: {exc}") from exc
+            raise DatabaseError(f"Database error granting clearance: {exc}") from exc
 
-        return UnlockRedeemResult(
+        return MissionListResult(
             outcome="success",
             new_missions=tuple(new_missions),
         )
@@ -337,7 +337,7 @@ class DatabaseRadspionStorage:
         user_id: int,
         slug: str,
         completion_code: str,
-    ) -> UnlockRedeemResult | None:
+    ) -> MissionListResult | None:
         """
         Submit a mission completion code (UC-021).
 
@@ -358,13 +358,13 @@ class DatabaseRadspionStorage:
                 return None
 
             if row["status"] == "completed":
-                return UnlockRedeemResult(
+                return MissionListResult(
                     outcome="already_done",
                     message="This mission is already marked complete.",
                 )
 
             if row["completion_code"] != completion_code:
-                return UnlockRedeemResult(outcome="invalid")
+                return MissionListResult(outcome="invalid")
 
             listed_before = self._listed_mission_summaries(user_id)
             self._conn.execute(
@@ -383,4 +383,4 @@ class DatabaseRadspionStorage:
         except sqlite3.Error as exc:
             raise DatabaseError(f"Database error submitting mission completion: {exc}") from exc
 
-        return UnlockRedeemResult(outcome="success", new_missions=new_missions)
+        return MissionListResult(outcome="success", new_missions=new_missions)

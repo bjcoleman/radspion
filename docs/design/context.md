@@ -3,7 +3,7 @@ This project is the infrastructure for Radspion, a secret agency with an undiscl
 My inspiration for this system comes from many sources:
 
 * The movie National Treasure - I love that they kept coming back to the Declaration of Independence, having to view it different ways to find the solution to the next step.
-* Escape Rooms - You have multiple puzzles in one space, and you unlock or find pieces of the puzzles in whatever order occurs.  Everything is planned so that you can't solve the "final" puzzle until you have solved all the previous puzzles.
+* Escape Rooms - You have multiple puzzles in one space, and you discover or assemble pieces of the puzzles in whatever order occurs.  Everything is planned so that you can't solve the "final" puzzle until you have solved all the previous puzzles.
 * The Westing Game (book) by Ellen Raskin - I love the aspect that it wasn't what they had, it's what they didn't have.  They kept finding words, eventually realized it was American The Beautiful, and then eventually realized that it was the words that never found that mattered.
 * Ready Player One (book) by  Ernest Cline - I love the idea of things hidden in places that you have to figure out where, and then you have to figure out the puzzle to get the thing.  I love the idea of the leaderboard celbrating that someone figured out a part of the puzzle (and challenging others to catch up).
 * he Adventures of the Black Hand Gang (book) by Hans Jürgen Press - I love that the story unfolded across one-page sections.  The top of the page verifies the solution to the last puzzle, and the rest of the page introduces the next puzzle.  I enjoyed finding the solution in the puzzle (although this aspect will be used minimally in Radspion).
