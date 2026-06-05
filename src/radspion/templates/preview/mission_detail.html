@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pygments-native.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/preview.css') }}">
+{% endblock %}
+
+{% block title %}{{ mission.title }} — Preview{% endblock %}
+{% block body_class %}page--mission page--preview{% endblock %}
+{% block main_class %}page__main--mission{% endblock %}
+
+{% block site_header %}{% endblock %}
+{% block site_footer %}{% endblock %}
+
+{% block content %}
+  <div class="mission-detail">
+    <nav class="mock-preview" aria-label="Preview controls">
+      <p class="mock-preview__label">Author preview</p>
+      <div class="mock-preview__actions">
+        <a
+          class="mock-preview__btn{% if preview_status == 'active' %} mock-preview__btn--current{% endif %}"
+          href="{{ url_for('preview.mission_detail') }}"
+        >Active</a>
+        <a
+          class="mock-preview__btn{% if preview_status == 'completed' %} mock-preview__btn--current{% endif %}"
+          href="{{ url_for('preview.mission_detail', status='completed') }}"
+        >Completed</a>
+      </div>
+    </nav>
+
+    {% include "agent/_mission_detail_body.html" %}
+  </div>
+{% endblock %}
+
+{% block extra_body %}
+  <script src="{{ url_for('static', filename='js/mission-detail-copy-data.js') }}" defer></script>
+  <script>
+    document.querySelectorAll(".page--preview .recovered-data-form__submit").forEach(function (btn) {
+      btn.disabled = true;
+    });
+  </script>
+{% endblock %}

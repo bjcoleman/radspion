@@ -9,6 +9,9 @@ description = "Secret-organization-themed mission platform for coursework"
 readme = "README.md"
 requires-python = ">=3.12"
 
+[project.scripts]
+preview_mission = "radspion.preview_cli:main"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 

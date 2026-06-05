@@ -9,6 +9,7 @@ email-validator==2.2.0
 markdown==3.8
 pymdown-extensions==10.21.3
 Pygments==2.20.0
+PyYAML==6.0.2
 
 # Development and CI
 pytest==8.3.5

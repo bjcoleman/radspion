@@ -91,6 +91,26 @@ Once application code exists:
 python -m radspion.app
 ```
 
+### Mission preview (authors)
+
+Preview a mission **brief** or **debrief** as it will appear on the agent mission page, reading live markdown from **radspion-missions** (no database or OAuth). Requires `RADSPION_MISSIONS_ROOT` in `.env` (same variable as `seed_storyline.sh`).
+
+After pulling preview support, reinstall the editable package once so the CLI is on your PATH:
+
+```bash
+pip install -e .
+```
+
+Start the preview server (port **8001**, separate from the main app on 8000):
+
+```bash
+preview_mission orientation basic-training
+```
+
+Without activating the venv, use `.venv/bin/preview_mission` instead.
+
+Open `http://127.0.0.1:8001/` (Flask prints this on launch). Edit `brief.md` or `debrief.md` in the missions repo, then refresh the browser. Use the **Active** / **Completed** links at the top of the page to switch layouts. Ctrl+C stops the server.
+
 ## Makefile
 
 Run from the project root (not from `src/`).
