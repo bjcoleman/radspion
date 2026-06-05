@@ -27,6 +27,7 @@
     {% block content %}{% endblock %}
   </main>
 
+  {% block site_footer %}
   <footer class="page__footer site-footer">
     <p class="site-footer__about">
       <a href="{{ url_for('main.about') }}">What is Radspion?</a>
@@ -36,7 +37,8 @@
     </ul>
     <p class="site-footer__meta">Moravian University · Educational use</p>
     <!-- ORUTNOIII UTIN -->
-</footer>
+  </footer>
+  {% endblock %}
   {% block extra_body %}{% endblock %}
 </body>
 </html>

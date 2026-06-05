@@ -26,25 +26,28 @@
         <article class="markdown">{{ mission.brief_html }}</article>
       </section>
 
-      <section class="mission-detail__section completion-panel" aria-labelledby="recovered-data-heading">
+      <section class="mission-detail__section completion-panel" aria-labelledby="data-heading">
         <header class="completion-panel__header">
-          <h2 id="recovered-data-heading" class="completion-panel__title">Recovered Data</h2>
+          <h2 id="data-heading" class="completion-panel__title">Data</h2>
           <p class="completion-panel__lede text-muted">
-            Enter the data you recovered during fieldwork.
+            Enter the data you recovered. Spacing and line breaks must be exact.
           </p>
         </header>
-        <form class="completion-form" action="#" method="post" data-mission-slug="{{ mission.slug }}">
-          <label class="sr-only" for="completion-code">Recovered data from fieldwork</label>
-          <input
-            class="completion-form__input text-mono"
-            type="text"
+        <form class="completion-form completion-form--multiline" action="#" method="post" data-mission-slug="{{ mission.slug }}">
+          <label class="sr-only" for="completion-code">Field data</label>
+          <textarea
+            class="completion-form__input completion-form__textarea text-mono"
             id="completion-code"
             name="completion_code"
+            rows="8"
             autocomplete="off"
+            autocapitalize="off"
+            autocorrect="off"
             spellcheck="false"
-            placeholder="Recovered data"
-          >
-          <button class="completion-form__submit" type="submit">Submit</button>
+            wrap="off"
+            placeholder="Field data"
+          ></textarea>
+          <button class="completion-form__submit" type="submit">Submit data</button>
         </form>
       </section>
     {% else %}
@@ -85,11 +88,9 @@
   </div>
 {% endblock %}
 
-{% block extra_body %}
+{% block agent_extra_body %}
   <script src="{{ url_for('static', filename='js/mission-detail-copy-code.js') }}" defer></script>
   {% if mission.status == 'active' %}
-    {% include "_transmission_modal.html" %}
-    <script src="{{ url_for('static', filename='js/transmission-modal.js') }}"></script>
     <script src="{{ url_for('static', filename='js/mission-detail-submit.js') }}"></script>
   {% endif %}
 {% endblock %}

@@ -39,10 +39,12 @@ def test_active_mission_shows_brief_and_enabled_completion_form(storyline_db: Pa
     assert "ES: Beta" in body
     assert "Mission Brief" in body
     assert "overview for the mission called ES: Beta" in body
-    assert 'class="completion-form"' in body
+    assert "completion-form--multiline" in body
     assert 'data-mission-slug="es-beta"' in body
     assert 'name="completion_code"' in body
-    assert "completion-form__input" in body
+    assert "completion-form__textarea" in body
+    assert "Submit data" in body
+    assert ">Data</h2>" in body
     assert "mission-detail-submit.js" in body
     assert 'id="completion-code"' in body
     assert "disabled" not in body.split('id="completion-code"')[1].split("</form>")[0]

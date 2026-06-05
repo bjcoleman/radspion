@@ -6,9 +6,9 @@ from radspion.web.guards import api_login_required
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
-INVALID_UNLOCK_MESSAGE = "We could not validate that unlock code against agency records."
+INVALID_UNLOCK_MESSAGE = "Command could not verify this clearance code against agency records."
 INVALID_SUBMIT_MESSAGE = (
-    "We reviewed your transmission, and the recovered data does not match mission requirements."
+    "We received your transmission, but the recovered data does not match mission parameters."
 )
 
 

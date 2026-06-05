@@ -7,6 +7,25 @@
   {% include "agent/_header.html" %}
 {% endblock %}
 
+{% block site_footer %}
+  <footer class="page__footer site-footer site-footer--inline">
+    <div class="site-footer__inline">
+      <a class="site-footer__link" href="{{ url_for('main.about') }}">What is Radspion?</a>
+      <span class="site-footer__meta">Moravian University · Educational Use</span>
+      <a class="site-footer__link" href="{{ url_for('main.privacy') }}">Privacy Policy</a>
+    </div>
+  </footer>
+{% endblock %}
+
 {% block content %}
   {% block agent_content %}{% endblock %}
+{% endblock %}
+
+{% block extra_body %}
+  {% include "_transmission_modal.html" %}
+  <script src="{{ url_for('static', filename='js/transmission-modal.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/transmission-outcome.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/unlock-redeem.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/clearance-form.js') }}"></script>
+  {% block agent_extra_body %}{% endblock %}
 {% endblock %}

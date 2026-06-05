@@ -78,7 +78,7 @@ def test_redeem_already_done_when_all_matching_listed(storyline_db: Path):
 
     assert result.outcome == "already_done"
     assert result.new_missions == ()
-    assert result.message == "Those missions are already on your dashboard."
+    assert result.message == "You have already been granted this clearance."
 
 
 def test_redeem_already_done_for_bob_with_all_storyline_completed(storyline_db: Path):

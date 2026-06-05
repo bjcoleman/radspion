@@ -38,8 +38,8 @@ def test_unlock_link_stages_pending_code(storyline_db: Path):
     response = client.get("/unlock/EXAMPLE-UNLOCK")
 
     assert response.status_code == 200
-    assert b"Mission unlock" in response.data
-    assert b"Apply mission unlock" not in response.data
+    assert b"Clearance request" in response.data
+    assert b"Request Access" not in response.data
     assert b"Sign in with Google" in response.data
     with client.session_transaction() as sess:
         assert sess[SESSION_PENDING_UNLOCK] == "EXAMPLE-UNLOCK"
@@ -65,7 +65,7 @@ def test_unlock_signed_in_shows_confirm_form(storyline_db: Path):
     response = client.get("/unlock/HIDDEN-UNLOCK")
 
     assert response.status_code == 200
-    assert b"Apply mission unlock" in response.data
+    assert b"Request Access" in response.data
     assert b"Sign in with Google" not in response.data
     assert b'value="HIDDEN-UNLOCK"' in response.data
 

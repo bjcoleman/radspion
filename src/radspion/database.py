@@ -282,7 +282,7 @@ class DatabaseRadspionStorage:
             if not rows:
                 return UnlockRedeemResult(
                     outcome="already_done",
-                    message="Those missions are already on your dashboard.",
+                    message="You have already been granted this clearance.",
                 )
 
             new_missions: list[MissionSummary] = []

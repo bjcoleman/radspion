@@ -1,4 +1,4 @@
-<header class="site-header">
+<header class="site-header site-header--sticky">
   <a class="site-header__brand" href="{{ url_for('agent.dashboard') }}">
     <img
       class="site-header__mark"
@@ -9,12 +9,29 @@
     >
     <span class="site-header__title">Radspion</span>
   </a>
-  <div class="site-header__agent">
-    <span class="site-header__agent-label">Agent</span>
-    <span class="site-header__agent-name">{{ user.display_name }}</span>
-    <span class="site-header__agent-email text-mono">{{ user.email }}</span>
-  </div>
-  <form action="{{ url_for('auth.logout') }}" method="post">
-    <button type="submit" class="site-header__action">Sign out</button>
+
+  <form class="clearance-form site-header__clearance" action="#" method="post">
+    <label class="sr-only" for="clearance-code">Clearance code</label>
+    <input
+      class="clearance-form__input text-mono"
+      type="text"
+      id="clearance-code"
+      name="unlock_code"
+      autocomplete="off"
+      spellcheck="false"
+      placeholder="Clearance code"
+    >
+    <button class="clearance-form__submit" type="submit">Request Access</button>
   </form>
+
+  <div class="site-header__end">
+    <div class="site-header__agent">
+      <span class="site-header__agent-label">Agent</span>
+      <span class="site-header__agent-name">{{ user.display_name }}</span>
+      <span class="site-header__agent-email text-mono">{{ user.email }}</span>
+    </div>
+    <form action="{{ url_for('auth.logout') }}" method="post">
+      <button type="submit" class="site-header__action">Sign out</button>
+    </form>
+  </div>
 </header>
