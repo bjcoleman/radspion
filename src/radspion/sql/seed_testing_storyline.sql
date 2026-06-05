@@ -53,7 +53,7 @@ The completion code for this mission is `COMPLETE es-alpha`.
 
 Congratulations, you completed ES: Alpha.
 
-Completing this mission unlocks ES: Gamma on your dashboard.
+Completing this mission lists ES: Gamma on your dashboard.
 ', (SELECT id FROM groups WHERE name = 'Testing Storyline'), 'unlock_code', 'COMPLETE es-alpha'),
     ('es-beta', 'ES: Beta', '# ES: Beta — Brief
 
@@ -67,12 +67,12 @@ The completion code for this mission is `COMPLETE es-beta`.
 
 ## Hidden Mission
 
-This mission provides the unlock code for another mission: `HIDDEN UNLOCK`.
+This mission provides a clearance code for another mission: `HIDDEN-UNLOCK`.
 ', '# ES: Beta — Debrief
 
 Congratulations, you completed ES: Beta.
 
-Completing this mission is one of two prerequisites for unlocking ES: Delta (you also need ES: Gamma).
+Completing this mission is one of two prerequisites for listing ES: Delta (you also need ES: Gamma).
 ', (SELECT id FROM groups WHERE name = 'Testing Storyline'), 'unlock_code', 'COMPLETE es-beta'),
     ('es-hidden', 'ES: Hidden', '# ES: Hidden — Brief
 
@@ -87,7 +87,7 @@ The completion code for this mission is `COMPLETE es-hidden`.
 
 Congratulations, you completed ES: Hidden.
 
-This mission does not unlock any other missions (dead end).
+This mission does not list any other missions (dead end).
 ', (SELECT id FROM groups WHERE name = 'Testing Storyline'), 'unlock_code', 'COMPLETE es-hidden'),
     ('es-gamma', 'ES: Gamma', '# ES: Gamma — Brief
 
@@ -102,7 +102,7 @@ The completion code for this mission is `COMPLETE es-gamma`.
 
 Congratulations, you completed ES: Gamma.
 
-Completing this mission is one of two prerequisites for unlocking ES: Delta (you also need ES: Beta).
+Completing this mission is one of two prerequisites for listing ES: Delta (you also need ES: Beta).
 ', (SELECT id FROM groups WHERE name = 'Testing Storyline'), 'requires_complete', 'COMPLETE es-gamma'),
     ('es-delta', 'ES: Delta', '# ES: Delta — Brief
 
@@ -117,14 +117,14 @@ The completion code for this mission is `COMPLETE es-delta`.
 
 Congratulations, you completed ES: Delta.
 
-This mission does not unlock any other missions (finale).
+This mission does not list any other missions (finale).
 ', (SELECT id FROM groups WHERE name = 'Testing Storyline'), 'requires_complete', 'COMPLETE es-delta');
 
 INSERT INTO mission_unlock_codes (mission_id, unlock_code)
-SELECT id, 'EXAMPLE UNLOCK' FROM missions WHERE slug IN ('es-alpha', 'es-beta');
+SELECT id, 'EXAMPLE-UNLOCK' FROM missions WHERE slug IN ('es-alpha', 'es-beta');
 
 INSERT INTO mission_unlock_codes (mission_id, unlock_code)
-SELECT id, 'HIDDEN UNLOCK' FROM missions WHERE slug = 'es-hidden';
+SELECT id, 'HIDDEN-UNLOCK' FROM missions WHERE slug = 'es-hidden';
 
 INSERT INTO mission_list_requires (mission_id, required_mission_id)
 SELECT child.id, parent.id
@@ -148,7 +148,7 @@ WHERE child.slug = 'es-delta';
 INSERT INTO agent_mission_status (user_id, mission_id, status)
 SELECT 4, id, 'active' FROM missions WHERE slug = 'basic-training';
 
--- Alice: EXAMPLE UNLOCK path — alpha complete, beta active, gamma active.
+-- Alice: EXAMPLE-UNLOCK path — alpha complete, beta active, gamma active.
 INSERT INTO agent_mission_status (user_id, mission_id, status)
 SELECT 1, id, 'completed' FROM missions WHERE slug = 'basic-training';
 INSERT INTO agent_mission_status (user_id, mission_id, status)

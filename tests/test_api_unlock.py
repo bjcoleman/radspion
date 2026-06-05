@@ -33,7 +33,7 @@ def test_unlock_success_returns_new_missions(storyline_db: Path):
     with client.session_transaction() as sess:
         sess[SESSION_USER_ID] = SAMPLE_AGENTS["diana"]["id"]
 
-    response = client.post("/api/unlock", json={"unlock_code": "EXAMPLE UNLOCK"})
+    response = client.post("/api/unlock", json={"unlock_code": "EXAMPLE-UNLOCK"})
     assert response.status_code == 200
     data = response.get_json()
     assert data["outcome"] == "success"
@@ -58,7 +58,7 @@ def test_unlock_already_done(storyline_db: Path):
     with client.session_transaction() as sess:
         sess[SESSION_USER_ID] = SAMPLE_AGENTS["alice"]["id"]
 
-    response = client.post("/api/unlock", json={"unlock_code": "EXAMPLE UNLOCK"})
+    response = client.post("/api/unlock", json={"unlock_code": "EXAMPLE-UNLOCK"})
     assert response.status_code == 200
     data = response.get_json()
     assert data["outcome"] == "already_done"
@@ -102,6 +102,6 @@ def test_unlock_rejects_non_json_body(storyline_db: Path):
 def test_unlock_requires_sign_in(storyline_db: Path):
     client = _client_for_db(storyline_db)
 
-    response = client.post("/api/unlock", json={"unlock_code": "EXAMPLE UNLOCK"})
+    response = client.post("/api/unlock", json={"unlock_code": "EXAMPLE-UNLOCK"})
     assert response.status_code == 401
     assert response.get_json() == {"error": "Unauthorized"}

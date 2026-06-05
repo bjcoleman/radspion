@@ -94,7 +94,7 @@ def test_unlock_then_dashboard_lists_storyline_missions(testing_storyline_db: Pa
     with client.session_transaction() as sess:
         sess[SESSION_USER_ID] = SAMPLE_AGENTS["diana"]["id"]
 
-    unlock = client.post("/api/unlock", json={"unlock_code": "EXAMPLE UNLOCK"})
+    unlock = client.post("/api/unlock", json={"unlock_code": "EXAMPLE-UNLOCK"})
     assert unlock.status_code == 200
     assert unlock.get_json()["outcome"] == "success"
 

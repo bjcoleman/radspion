@@ -59,7 +59,7 @@ def test_agent_has_listed_mission_false_when_not_listed(orientation_database_pat
             "loading mission detail",
         ),
         (
-            lambda storage: storage.redeem_unlock_code(1, "EXAMPLE UNLOCK"),
+            lambda storage: storage.redeem_unlock_code(1, "EXAMPLE-UNLOCK"),
             "redeeming unlock code",
         ),
         (
@@ -125,7 +125,7 @@ def test_closed_connection_raises_database_error_for_all_queries(tmp_path: Path)
             lambda: storage.get_listed_mission_content(1, "basic-training"),
             "loading mission detail",
         ),
-        (lambda: storage.redeem_unlock_code(1, "EXAMPLE UNLOCK"), "redeeming unlock code"),
+        (lambda: storage.redeem_unlock_code(1, "EXAMPLE-UNLOCK"), "redeeming unlock code"),
         (
             lambda: storage.submit_mission_completion(1, "es-beta", "COMPLETE es-beta"),
             "submitting mission completion",

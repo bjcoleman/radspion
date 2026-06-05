@@ -52,7 +52,7 @@ def test_submit_success_after_unlock_lists_gamma(storyline_db: Path):
     storage = DatabaseRadspionStorage(storyline_db)
     diana_id = SAMPLE_AGENTS["diana"]["id"]
 
-    storage.redeem_unlock_code(diana_id, "EXAMPLE UNLOCK")
+    storage.redeem_unlock_code(diana_id, "EXAMPLE-UNLOCK")
     result = storage.submit_mission_completion(diana_id, "es-alpha", "COMPLETE es-alpha")
 
     assert result is not None

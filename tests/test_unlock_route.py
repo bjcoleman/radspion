@@ -35,14 +35,14 @@ def _client_for_db(db_path: Path, *, oauth: FakeGoogleOAuth | None = None):
 
 def test_unlock_link_stages_pending_code(storyline_db: Path):
     client, _oauth = _client_for_db(storyline_db)
-    response = client.get("/unlock/EXAMPLE%20UNLOCK")
+    response = client.get("/unlock/EXAMPLE-UNLOCK")
 
     assert response.status_code == 200
     assert b"Mission unlock" in response.data
     assert b"Apply mission unlock" not in response.data
     assert b"Sign in with Google" in response.data
     with client.session_transaction() as sess:
-        assert sess[SESSION_PENDING_UNLOCK] == "EXAMPLE UNLOCK"
+        assert sess[SESSION_PENDING_UNLOCK] == "EXAMPLE-UNLOCK"
 
 
 def test_unlock_link_invalid_token_redirects_home(storyline_db: Path):
@@ -62,12 +62,12 @@ def test_unlock_signed_in_shows_confirm_form(storyline_db: Path):
     with client.session_transaction() as sess:
         sess[SESSION_USER_ID] = diana_id
 
-    response = client.get("/unlock/HIDDEN%20UNLOCK")
+    response = client.get("/unlock/HIDDEN-UNLOCK")
 
     assert response.status_code == 200
     assert b"Apply mission unlock" in response.data
     assert b"Sign in with Google" not in response.data
-    assert b'value="HIDDEN UNLOCK"' in response.data
+    assert b'value="HIDDEN-UNLOCK"' in response.data
 
 
 def test_unlock_signed_in_redeem_via_api(storyline_db: Path):
@@ -77,8 +77,8 @@ def test_unlock_signed_in_redeem_via_api(storyline_db: Path):
     with client.session_transaction() as sess:
         sess[SESSION_USER_ID] = diana_id
 
-    client.get("/unlock/EXAMPLE%20UNLOCK")
-    unlock = client.post("/api/unlock", json={"unlock_code": "EXAMPLE UNLOCK"})
+    client.get("/unlock/EXAMPLE-UNLOCK")
+    unlock = client.post("/api/unlock", json={"unlock_code": "EXAMPLE-UNLOCK"})
 
     assert unlock.status_code == 200
     assert unlock.get_json()["outcome"] == "success"
@@ -90,7 +90,7 @@ def test_oauth_returning_user_redeems_pending_unlock(storyline_db: Path):
     client, _ = _client_for_db(storyline_db, oauth=oauth)
     diana = SAMPLE_AGENTS["diana"]
 
-    client.get("/unlock/EXAMPLE%20UNLOCK")
+    client.get("/unlock/EXAMPLE-UNLOCK")
     client.get("/auth/google")
     oauth.returns(
         google_subject_id=diana["google_subject_id"],
@@ -119,7 +119,7 @@ def test_second_login_without_unlock_link_skips_modal(storyline_db: Path):
     client, _ = _client_for_db(storyline_db, oauth=oauth)
     diana = SAMPLE_AGENTS["diana"]
 
-    client.get("/unlock/EXAMPLE%20UNLOCK")
+    client.get("/unlock/EXAMPLE-UNLOCK")
     client.get("/auth/google")
     oauth.returns(
         google_subject_id=diana["google_subject_id"],
@@ -149,7 +149,7 @@ def test_oauth_new_user_redeems_unlock_without_access_gate(storyline_db: Path):
     oauth = FakeGoogleOAuth()
     client, _ = _client_for_db(storyline_db, oauth=oauth)
 
-    client.get("/unlock/HIDDEN%20UNLOCK")
+    client.get("/unlock/HIDDEN-UNLOCK")
     client.get("/auth/google")
     oauth.returns(
         google_subject_id="google-new",
