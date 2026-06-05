@@ -2,12 +2,16 @@
 
 from __future__ import annotations
 
-import sys
 from dataclasses import dataclass
 from os import getenv
 from pathlib import Path
 
+import yaml
 from dotenv import load_dotenv
+
+STORYLINE_FILE = "storyline.yaml"
+BRIEF_FILE = "brief.md"
+DEBRIEF_FILE = "debrief.md"
 
 
 class MissionsFilesystemError(Exception):
@@ -53,47 +57,83 @@ def load_missions_root() -> Path:
     return missions_root
 
 
-def _import_storyline_pack(missions_root: Path):
-    scripts_dir = missions_root / "scripts"
-    if not scripts_dir.is_dir():
-        raise MissionsFilesystemError(f"Missing missions scripts directory: {scripts_dir}")
+def _read_markdown(path: Path) -> str:
+    if not path.is_file():
+        raise MissionsFilesystemError(f"Missing {path}")
+    return path.read_text(encoding="utf-8")
 
-    scripts_path = str(scripts_dir)
-    if scripts_path not in sys.path:
-        sys.path.insert(0, scripts_path)
+
+def _load_storyline_yaml(pack_root: Path) -> dict:
+    path = pack_root / STORYLINE_FILE
+    if not path.is_file():
+        raise MissionsFilesystemError(f"Missing {path}")
 
     try:
-        from storyline_pack import StorylineError, load_pack
-    except ImportError as exc:  # pragma: no cover
-        raise MissionsFilesystemError(
-            "Could not import storyline_pack from radspion-missions. "
-            "Ensure PyYAML is installed in this venv."
-        ) from exc
+        data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    except yaml.YAMLError as exc:
+        raise MissionsFilesystemError(f"Invalid YAML in {path}: {exc}") from exc
 
-    return StorylineError, load_pack
+    if not isinstance(data, dict):
+        raise MissionsFilesystemError(f"{path} must be a YAML mapping")
+
+    return data
+
+
+def _find_mission_entry(data: dict, pack_root: Path, mission_slug: str) -> dict:
+    raw_missions = data.get("missions")
+    if not isinstance(raw_missions, list):
+        raise MissionsFilesystemError(f"{pack_root / STORYLINE_FILE}: missions must be a list")
+
+    for raw in raw_missions:
+        if not isinstance(raw, dict):
+            continue
+        slug = raw.get("slug")
+        if isinstance(slug, str) and slug.strip() == mission_slug:
+            return raw
+
+    raise MissionsFilesystemError(
+        f"Mission {mission_slug!r} not found in storyline pack {pack_root.name!r}."
+    )
+
+
+def _mission_fields(raw: dict, pack_root: Path, mission_slug: str) -> tuple[str, str]:
+    title = raw.get("title")
+    if not isinstance(title, str) or not title.strip():
+        raise MissionsFilesystemError(
+            f"Mission {mission_slug!r} in {pack_root / STORYLINE_FILE}: "
+            "title must be a non-empty string"
+        )
+
+    completion_data = raw.get("completion_data")
+    if not isinstance(completion_data, str) or not completion_data.strip():
+        raise MissionsFilesystemError(
+            f"Mission {mission_slug!r} in {pack_root / STORYLINE_FILE}: "
+            "completion_data must be a non-empty string"
+        )
+
+    return title.strip(), completion_data.strip()
 
 
 def load_mission(storyline: str, mission_slug: str) -> FilesystemMission:
     """Load one mission from a storyline pack by directory name and slug."""
     missions_root = load_missions_root()
-    storyline_error, load_pack = _import_storyline_pack(missions_root)
-
     pack_root = missions_root / storyline
-    try:
-        pack = load_pack(pack_root)
-    except storyline_error as exc:
-        raise MissionsFilesystemError(str(exc)) from exc
 
-    for mission in pack.missions:
-        if mission.slug == mission_slug:
-            return FilesystemMission(
-                slug=mission.slug,
-                title=mission.title,
-                completion_data=mission.completion_data,
-                brief_markdown=mission.brief_markdown,
-                debrief_markdown=mission.debrief_markdown,
-            )
+    if not pack_root.is_dir():
+        raise MissionsFilesystemError(f"Not a directory: {pack_root}")
 
-    raise MissionsFilesystemError(
-        f"Mission {mission_slug!r} not found in storyline pack {storyline!r}."
+    data = _load_storyline_yaml(pack_root)
+    raw = _find_mission_entry(data, pack_root, mission_slug)
+    title, completion_data = _mission_fields(raw, pack_root, mission_slug)
+
+    mission_dir = pack_root / mission_slug
+    brief_markdown = _read_markdown(mission_dir / BRIEF_FILE)
+    debrief_markdown = _read_markdown(mission_dir / DEBRIEF_FILE)
+
+    return FilesystemMission(
+        slug=mission_slug,
+        title=title,
+        completion_data=completion_data,
+        brief_markdown=brief_markdown,
+        debrief_markdown=debrief_markdown,
     )

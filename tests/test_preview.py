@@ -19,16 +19,7 @@ from radspion.preview_cli import (
 def missions_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     """Minimal storyline pack tree under a temporary missions root."""
     missions_root = tmp_path / "radspion-missions"
-    scripts_dir = missions_root / "scripts"
-    scripts_dir.mkdir(parents=True)
-
-    storyline_pack_src = (
-        Path(__file__).resolve().parents[2] / "radspion-missions" / "scripts" / "storyline_pack.py"
-    )
-    (scripts_dir / "storyline_pack.py").write_text(
-        storyline_pack_src.read_text(encoding="utf-8"),
-        encoding="utf-8",
-    )
+    missions_root.mkdir()
 
     pack = missions_root / "test-pack"
     mission_dir = pack / "alpha"
@@ -152,23 +143,22 @@ def test_load_missions_root_requires_env(monkeypatch: pytest.MonkeyPatch):
         load_missions_root()
 
 
-def test_load_mission_requires_scripts_directory(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
+def test_load_mission_requires_pack_directory(
+    missions_env: Path,
 ):
-    missions_root = tmp_path / "missions"
-    missions_root.mkdir()
+    with pytest.raises(MissionsFilesystemError, match="Not a directory"):
+        load_mission("missing-pack", "alpha")
 
-    monkeypatch.setattr("radspion.missions_fs.load_dotenv", lambda *_args, **_kwargs: None)
-    monkeypatch.setenv("RADSPION_MISSIONS_ROOT", str(missions_root))
 
-    with pytest.raises(MissionsFilesystemError, match="Missing missions scripts directory"):
+def test_load_mission_requires_brief_markdown(missions_env: Path):
+    (missions_env / "test-pack" / "alpha" / "brief.md").unlink()
+
+    with pytest.raises(MissionsFilesystemError, match="Missing"):
         load_mission("test-pack", "alpha")
 
 
-def test_load_mission_wraps_invalid_pack(
+def test_load_mission_rejects_invalid_storyline_yaml(
     missions_env: Path,
-    tmp_path: Path,
 ):
     bad_pack = missions_env / "bad-pack"
     bad_pack.mkdir()
@@ -176,6 +166,35 @@ def test_load_mission_wraps_invalid_pack(
 
     with pytest.raises(MissionsFilesystemError, match="must be a YAML mapping"):
         load_mission("bad-pack", "alpha")
+
+
+def test_load_mission_requires_storyline_yaml(missions_env: Path):
+    empty_pack = missions_env / "empty-pack"
+    empty_pack.mkdir()
+
+    with pytest.raises(MissionsFilesystemError, match="Missing"):
+        load_mission("empty-pack", "alpha")
+
+
+def test_load_mission_rejects_invalid_yaml_syntax(missions_env: Path):
+    bad_pack = missions_env / "syntax-pack"
+    bad_pack.mkdir()
+    (bad_pack / "storyline.yaml").write_text("missions: [\n", encoding="utf-8")
+
+    with pytest.raises(MissionsFilesystemError, match="Invalid YAML"):
+        load_mission("syntax-pack", "alpha")
+
+
+def test_load_mission_requires_missions_list(missions_env: Path):
+    bad_pack = missions_env / "list-pack"
+    bad_pack.mkdir()
+    (bad_pack / "storyline.yaml").write_text(
+        "group: Test\nmissions: open\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(MissionsFilesystemError, match="missions must be a list"):
+        load_mission("list-pack", "alpha")
 
 
 def test_preview_route_renders_active_brief(missions_env: Path):
