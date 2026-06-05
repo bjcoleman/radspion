@@ -17,14 +17,14 @@
 
   const PRESETS = {
     [PRESET.UNLOCK_CODE]: {
-      title: "Secure channel",
+      title: "Requesting clearance",
       introText: "Initializing secure channel…",
-      dataLabel: "unlock code",
+      dataLabel: "clearance code",
     },
     [PRESET.COMPLETION_DATA]: {
-      title: "Secure transmission",
-      introText: "Initializing secure transmission…",
-      dataLabel: "completion data",
+      title: "Transmitting field data",
+      introText: "Compressing and Encrypting data",
+      dataLabel: "field data",
     },
   };
 

@@ -577,9 +577,14 @@ a:hover {
 
 .site-header__action {
   flex-shrink: 0;
+  font-family: inherit;
   font-size: 0.8125rem;
   color: var(--color-text-muted);
   text-decoration: none;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 }
 
 .site-header__action:hover {
@@ -588,14 +593,6 @@ a:hover {
 
 .site-header form {
   margin: 0;
-}
-
-.site-header__action[type="submit"] {
-  font-family: inherit;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
 }
 
 /* Agent dashboard */
@@ -1406,6 +1403,11 @@ a:hover {
   align-items: stretch;
 }
 
+.completion-form--multiline {
+  flex-direction: column;
+  align-items: stretch;
+}
+
 .completion-form__input {
   flex: 1 1 12rem;
   min-width: 0;
@@ -1415,6 +1417,28 @@ a:hover {
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
+}
+
+.completion-form__textarea {
+  display: block;
+  flex: none;
+  width: 100%;
+  min-height: 10rem;
+  max-height: 70vh;
+  resize: vertical;
+  line-height: 1.5;
+  white-space: pre;
+  overflow-x: auto;
+  tab-size: 4;
+}
+
+.completion-form__textarea::placeholder {
+  font-family: var(--font-mono);
+  font-style: normal;
+}
+
+.completion-form--multiline .completion-form__submit {
+  align-self: flex-start;
 }
 
 .completion-form__input::placeholder {
@@ -1497,6 +1521,10 @@ body.has-transmission-modal {
   color: var(--color-text-faint);
 }
 
+.transmission-modal__title--phase {
+  color: var(--color-accent);
+}
+
 .transmission-modal__outcome .transmission-modal__title {
   font-size: 1rem;
   letter-spacing: 0.04em;
@@ -1538,20 +1566,65 @@ body.has-transmission-modal {
   color: var(--color-text-muted);
 }
 
-.transmission-modal__mission-list {
-  margin: 0 0 var(--space-md);
-  padding-left: 1.25rem;
-  font-size: 0.9375rem;
-  line-height: 1.65;
-  color: var(--color-text-muted);
+.transmission-modal__outcome-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
 }
 
-.transmission-modal__mission-list li + li {
-  margin-top: var(--space-xs);
+.transmission-modal__outcome-mark {
+  display: block;
+  flex-shrink: 0;
+  width: 3rem;
+  height: 3rem;
+  margin: 0;
+}
+
+.transmission-modal__outcome-heading {
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+  color: var(--color-accent);
+}
+
+.transmission-modal__outcome-heading-line {
+  display: block;
+}
+
+.transmission-modal__outcome-mark--success {
+  opacity: 1;
+}
+
+.transmission-modal__outcome-mark--already-done {
+  opacity: 0.75;
+}
+
+.transmission-modal__outcome-mark--failure {
+  opacity: 0.55;
+}
+
+.outcome-missions-groups {
+  margin: 0 0 var(--space-lg);
+}
+
+.outcome-missions-group + .outcome-missions-group {
+  margin-top: var(--space-md);
+}
+
+.outcome-missions-group__heading {
+  margin: 0 0 var(--space-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
 }
 
 .outcome-missions {
-  margin: 0 0 var(--space-lg);
+  margin: 0;
   padding: 0;
   list-style: none;
 }
@@ -1561,33 +1634,21 @@ body.has-transmission-modal {
 }
 
 .outcome-missions__item {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-  padding: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  font-size: 0.9375rem;
+  color: var(--color-text);
   background: var(--color-bg);
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-sm);
 }
 
 .outcome-missions__item + .outcome-missions__item {
-  margin-top: var(--space-sm);
-}
-
-.outcome-missions__title {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--color-text);
+  margin-top: var(--space-xs);
 }
 
 .outcome-missions__slug {
-  font-size: 0.75rem;
-  color: var(--color-text-faint);
-}
-
-.outcome-missions__group {
   font-size: 0.8125rem;
-  color: var(--color-text-muted);
+  color: var(--color-text-faint);
 }
 
 .transmission-modal__ok {
