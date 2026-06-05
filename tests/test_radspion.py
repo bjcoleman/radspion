@@ -14,10 +14,10 @@ def test_grant_clearance_rejects_empty_after_trim():
     assert result.message is None
 
 
-def test_submit_mission_completion_rejects_empty_after_trim():
+def test_submit_mission_data_rejects_empty_after_trim():
     app = Radspion(InMemoryRadspionStorage())
 
-    result = app.submit_mission_completion(1, "es-beta", "   ")
+    result = app.submit_mission_data(1, "es-beta", "   ")
 
     assert result.outcome == "invalid"
     assert result.new_missions == ()

@@ -5,7 +5,7 @@ info:
     JSON endpoints under `/api/`.
 
     **Agent vocabulary:** clearance codes are submitted as `clearance_code` on `POST /api/clearance`.
-    Mission data is submitted as `completion_code` on `POST /api/missions/{slug}/submit`.
+    Recovered mission data is submitted as `completion_data` on `POST /api/missions/{slug}/submit`.
     See `docs/design/06-agent-experience.md`.
   version: 0.1.0
   contact:
@@ -81,7 +81,7 @@ paths:
       tags: [Agent]
       summary: Submit mission data
       description: |
-        Trims leading and trailing whitespace from `completion_code`. Comparison is
+        Trims leading and trailing whitespace from `completion_data`. Comparison is
         case-sensitive. Internal newlines and spacing must match exactly.
 
         When `outcome` is `success`, the mission identified by `slug` is marked completed for
@@ -134,7 +134,7 @@ paths:
                     outcome: invalid
                     message: We received your transmission, but the recovered data does not match mission parameters.
         "400":
-          description: Missing or empty `completion_code`
+          description: Missing or empty `completion_data`
         "401":
           description: Not signed in
         "404":
@@ -192,8 +192,8 @@ components:
 
     SubmitRequest:
       type: object
-      required: [completion_code]
+      required: [completion_data]
       properties:
-        completion_code:
+        completion_data:
           type: string
-          description: Mission data (may include newlines)
+          description: Recovered mission data (may include newlines)

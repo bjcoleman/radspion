@@ -10,22 +10,20 @@ BEGIN;
 INSERT INTO groups (id, name) VALUES
     (1, 'Orientation');
 
-INSERT INTO missions (id, slug, title, brief_markdown, debrief_markdown, group_id, access_rule, completion_code) VALUES
+INSERT INTO missions (id, slug, title, brief_markdown, debrief_markdown, group_id, access_rule, completion_data) VALUES
     (1, 'basic-training', 'Welcome to Radspion', '# Welcome to Radspion — Brief
 
-Placeholder mission content. Replace with operator-authored markdown.
+## Overview
 
-```bash
-echo "orientation example"
+This is the orientation mission for agents new to Radspion. Complete it to practice submitting recovered data.
+
+## Data
+
+Submit the following data exactly:
+
 ```
-
-1. Review the briefing, then run:
-
-   ```bash
-   echo "step one"
-   ```
-
-2. Continue when ready.
+WELCOME-AGENT-OK
+```
 ', '# Welcome to Radspion — Debrief
 
 Placeholder. Shown after completion only.
@@ -39,7 +37,7 @@ INSERT INTO users (id, email, google_subject_id, display_name) VALUES
     (3, 'charlie@moravian.edu', 'google-charlie', 'Charlie'),
     (4, 'diana@moravian.edu', 'google-diana', 'Diana');
 
-INSERT INTO missions (slug, title, brief_markdown, debrief_markdown, group_id, access_rule, completion_code) VALUES
+INSERT INTO missions (slug, title, brief_markdown, debrief_markdown, group_id, access_rule, completion_data) VALUES
     ('es-alpha', 'ES: Alpha', '# ES: Alpha — Brief
 
 ## Overview
@@ -48,7 +46,11 @@ This is the overview for the mission called ES: Alpha.
 
 ## Data
 
-The data for this mission is `COMPLETE es-alpha`.
+Submit the following data exactly:
+
+```
+COMPLETE es-alpha
+```
 ', '# ES: Alpha — Debrief
 
 Congratulations, you completed ES: Alpha.
@@ -63,7 +65,11 @@ This is the overview for the mission called ES: Beta.
 
 ## Data
 
-The data for this mission is `COMPLETE es-beta`.
+Submit the following data exactly:
+
+```
+COMPLETE es-beta
+```
 
 ## Hidden Mission
 
@@ -82,7 +88,11 @@ This is the overview for the mission called ES: Hidden.
 
 ## Data
 
-The data for this mission is `COMPLETE es-hidden`.
+Submit the following data exactly:
+
+```
+COMPLETE es-hidden
+```
 ', '# ES: Hidden — Debrief
 
 Congratulations, you completed ES: Hidden.
@@ -97,7 +107,11 @@ This is the overview for the mission called ES: Gamma.
 
 ## Data
 
-The data for this mission is `COMPLETE es-gamma`.
+Submit the following data exactly:
+
+```
+COMPLETE es-gamma
+```
 ', '# ES: Gamma — Debrief
 
 Congratulations, you completed ES: Gamma.
@@ -112,7 +126,11 @@ This is the overview for the mission called ES: Delta.
 
 ## Data
 
-The data for this mission is `COMPLETE es-delta`.
+Submit the following data exactly:
+
+```
+COMPLETE es-delta
+```
 ', '# ES: Delta — Debrief
 
 Congratulations, you completed ES: Delta.

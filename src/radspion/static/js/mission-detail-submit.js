@@ -53,12 +53,12 @@
       Outcome.okButton;
   }
 
-  function postSubmit(slug, completionCode) {
+  function postSubmit(slug, completionData) {
     return fetch("/api/missions/" + encodeURIComponent(slug) + "/submit", {
       method: "POST",
       credentials: "same-origin",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ completion_code: completionCode }),
+      body: JSON.stringify({ completion_data: completionData }),
     }).then(function (response) {
       return response.json().then(function (data) {
         if (response.status === 401) {
@@ -76,7 +76,7 @@
     });
   }
 
-  var form = document.querySelector(".completion-form");
+  var form = document.querySelector(".recovered-data-form");
   if (!form || !window.RadspionTransmission) {
     return;
   }
@@ -88,13 +88,13 @@
 
   form.addEventListener("submit", function (event) {
     event.preventDefault();
-    var input = form.querySelector('[name="completion_code"]');
-    var completionCode = input ? input.value : "";
+    var input = form.querySelector('[name="completion_data"]');
+    var completionData = input ? input.value : "";
 
     window.RadspionTransmission.transmit({
       preset: window.RadspionTransmission.PRESET.COMPLETION_DATA,
       request: function () {
-        return postSubmit(slug, completionCode).catch(function () {
+        return postSubmit(slug, completionData).catch(function () {
           return { outcome: "invalid", message: INVALID_FALLBACK };
         });
       },

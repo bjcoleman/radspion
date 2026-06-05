@@ -40,14 +40,14 @@ def submit_mission(slug: str):
     """Submit mission data (POST /api/missions/<slug>/submit)."""
     payload = request.get_json(silent=True)
     if not isinstance(payload, dict):
-        return jsonify({"error": "missing completion_code"}), 400
+        return jsonify({"error": "missing completion_data"}), 400
 
-    raw_code = payload.get("completion_code")
-    if not isinstance(raw_code, str) or not raw_code.strip():
-        return jsonify({"error": "missing completion_code"}), 400
+    raw_data = payload.get("completion_data")
+    if not isinstance(raw_data, str) or not raw_data.strip():
+        return jsonify({"error": "missing completion_data"}), 400
 
     radspion = current_app.extensions["radspion"]
-    result = radspion.submit_mission_completion(g.user.id, slug, raw_code)
+    result = radspion.submit_mission_data(g.user.id, slug, raw_data)
     if result is None:
         return jsonify({"error": "Not found"}), 404
     if result.outcome == "invalid":

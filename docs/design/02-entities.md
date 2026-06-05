@@ -9,7 +9,7 @@ Agents work with **clearance** and **data**. The database and API use the names 
 | Agent term | Database / API | UI label |
 |------------|----------------|----------|
 | Clearance code | `mission_clearance_codes.clearance_code`, `POST /api/clearance` → `clearance_code` | Header placeholder **Clearance code**; button **Request Access** |
-| Data | `missions.completion_code`, `POST /api/missions/<slug>/submit` → `completion_code` | Active panel **Data**; button **Submit data**; completed **Recovered Data** archives |
+| Recovered data | `missions.completion_data`, `POST /api/missions/<slug>/submit` → `completion_data` | **Recovered Data** panel (active and completed); button **Submit data** on active missions |
 
 Format rules, layout, and modal copy: [06-agent-experience.md](06-agent-experience.md). Mockups: [`docs/ui/README.md`](../ui/README.md).
 
@@ -28,7 +28,7 @@ Format rules, layout, and modal copy: [06-agent-experience.md](06-agent-experien
 | `brief_markdown`, `debrief_markdown` | Mission Brief / Debrief markdown |
 | `group_id` | Story arc for dashboard grouping |
 | `access_rule` | How the mission gets on the agent's list |
-| `completion_code` | Data required to mark the mission completed (may be multi-line text) |
+| `completion_data` | Completion data — exact text required to mark the mission completed (may be multi-line) |
 
 ### `access_rule` (one per mission)
 
@@ -62,7 +62,7 @@ Used with `requires_complete`. Prereqs may span story arcs if you design them th
 
 **`agent_mission_status`**: `(user_id, mission_id, status)` — `active` | `completed`.
 
-- Completed missions may display `missions.completion_code` (data); never expose it for `active` missions
+- Completed missions may display `missions.completion_data` (data); never expose it for `active` missions
 - **No row** means not listable yet (clearance not granted, or list prereqs not met). Missions that are not listable are **hidden** from the agent dashboard — not shown as locked placeholders
 - For listable `open` missions, a missing row is a **sync error**
 
@@ -82,7 +82,7 @@ Keep **`agent_mission_status` current immediately** on login, clearance grant, a
 
 1. Signed-in agent  
 2. **List:** per `access_rule` + `mission_list_requires` → ensure `active` row exists when listable  
-3. **Complete:** mission is `active` and submitted data matches `completion_code` → `completed`  
+3. **Complete:** mission is `active` and submitted data matches `completion_data` → `completed`  
 4. On complete → sync: create `active` rows for missions whose `mission_list_requires` are now satisfied  
 
 ## Diagram

@@ -50,7 +50,7 @@ class ListedMissionContent:
     status: str
     brief_markdown: str
     debrief_markdown: str
-    completion_code: str | None = None
+    completion_data: str | None = None
 
 
 @dataclass(frozen=True)
@@ -62,7 +62,7 @@ class MissionDetail:
     status: str
     brief_html: Markup
     debrief_html: Markup
-    recovered_code: str | None = None
+    recovered_data: str | None = None
 
 
 @dataclass(frozen=True)

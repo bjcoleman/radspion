@@ -8,7 +8,7 @@ SQL files run `PRAGMA foreign_keys = ON;` at the start of each script.
 
 **Story arcs:** `Orientation` (includes `basic-training`), `Testing Storyline` (five test missions).
 
-**Agent vocabulary:** strings in `mission_clearance_codes` are **clearance codes** (letters, digits, hyphen only — e.g. `EXAMPLE-CLEARANCE`). Values in `completion_code` are mission **data**. See [06-agent-experience.md](06-agent-experience.md).
+**Agent vocabulary:** strings in `mission_clearance_codes` are **clearance codes** (letters, digits, hyphen only — e.g. `EXAMPLE-CLEARANCE`). Values in `completion_data` are mission **data**. See [06-agent-experience.md](06-agent-experience.md).
 
 ## Mission graph
 
@@ -24,7 +24,7 @@ HIDDEN-CLEARANCE ──► es-hidden (dead end)      │
 
 ## missions
 
-| slug | title | group | access_rule | completion_code |
+| slug | title | group | access_rule | completion_data |
 |------|-------|-------|-------------|-----------------|
 | basic-training | Welcome to Radspion | Orientation | open | WELCOME-AGENT-OK |
 | es-alpha | ES: Alpha | Testing Storyline | clearance_code | COMPLETE es-alpha |
@@ -52,7 +52,7 @@ Clearance **EXAMPLE-CLEARANCE** lists both **es-alpha** and **es-beta** (same co
 
 ## agent_mission_status (seed personas)
 
-When `status = completed`, the app shows `missions.completion_code` for that mission.
+When `status = completed`, the app shows `missions.completion_data` for that mission.
 
 | user | Storyline state (summary) |
 |------|---------------------------|

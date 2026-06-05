@@ -15,25 +15,25 @@ def storyline_db(tmp_path: Path) -> Path:
     return db_path
 
 
-def test_get_listed_mission_content_omits_completion_code_when_active(storyline_db: Path):
+def test_get_listed_mission_content_omits_completion_data_when_active(storyline_db: Path):
     storage = DatabaseRadspionStorage(storyline_db)
 
     content = storage.get_listed_mission_content(SAMPLE_AGENTS["alice"]["id"], "es-beta")
 
     assert content is not None
     assert content.status == "active"
-    assert content.completion_code is None
+    assert content.completion_data is None
     assert "ES: Beta" in content.brief_markdown
 
 
-def test_get_listed_mission_content_includes_completion_code_when_completed(storyline_db: Path):
+def test_get_listed_mission_content_includes_completion_data_when_completed(storyline_db: Path):
     storage = DatabaseRadspionStorage(storyline_db)
 
     content = storage.get_listed_mission_content(SAMPLE_AGENTS["alice"]["id"], "es-alpha")
 
     assert content is not None
     assert content.status == "completed"
-    assert content.completion_code == "COMPLETE es-alpha"
+    assert content.completion_data == "COMPLETE es-alpha"
 
 
 def test_find_listed_mission_returns_dashboard_mission_when_listed(storyline_db: Path):

@@ -224,7 +224,7 @@ class DatabaseRadspionStorage:
                        ams.status,
                        m.brief_markdown,
                        m.debrief_markdown,
-                       m.completion_code
+                       m.completion_data
                 FROM agent_mission_status ams
                 JOIN missions m ON m.id = ams.mission_id
                 WHERE ams.user_id = ? AND m.slug = ?
@@ -235,14 +235,14 @@ class DatabaseRadspionStorage:
             raise DatabaseError(f"Database error loading mission detail: {exc}") from exc
         if row is None:
             return None
-        recovered = row["completion_code"] if row["status"] == "completed" else None
+        recovered = row["completion_data"] if row["status"] == "completed" else None
         return ListedMissionContent(
             slug=row["slug"],
             title=row["title"],
             status=row["status"],
             brief_markdown=row["brief_markdown"],
             debrief_markdown=row["debrief_markdown"],
-            completion_code=recovered,
+            completion_data=recovered,
         )
 
     def grant_clearance(self, user_id: int, clearance_code: str) -> MissionListResult:
@@ -332,22 +332,22 @@ class DatabaseRadspionStorage:
             for row in rows
         }
 
-    def submit_mission_completion(
+    def submit_mission_data(
         self,
         user_id: int,
         slug: str,
-        completion_code: str,
+        completion_data: str,
     ) -> MissionListResult | None:
         """
-        Submit a mission completion code (UC-021).
+        Submit recovered mission data (UC-021).
 
-        ``completion_code`` must be trimmed and non-empty. Comparison is case-sensitive.
+        ``completion_data`` must be trimmed and non-empty. Comparison is case-sensitive.
         Returns None when the mission is not on the agent's list.
         """
         try:
             row = self._conn.execute(
                 """
-                SELECT ams.status, m.id AS mission_id, m.completion_code
+                SELECT ams.status, m.id AS mission_id, m.completion_data
                 FROM agent_mission_status ams
                 JOIN missions m ON m.id = ams.mission_id
                 WHERE ams.user_id = ? AND m.slug = ?
@@ -363,7 +363,7 @@ class DatabaseRadspionStorage:
                     message="This mission is already marked complete.",
                 )
 
-            if row["completion_code"] != completion_code:
+            if row["completion_data"] != completion_data:
                 return MissionListResult(outcome="invalid")
 
             listed_before = self._listed_mission_summaries(user_id)
@@ -381,6 +381,6 @@ class DatabaseRadspionStorage:
             new_missions = tuple(listed_after[s] for s in new_slugs)
             self._conn.commit()
         except sqlite3.Error as exc:
-            raise DatabaseError(f"Database error submitting mission completion: {exc}") from exc
+            raise DatabaseError(f"Database error submitting mission data: {exc}") from exc
 
         return MissionListResult(outcome="success", new_missions=new_missions)

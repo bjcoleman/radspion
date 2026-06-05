@@ -188,7 +188,7 @@ Agent opens a listed mission: title, Brief link/body, status, completion UI as a
 
 **Actor:** System  
 **Requires:** UC-016  
-API/UI never returns `missions.completion_code` for missions where the agent’s status is `active` ([06-agent-experience.md](06-agent-experience.md)).
+API/UI never returns `missions.completion_data` for missions where the agent’s status is `active` ([06-agent-experience.md](06-agent-experience.md)).
 
 ---
 
@@ -196,7 +196,7 @@ API/UI never returns `missions.completion_code` for missions where the agent’s
 
 **Actor:** Agent  
 **Requires:** UC-017, UC-021  
-After `completed`, agent sees the stored `completion_code` value for that mission in agency archives.
+After `completed`, agent sees the stored `completion_data` value for that mission in agency archives.
 
 ---
 
@@ -232,7 +232,7 @@ No matching `mission_clearance_codes` row → `outcome: invalid`; generic error 
 
 **Actor:** Agent  
 **Requires:** UC-016, UC-017  
-Agent submits correct data (`completion_code`) while mission is `active` → `status = completed`; run listing sync (UC-024). API returns `outcome: success` and `new_missions` for missions that became listable (may be empty). Data may be multi-line. Examples: basic-training; any listed mission with matching data.
+Agent submits correct data (`completion_data`) while mission is `active` → `status = completed`; run listing sync (UC-024). API returns `outcome: success` and `new_missions` for missions that became listable (may be empty). Data may be multi-line. Examples: basic-training; any listed mission with matching data.
 
 ---
 

@@ -64,7 +64,7 @@ class Radspion:
             status=content.status,
             brief_html=render_mission_markdown(content.brief_markdown),
             debrief_html=render_mission_markdown(content.debrief_markdown),
-            recovered_code=content.completion_code,
+            recovered_data=content.completion_data,
         )
 
     def grant_clearance(self, user_id: int, raw_code: str) -> MissionListResult:
@@ -78,19 +78,19 @@ class Radspion:
             return MissionListResult(outcome="invalid")
         return self._storage.grant_clearance(user_id, code)
 
-    def submit_mission_completion(
+    def submit_mission_data(
         self,
         user_id: int,
         slug: str,
-        raw_code: str,
+        raw_data: str,
     ) -> MissionListResult | None:
         """
-        Submit mission data for the signed-in agent.
+        Submit recovered mission data for the signed-in agent.
 
         Trims whitespace; comparison is case-sensitive.
         Returns None when the mission is not on the agent's list.
         """
-        code = raw_code.strip()
-        if not code:
+        data = raw_data.strip()
+        if not data:
             return MissionListResult(outcome="invalid")
-        return self._storage.submit_mission_completion(user_id, slug, code)
+        return self._storage.submit_mission_data(user_id, slug, data)

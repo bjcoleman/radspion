@@ -63,8 +63,8 @@ def test_agent_has_listed_mission_false_when_not_listed(orientation_database_pat
             "granting clearance",
         ),
         (
-            lambda storage: storage.submit_mission_completion(1, "es-beta", "COMPLETE es-beta"),
-            "submitting mission completion",
+            lambda storage: storage.submit_mission_data(1, "es-beta", "COMPLETE es-beta"),
+            "submitting mission data",
         ),
     ],
 )
@@ -127,8 +127,8 @@ def test_closed_connection_raises_database_error_for_all_queries(tmp_path: Path)
         ),
         (lambda: storage.grant_clearance(1, "EXAMPLE-CLEARANCE"), "granting clearance"),
         (
-            lambda: storage.submit_mission_completion(1, "es-beta", "COMPLETE es-beta"),
-            "submitting mission completion",
+            lambda: storage.submit_mission_data(1, "es-beta", "COMPLETE es-beta"),
+            "submitting mission data",
         ),
     ]
 

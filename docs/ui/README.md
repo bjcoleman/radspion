@@ -6,7 +6,7 @@ Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snaps
 
 **Assets:** styles in [`css/radspion.css`](css/radspion.css) are kept in sync with production [`src/radspion/static/css/radspion.css`](../../src/radspion/static/css/radspion.css) (mockup rules + app-only rules for flash, content pages, disabled controls). Logos in [`logos/`](../../logos/). Mission brief and debrief copy is **inlined in HTML** on mission detail mockups (production loads markdown from the database).
 
-**Target layout:** Sticky site header with **Clearance** field + **Request Access**; Mission Dashboard **without** a body clearance field; mission detail **Data** panel with **textarea** + **Submit data**; distinct clearance vs data transmission modals.
+**Target layout:** Sticky site header with **Clearance** field + **Request Access**; Mission Dashboard **without** a body clearance field; mission detail **Recovered Data** panel with **textarea** + **Submit data**; distinct clearance vs data transmission modals.
 
 **Sample data alignment:** Story arcs **Orientation** and **Testing Storyline** (`es-*` missions); **`clearance_code`** or **`requires_complete`** listing — never both on one mission.
 
@@ -50,7 +50,7 @@ Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snaps
 
 | File | Status | Persona / state | Use cases |
 |------|--------|-----------------|-----------|
-| [mission-detail-active.html](mission-detail-active.html) | done | **Alice / es-beta** active: Brief, Data textarea | UC-009, UC-016, UC-017 |
+| [mission-detail-active.html](mission-detail-active.html) | done | **Alice / es-beta** active: Brief, Recovered Data textarea | UC-009, UC-016, UC-017 |
 | [mission-detail-completed.html](mission-detail-completed.html) | done | **Alice / es-alpha** completed; agency archives + Debrief | UC-010, UC-018, UC-021 |
 | [mission-detail-submit-success.html](mission-detail-submit-success.html) | done | **es-beta** data accepted (no new missions) | UC-021 |
 | [mission-detail-submit-success-lists.html](mission-detail-submit-success-lists.html) | done | **es-alpha** success + **es-gamma** listed | UC-021, UC-032 |
@@ -101,7 +101,7 @@ Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snaps
 
 ### Mission detail (active)
 
-- Mission Brief; **Data** textarea + **Submit data** → open `mission-detail-submit-*.html` for each outcome.
+- Mission Brief; **Recovered Data** textarea + **Submit data** → open `mission-detail-submit-*.html` for each outcome.
 
 ### Mission detail (completed)
 

@@ -35,7 +35,7 @@ def test_submit_success(storyline_db: Path):
 
     response = client.post(
         "/api/missions/es-beta/submit",
-        json={"completion_code": "COMPLETE es-beta"},
+        json={"completion_data": "COMPLETE es-beta"},
     )
     assert response.status_code == 200
     data = response.get_json()
@@ -50,7 +50,7 @@ def test_submit_success_with_new_missions(storyline_db: Path):
 
     response = client.post(
         "/api/missions/es-alpha/submit",
-        json={"completion_code": "COMPLETE es-alpha"},
+        json={"completion_data": "COMPLETE es-alpha"},
     )
     assert response.status_code == 200
     data = response.get_json()
@@ -66,7 +66,7 @@ def test_submit_invalid_returns_message(storyline_db: Path):
 
     response = client.post(
         "/api/missions/es-beta/submit",
-        json={"completion_code": "WRONG"},
+        json={"completion_data": "WRONG"},
     )
     assert response.status_code == 200
     data = response.get_json()
@@ -80,7 +80,7 @@ def test_submit_already_done(storyline_db: Path):
 
     response = client.post(
         "/api/missions/es-alpha/submit",
-        json={"completion_code": "COMPLETE es-alpha"},
+        json={"completion_data": "COMPLETE es-alpha"},
     )
     assert response.status_code == 200
     data = response.get_json()
@@ -96,7 +96,7 @@ def test_submit_not_listed_returns_404(storyline_db: Path):
 
     response = client.post(
         "/api/missions/es-alpha/submit",
-        json={"completion_code": "COMPLETE es-alpha"},
+        json={"completion_data": "COMPLETE es-alpha"},
     )
     assert response.status_code == 404
 
@@ -108,7 +108,7 @@ def test_submit_rejects_missing_code(storyline_db: Path):
 
     response = client.post("/api/missions/es-beta/submit", json={})
     assert response.status_code == 400
-    assert response.get_json() == {"error": "missing completion_code"}
+    assert response.get_json() == {"error": "missing completion_data"}
 
 
 def test_submit_rejects_empty_code(storyline_db: Path):
@@ -118,7 +118,7 @@ def test_submit_rejects_empty_code(storyline_db: Path):
 
     response = client.post(
         "/api/missions/es-beta/submit",
-        json={"completion_code": "   "},
+        json={"completion_data": "   "},
     )
     assert response.status_code == 400
 
@@ -134,7 +134,7 @@ def test_submit_rejects_non_json_body(storyline_db: Path):
         content_type="application/json",
     )
     assert response.status_code == 400
-    assert response.get_json() == {"error": "missing completion_code"}
+    assert response.get_json() == {"error": "missing completion_data"}
 
 
 def test_submit_requires_sign_in(storyline_db: Path):
@@ -142,7 +142,7 @@ def test_submit_requires_sign_in(storyline_db: Path):
 
     response = client.post(
         "/api/missions/es-beta/submit",
-        json={"completion_code": "COMPLETE es-beta"},
+        json={"completion_data": "COMPLETE es-beta"},
     )
     assert response.status_code == 401
     assert response.get_json() == {"error": "Unauthorized"}

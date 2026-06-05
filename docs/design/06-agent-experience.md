@@ -7,7 +7,7 @@ Agents interact with Radspion through **two channels** — clearance and data. T
 | Channel | Purpose | API |
 |---------|---------|-----|
 | **Clearance** | List new mission(s) on the dashboard | `POST /api/clearance` with `clearance_code` |
-| **Data** | Mark an **active** mission **completed** | `POST /api/missions/<slug>/submit` with `completion_code` |
+| **Data** | Mark an **active** mission **completed** | `POST /api/missions/<slug>/submit` with `completion_data` |
 
 ### Clearance codes
 
@@ -60,12 +60,12 @@ Missions are grouped by story arc (`groups.name`). Collapsible sections; complet
 ### Mission detail (active)
 
 - **Mission Brief** from `missions.brief_markdown`.
-- **Data** panel — not “Recovered Data” on active missions.
+- **Recovered Data** panel — same title as the completed archives section; lede and control make clear this is for submission.
 
 | Element | Copy |
 |---------|------|
-| Panel title | **Data** |
-| Lede | Enter the data you recovered. Spacing and line breaks must be exact. |
+| Panel title | **Recovered Data** |
+| Lede | Enter the data you recovered from this mission. Spacing and line breaks must be exact. |
 | Input | Multi-line textarea; placeholder `Field data` |
 | Submit | **Submit data** |
 
@@ -79,10 +79,10 @@ Section order: **Recovered Data** (agency archives) → **Mission Debrief** (exp
 |---------|------|
 | Archives title | **Recovered Data** |
 | Archives lede | The following data is secured in agency archives. |
-| Display | Submitted `completion_code` in a `<pre>` block; multi-line; height fits content |
+| Display | Stored `completion_data` (recovered data) in a `<pre>` block; multi-line; height fits content |
 | Copy control | Clipboard button on the archives block |
 
-Never expose `completion_code` to **active** missions in API or UI.
+Never expose `completion_data` to **active** missions in API or UI.
 
 ### Site footer (agent pages)
 
@@ -109,7 +109,7 @@ Missions that are not yet listable are **not shown** on the dashboard.
 ## Completion
 
 1. Mission on status list (`active`).
-2. Submitted data matches **`completion_code`** — else invalid outcome.
+2. Submitted data matches **`completion_data`** — else invalid outcome.
 3. `agent_mission_status.status = completed`; sync list for other missions.
 
 ## Interactive actions (hybrid SSR + JSON)
@@ -192,7 +192,7 @@ Granting clearance creates an `active` row for each matching `clearance_code` mi
 
 **Path:** mission `slug` (e.g. `es-alpha`).
 
-**Request:** `{ "completion_code": "..." }`
+**Request:** `{ "completion_data": "..." }`
 
 **Response:** [`MissionListResponse`](../api.yaml).
 

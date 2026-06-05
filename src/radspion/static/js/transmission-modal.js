@@ -41,7 +41,7 @@
 
   /** Forms that submit clearance / data behind the modal. */
   const SUBMIT_FORM_SELECTOR =
-    ".clearance-form, .clearance-confirm-form, .completion-form";
+    ".clearance-form, .clearance-confirm-form, .recovered-data-form";
 
   function prefersReducedMotion() {
     return global.matchMedia("(prefers-reduced-motion: reduce)").matches;

@@ -26,19 +26,17 @@
         <article class="markdown">{{ mission.brief_html }}</article>
       </section>
 
-      <section class="mission-detail__section completion-panel" aria-labelledby="data-heading">
-        <header class="completion-panel__header">
-          <h2 id="data-heading" class="completion-panel__title">Data</h2>
-          <p class="completion-panel__lede text-muted">
-            Enter the data you recovered. Spacing and line breaks must be exact.
-          </p>
-        </header>
-        <form class="completion-form completion-form--multiline" action="#" method="post" data-mission-slug="{{ mission.slug }}">
-          <label class="sr-only" for="completion-code">Field data</label>
+      <section class="mission-detail__section recovered-data-panel" aria-labelledby="recovered-data-heading">
+        <h2 id="recovered-data-heading" class="recovered-data-panel__title">Recovered Data</h2>
+        <p class="recovered-data-panel__lede text-muted">
+          Enter the data you recovered from this mission. Spacing and line breaks must be exact.
+        </p>
+        <form class="recovered-data-form recovered-data-form--multiline" action="#" method="post" data-mission-slug="{{ mission.slug }}">
+          <label class="sr-only" for="recovered-data-input">Field data</label>
           <textarea
-            class="completion-form__input completion-form__textarea text-mono"
-            id="completion-code"
-            name="completion_code"
+            class="recovered-data-form__input recovered-data-form__textarea text-mono"
+            id="recovered-data-input"
+            name="completion_data"
             rows="8"
             autocomplete="off"
             autocapitalize="off"
@@ -47,7 +45,7 @@
             wrap="off"
             placeholder="Field data"
           ></textarea>
-          <button class="completion-form__submit" type="submit">Submit data</button>
+          <button class="recovered-data-form__submit" type="submit">Submit data</button>
         </form>
       </section>
     {% else %}
@@ -57,7 +55,7 @@
           The following data is secured in agency archives.
         </p>
         <div class="recovered-data__block">
-          <pre class="recovered-data__value text-mono">{{ mission.recovered_code }}</pre>
+          <pre class="recovered-data__value text-mono">{{ mission.recovered_data }}</pre>
         </div>
       </section>
 
@@ -89,7 +87,7 @@
 {% endblock %}
 
 {% block agent_extra_body %}
-  <script src="{{ url_for('static', filename='js/mission-detail-copy-code.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/mission-detail-copy-data.js') }}" defer></script>
   {% if mission.status == 'active' %}
     <script src="{{ url_for('static', filename='js/mission-detail-submit.js') }}"></script>
   {% endif %}

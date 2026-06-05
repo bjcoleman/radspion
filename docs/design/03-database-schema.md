@@ -48,7 +48,7 @@ Story-arc label for dashboard sections and operator navigation.
 | `debrief_markdown` | `TEXT` | NOT NULL |
 | `group_id` | `INTEGER` | NOT NULL, FK → `groups` |
 | `access_rule` | `TEXT` | NOT NULL, CHECK (see enums above) |
-| `completion_code` | `TEXT` | NOT NULL — mission **data**; may include newlines |
+| `completion_data` | `TEXT` | NOT NULL — mission **completion data**; may include newlines |
 
 **Consistency rules:**
 
@@ -92,7 +92,7 @@ Story-arc label for dashboard sections and operator navigation.
 
 **Unique:** `(user_id, mission_id)`.
 
-After `completed`, UI may show `missions.completion_code` for that mission.
+After `completed`, UI may show `missions.completion_data` for that mission.
 
 ## Runtime summary
 
@@ -100,5 +100,5 @@ After `completed`, UI may show `missions.completion_code` for that mission.
 
 1. Signed-in agent  
 2. **List:** `open` → `active` row; `clearance_code` → after clearance granted; `requires_complete` → after all list prereqs completed  
-3. **Complete:** mission `active` → match `completion_code` → `completed`  
+3. **Complete:** mission `active` → match `completion_data` → `completed`  
 4. On complete (and on login) → sync `active` rows for missions whose list prereqs are now satisfied  

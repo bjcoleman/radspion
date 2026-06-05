@@ -41,7 +41,7 @@ CREATE TABLE missions (
     debrief_markdown  TEXT NOT NULL,
     group_id          INTEGER NOT NULL REFERENCES groups (id) ON DELETE CASCADE,
     access_rule     TEXT NOT NULL CHECK (access_rule IN ('open', 'clearance_code', 'requires_complete')),
-    completion_code TEXT NOT NULL
+    completion_data TEXT NOT NULL
 );
 
 CREATE INDEX idx_missions_group_id ON missions (group_id);
