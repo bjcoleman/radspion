@@ -26,7 +26,7 @@ A web app where students act as **agents** in a spy-agency fiction. **Missions**
 
 ## Stack
 
-- **Flask + Jinja** for server-rendered pages; JSON API at `/api/unlock` and `/api/missions/<slug>/submit` — see [api.yaml](../api.yaml)
+- **Flask + Jinja** for server-rendered pages; JSON API at `/api/unlock` and `/api/missions/<slug>/submit` — see [api.yaml](../api.yaml). Agent UI copy: [06-agent-experience.md](06-agent-experience.md); mockups: [ui/README.md](../ui/README.md)
 - SQLite 3
 - Mission Brief/Debrief markdown in DB (`brief_markdown` / `debrief_markdown`), seeded from **radspion-missions**; UI mockups in `docs/ui/` inline HTML for layout review
 

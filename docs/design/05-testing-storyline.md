@@ -2,7 +2,7 @@
 
 Generic mission chain for **local testing** and use-case acceptance. **Not used in production.**
 
-**Orientation** includes `basic-training` (`open`). **Testing Storyline** exercises shared clearance codes (`EXAMPLE UNLOCK`, `HIDDEN UNLOCK` in seed data), list prerequisites, a hidden side mission, and a two-prereq finale. Agent UI vocabulary: [06-agent-experience.md](06-agent-experience.md).
+**Orientation** includes `basic-training` (`open`). **Testing Storyline** exercises shared clearance codes (`EXAMPLE-UNLOCK`, `HIDDEN-UNLOCK`), list prerequisites, a hidden side mission, and a two-prereq finale. Agent UI vocabulary: [06-agent-experience.md](06-agent-experience.md).
 
 Seed: [`src/radspion/sql/seed_testing_storyline.sql`](../../src/radspion/sql/seed_testing_storyline.sql).  
 Details: [04-example-data-walkthrough.md](04-example-data-walkthrough.md). Always refer to missions by **slug**.
@@ -26,15 +26,15 @@ Four sample agents; each illustrates a distinct progress state:
 | Alice | `es-gamma` active after `es-alpha` complete; `es-delta` not listed until `es-beta` and `es-gamma` are both complete |
 | Charlie | `es-beta` complete but `es-gamma` not listed (`es-alpha` not complete) |
 | Bob | All `es-*` missions `completed`; can view all captured data |
-| Any | Clearance **EXAMPLE UNLOCK** → `es-alpha` and `es-beta` appear; **HIDDEN UNLOCK** → `es-hidden` only |
+| Any | Clearance **EXAMPLE-UNLOCK** → `es-alpha` and `es-beta` appear; **HIDDEN-UNLOCK** → `es-hidden` only |
 
 ## Per-mission config
 
 | slug | access_rule | Listed when |
 |------|-------------|-------------|
-| es-alpha | unlock_code | Clearance **EXAMPLE UNLOCK** |
-| es-beta | unlock_code | Clearance **EXAMPLE UNLOCK** |
-| es-hidden | unlock_code | Clearance **HIDDEN UNLOCK** (hint on ES: Beta brief) |
+| es-alpha | unlock_code | Clearance **EXAMPLE-UNLOCK** |
+| es-beta | unlock_code | Clearance **EXAMPLE-UNLOCK** |
+| es-hidden | unlock_code | Clearance **HIDDEN-UNLOCK** (hint on ES: Beta brief) |
 | es-gamma | requires_complete | **es-alpha** completed |
 | es-delta | requires_complete | **es-beta** and **es-gamma** completed |
 

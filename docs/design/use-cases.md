@@ -20,8 +20,9 @@ Ordered by **dependency** — build from the top down. Each case lists **Require
 | Mission list UX | Dashboard shows missions with `agent_mission_status` rows, grouped by story arc |
 | `agent_mission_status` | Keep table **in sync at all times** (login + clearance + data submit); dashboard reads this table |
 | Debrief | Only after mission `completed` |
-| Transmission modals | Distinct presets for clearance request vs data submission |
-| Error copy (UC-020, UC-022) | Generic messages per [api.yaml](../api.yaml) |
+| Transmission modals | Distinct presets for clearance request vs data submission; canonical copy in [06-agent-experience.md](06-agent-experience.md) |
+| Agent UI copy | Mockups in `docs/ui/`; header **Request Access**, active **Data** panel, completed **Recovered Data** archives |
+| Error copy (UC-020, UC-022) | Modal strings in [06-agent-experience.md](06-agent-experience.md); API `message` examples in [api.yaml](../api.yaml) |
 | Web framework | **Flask + Jinja** SSR; JSON API at `/api/unlock`, `/api/missions/<slug>/submit` |
 | Brief/Debrief bodies | `missions.brief_markdown` / `debrief_markdown` (seed SQL generated from **radspion-missions**) |
 | Operator config V1 | SQL/seed only — no in-app mission editor |
@@ -205,7 +206,7 @@ After `completed`, agent sees the stored `completion_code` value for that missio
 
 **Actor:** Agent  
 **Requires:** UC-014  
-Valid clearance code → one or more matching missions appear on the list (`active`). API returns `outcome: success` and `new_missions` with summaries of missions newly listed (may be one or many). Example: `EXAMPLE UNLOCK` lists `es-alpha` and `es-beta`.
+Valid clearance code → one or more matching missions appear on the list (`active`). API returns `outcome: success` and `new_missions` with summaries of missions newly listed (may be one or many). Example: `EXAMPLE-UNLOCK` lists `es-alpha` and `es-beta`.
 
 ---
 
@@ -213,7 +214,7 @@ Valid clearance code → one or more matching missions appear on the list (`acti
 
 **Actor:** Agent  
 **Requires:** UC-019  
-Valid clearance code, but every matching mission already has a status row for this agent → `outcome: already_done`, `new_missions: []`. Optional generic `message`.
+Valid clearance code, but every matching mission already has a status row for this agent → `outcome: already_done`, `new_missions: []`. Modal: **Previously Granted**; body *You have already been granted this clearance.*
 
 ---
 
@@ -221,7 +222,7 @@ Valid clearance code, but every matching mission already has a status row for th
 
 **Actor:** Agent  
 **Requires:** UC-019  
-No matching `mission_unlock_codes` row → `outcome: invalid`; generic error without revealing mission existence or codes (see [api.yaml](../api.yaml)).
+No matching `mission_unlock_codes` row → `outcome: invalid`; generic error without revealing mission existence or codes (see [api.yaml](../api.yaml)). Modal: **Verification Failed**; no mission hints.
 
 ---
 
@@ -247,7 +248,7 @@ Mission already `completed` for this agent (re-submit) → `outcome: already_don
 
 **Actor:** Agent  
 **Requires:** UC-021  
-Wrong code → “not recognized”. *(Wording TBD.)*
+Wrong data → `outcome: invalid`. Modal: **Verification Failed**; *We received your transmission, but the recovered data does not match mission parameters.* Continue fieldwork; no answer hints.
 
 ---
 
@@ -291,7 +292,7 @@ Sees `basic-training` (`active` or `completed`); no Testing Storyline missions l
 
 **Actor:** Agent  
 **Requires:** UC-019  
-Clearance `HIDDEN UNLOCK` → `es-hidden` appears `active` (hint on ES: Beta brief). Re-submitting when already listed → UC-019b (`already_done`).
+Clearance `HIDDEN-UNLOCK` → `es-hidden` appears `active` (hint on ES: Beta brief). Re-submitting when already listed → UC-019b (`already_done`).
 
 ---
 

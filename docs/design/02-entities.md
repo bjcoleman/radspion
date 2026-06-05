@@ -6,12 +6,12 @@ SQLite. **Groups** are story arcs (organization for the dashboard and operator v
 
 Agents work with **clearance** and **data**. The database and API use the names below.
 
-| Agent term | Database / API |
-|------------|----------------|
-| Clearance code | `mission_unlock_codes.unlock_code`, `POST /api/unlock` → `unlock_code` |
-| Data | `missions.completion_code`, `POST /api/missions/<slug>/submit` → `completion_code` |
+| Agent term | Database / API | UI label |
+|------------|----------------|----------|
+| Clearance code | `mission_unlock_codes.unlock_code`, `POST /api/unlock` → `unlock_code` | Header placeholder **Clearance code**; button **Request Access** |
+| Data | `missions.completion_code`, `POST /api/missions/<slug>/submit` → `completion_code` | Active panel **Data**; button **Submit data**; completed **Recovered Data** archives |
 
-Format rules and agent UI: [06-agent-experience.md](06-agent-experience.md).
+Format rules, layout, and modal copy: [06-agent-experience.md](06-agent-experience.md). Mockups: [`docs/ui/README.md`](../ui/README.md).
 
 ## Groups
 

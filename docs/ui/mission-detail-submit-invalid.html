@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Static mission detail mockup — submit invalid code; transmission modal outcome -->
+<!-- Static mission detail mockup — invalid data submit; Alice / es-beta -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -11,8 +11,8 @@
   <link rel="stylesheet" href="css/radspion.css">
 </head>
 <body class="page page--mission has-transmission-modal">
-  <header class="site-header">
-    <div class="site-header__brand">
+  <header class="site-header site-header--sticky">
+    <a class="site-header__brand" href="agent-dashboard.html">
       <img
         class="site-header__mark"
         src="../../logos/radspion_mark_white.svg"
@@ -21,19 +21,36 @@
         alt=""
       >
       <span class="site-header__title">Radspion</span>
+    </a>
+
+    <form class="clearance-form site-header__clearance" action="#" method="post">
+      <label class="sr-only" for="clearance-code">Clearance code</label>
+      <input
+        class="clearance-form__input text-mono"
+        type="text"
+        id="clearance-code"
+        name="unlock_code"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="Clearance code"
+      >
+      <button class="clearance-form__submit" type="button">Request Access</button>
+    </form>
+
+    <div class="site-header__end">
+      <div class="site-header__agent">
+        <span class="site-header__agent-label">Agent</span>
+        <span class="site-header__agent-name">Alice</span>
+        <span class="site-header__agent-email text-mono">alice@moravian.edu</span>
+      </div>
+      <button type="button" class="site-header__action">Sign out</button>
     </div>
-    <div class="site-header__agent">
-      <span class="site-header__agent-label">Agent</span>
-      <span class="site-header__agent-name">Alice</span>
-      <span class="site-header__agent-email text-mono">alice@moravian.edu</span>
-    </div>
-    <span class="site-header__action">Sign out</span>
   </header>
 
   <main class="page__main page__main--mission">
     <div class="mission-detail">
       <nav class="mission-detail__nav">
-        <span class="mission-detail__back">← Mission Dashboard</span>
+        <a class="mission-detail__back" href="agent-dashboard.html">← Mission Dashboard</a>
       </nav>
 
       <header class="mission-detail__header">
@@ -52,47 +69,47 @@
           <p>The completion code for this mission is <code>COMPLETE es-beta</code>.</p>
 
           <h2>Hidden Mission</h2>
-          <p>This mission provides the unlock code for another mission: <code>HIDDEN UNLOCK</code>.</p>
+          <p>This mission provides a clearance code for another mission: <code>HIDDEN-UNLOCK</code>.</p>
         </article>
       </section>
 
-      <section class="mission-detail__section completion-panel" aria-labelledby="recovered-data-heading">
+      <section class="mission-detail__section completion-panel" aria-labelledby="data-heading">
         <header class="completion-panel__header">
-          <h2 id="recovered-data-heading" class="completion-panel__title">Recovered Data</h2>
+          <h2 id="data-heading" class="completion-panel__title">Data</h2>
           <p class="completion-panel__lede text-muted">
-            Enter the data you recovered during fieldwork.
+            Enter the data you recovered. Spacing and line breaks must be exact.
           </p>
         </header>
-        <form class="completion-form" action="#" method="post">
-          <label class="sr-only" for="completion-code">Recovered data from fieldwork</label>
-          <input
-            class="completion-form__input text-mono"
-            type="text"
+        <form class="completion-form completion-form--multiline" action="#" method="post">
+          <label class="sr-only" for="completion-code">Field data</label>
+          <textarea
+            class="completion-form__input completion-form__textarea text-mono"
             id="completion-code"
             name="completion_code"
+            rows="8"
             autocomplete="off"
+            autocapitalize="off"
+            autocorrect="off"
             spellcheck="false"
-            placeholder="Recovered data"
-            value="WRONG-DATA"
-          >
-          <button class="completion-form__submit" type="button">Submit</button>
+            wrap="off"
+            placeholder="Field data"
+          >WRONG-DATA</textarea>
+          <button class="completion-form__submit" type="button">Submit data</button>
         </form>
       </section>
 
       <nav class="mission-detail__nav mission-detail__nav--bottom" aria-label="Mission dashboard">
-        <span class="mission-detail__back">← Mission Dashboard</span>
+        <a class="mission-detail__back" href="agent-dashboard.html">← Mission Dashboard</a>
       </nav>
     </div>
   </main>
 
-  <footer class="page__footer site-footer">
-    <p class="site-footer__about">
-      <a href="about.html">What is Radspion?</a>
-    </p>
-    <ul class="site-footer__legal">
-      <li><a href="privacy.html">Privacy Policy</a></li>
-    </ul>
-    <p class="site-footer__meta">Moravian University · Educational Use</p>
+  <footer class="page__footer site-footer site-footer--inline">
+    <div class="site-footer__inline">
+      <a class="site-footer__link" href="about.html">What is Radspion?</a>
+      <span class="site-footer__meta">Moravian University · Educational Use</span>
+      <a class="site-footer__link" href="privacy.html">Privacy Policy</a>
+    </div>
   </footer>
 
   <div class="transmission-modal">
@@ -101,19 +118,31 @@
       class="transmission-modal__dialog"
       role="dialog"
       aria-modal="true"
-      aria-labelledby="transmission-heading"
+      aria-labelledby="data-transmission-heading"
     >
-      <div class="transmission-modal__progress" id="transmission-progress">
-        <h2 id="transmission-heading" class="transmission-modal__title text-mono">Secure transmission</h2>
-        <p class="transmission-modal__step" id="transmission-step">Initializing secure transmission...</p>
+      <div class="transmission-modal__progress" id="data-progress">
+        <h2 id="data-transmission-heading" class="transmission-modal__title transmission-modal__title--phase text-mono">Transmitting field data</h2>
+        <p class="transmission-modal__step" id="data-step">Compressing and Encrypting data</p>
         <div class="transmission-modal__bar" aria-hidden="true">
-          <div class="transmission-modal__bar-fill" id="transmission-bar-fill"></div>
+          <div class="transmission-modal__bar-fill" id="data-bar-fill"></div>
         </div>
       </div>
-      <div class="transmission-modal__outcome" id="transmission-outcome" hidden>
-        <h2 class="transmission-modal__title">Verification failed</h2>
+      <div class="transmission-modal__outcome" id="data-outcome" hidden>
+        <div class="transmission-modal__outcome-header">
+          <img
+            class="transmission-modal__outcome-mark transmission-modal__outcome-mark--failure"
+            src="../../logos/radspion_mark_white.svg"
+            width="48"
+            height="48"
+            alt=""
+          >
+          <h2 class="transmission-modal__outcome-heading">
+            <span class="transmission-modal__outcome-heading-line">Verification</span>
+            <span class="transmission-modal__outcome-heading-line">Failed</span>
+          </h2>
+        </div>
         <p class="transmission-modal__message">
-          We reviewed your transmission, and the recovered data does not match mission
+          We received your transmission, but the recovered data does not match mission
           parameters. Continue your fieldwork and submit again when you have the correct value.
         </p>
         <button type="button" class="transmission-modal__ok">OK</button>
@@ -123,18 +152,19 @@
 
   <script>
     (function () {
-      var progress = document.getElementById("transmission-progress");
-      var outcome = document.getElementById("transmission-outcome");
-      var stepEl = document.getElementById("transmission-step");
-      var barEl = document.getElementById("transmission-bar-fill");
+      var progress = document.getElementById("data-progress");
+      var outcome = document.getElementById("data-outcome");
+      var stepEl = document.getElementById("data-step");
+      var barEl = document.getElementById("data-bar-fill");
       if (!progress || !outcome || !stepEl || !barEl) return;
 
       var prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var prepText = "Compressing and Encrypting data";
       var steps = [
-        { text: "Contacting agency relay nodes…", width: 25, delay: 500 },
-        { text: "Negotiating ephemeral tunnel…", width: 50, delay: 550 },
-        { text: "Validating agent credentials…", width: 75, delay: 550 },
-        { text: "Sealing field transmission…", width: 88, delay: 800 }
+        { text: "Initiating secure connection…", width: 22, delay: 500 },
+        { text: "Establishing agent identity…", width: 48, delay: 500 },
+        { text: "Transferring field data…", width: 72, delay: 500 },
+        { text: "Checking agency records…", width: 90, delay: 400 }
       ];
 
       if (prefersReducedMotion) {
@@ -143,26 +173,41 @@
         return;
       }
 
-      var i = 0;
-      function runStep() {
-        if (i >= steps.length) {
-          setTimeout(function () {
-            barEl.style.width = "100%";
-            setTimeout(function () {
-              progress.hidden = true;
-              outcome.hidden = false;
-            }, 220);
-          }, 650);
-          return;
-        }
-        var step = steps[i];
-        stepEl.textContent = step.text;
-        barEl.style.width = step.width + "%";
-        i += 1;
-        setTimeout(runStep, step.delay);
+      function finish() {
+        barEl.style.width = "100%";
+        setTimeout(function () {
+          progress.hidden = true;
+          outcome.hidden = false;
+        }, 220);
       }
 
-      setTimeout(runStep, 800);
+      function runSteps(index) {
+        if (index >= steps.length) {
+          setTimeout(finish, 400);
+          return;
+        }
+        var step = steps[index];
+        stepEl.textContent = step.text;
+        barEl.style.width = step.width + "%";
+        setTimeout(function () {
+          runSteps(index + 1);
+        }, step.delay);
+      }
+
+      stepEl.textContent = prepText;
+      barEl.style.width = "0%";
+      barEl.style.transition = "width 0.6s ease";
+
+      setTimeout(function () {
+        barEl.style.width = "100%";
+        setTimeout(function () {
+          barEl.style.transition = "width 0.2s ease";
+          barEl.style.width = "0%";
+          setTimeout(function () {
+            runSteps(0);
+          }, 150);
+        }, 600);
+      }, 400);
     })();
   </script>
 </body>

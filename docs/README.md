@@ -15,7 +15,7 @@ Read in order:
 7. [design/07-operator-setup.md](design/07-operator-setup.md) — how you configure data today  
 8. [design/use-cases.md](design/use-cases.md) — V1 use cases ordered by dependency (work backlog)
 
-**UI mockups:** [ui/README.md](ui/README.md) — static HTML/CSS prototypes (build before Jinja templates)
+**UI mockups:** [ui/README.md](ui/README.md) — static HTML/CSS prototypes; **canonical agent UI copy** for production (see [06-agent-experience.md](design/06-agent-experience.md))
 
 **SQL (infrastructure):** [src/radspion/sql/README.md](../src/radspion/sql/README.md) — schema and seeds (mission markdown inlined)
 

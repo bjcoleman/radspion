@@ -34,16 +34,59 @@ The **Orientation** story arc is public and teaches this model. Orientation **da
 
 ## Layout
 
+Static mockups in [`docs/ui/`](../ui/README.md) are the reference for agent-facing copy. Production templates and API `message` fields should match.
+
 ### Site header
 
-The agent header is **sticky** on dashboard and mission pages. It includes brand, agent identity, a **clearance** field with **Request**, and sign out. The Mission Dashboard does **not** include a second clearance field.
+The agent header is **sticky** on dashboard and mission pages. It includes brand, agent identity, a **clearance** field, **Request Access**, and sign out (text-only control, not a filled button).
 
-### Mission detail
+| Control | Copy |
+|---------|------|
+| Clearance input placeholder | `Clearance code` |
+| Submit clearance | **Request Access** |
 
-- **Mission Brief** from `missions.brief_markdown` when the mission is on the agent's list.
-- **Data** panel on active missions — multi-line input and **Submit data**.
-- **Debrief** from `missions.debrief_markdown` only after **completed**.
-- After **completed**, show the captured value from `missions.completion_code` in agency archives (never expose to `active` missions in API).
+The Mission Dashboard does **not** include a second clearance field in the body.
+
+### Mission Dashboard
+
+| Element | Copy |
+|---------|------|
+| Heading | **Mission Dashboard** |
+| Toggle | **Show completed missions** |
+| Lede | Missions are assigned by Command, or listed when you are granted clearance for a new assignment. |
+
+Missions are grouped by story arc (`groups.name`). Collapsible sections; completed missions may be hidden via the toggle.
+
+### Mission detail (active)
+
+- **Mission Brief** from `missions.brief_markdown`.
+- **Data** panel — not “Recovered Data” on active missions.
+
+| Element | Copy |
+|---------|------|
+| Panel title | **Data** |
+| Lede | Enter the data you recovered. Spacing and line breaks must be exact. |
+| Input | Multi-line textarea; placeholder `Field data` |
+| Submit | **Submit data** |
+
+Paste from clipboard must preserve internal spacing and line breaks. Only leading and trailing whitespace is trimmed on submit.
+
+### Mission detail (completed)
+
+Section order: **Recovered Data** (agency archives) → **Mission Debrief** (expanded) → **Mission Brief** (collapsed).
+
+| Element | Copy |
+|---------|------|
+| Archives title | **Recovered Data** |
+| Archives lede | The following data is secured in agency archives. |
+| Display | Submitted `completion_code` in a `<pre>` block; multi-line; height fits content |
+| Copy control | Clipboard button on the archives block |
+
+Never expose `completion_code` to **active** missions in API or UI.
+
+### Site footer (agent pages)
+
+Single row: **What is Radspion?** · **Moravian University · Educational Use** · **Privacy Policy**
 
 ## Groups (story arcs)
 
@@ -79,12 +122,42 @@ Business failures return **HTTP 200** with an `outcome` field (invalid) so the m
 
 ### Transmission modals
 
-Clearance and data use **distinct** modal presets — different titles, step copy, progress styling, and success/failure messages. Both run the same four-step timing (~3 seconds with jitter) unless the user prefers reduced motion.
+Clearance and data use **distinct** modal presets — different progress titles, step copy, outcome headers, and messages. Agent-facing copy uses **clearance** / **data** vocabulary (not “unlock” or “validate”). Honor `prefers-reduced-motion` (skip animation; show outcome immediately).
 
-| Preset | Typical success copy |
-|--------|----------------------|
-| Clearance | Clearance granted; new mission(s) listed |
-| Data | Data accepted; mission completed |
+**Shared outcome chrome**
+
+- Progress-phase title uses accent color (Radspion gold).
+- Outcome: Radspion mark left of a **two-line stacked** heading; mark opacity by outcome — **100%** success, **75%** already done, **55%** invalid.
+- New missions: grouped under story-arc headings; each line **Title** `(slug)` in monospace.
+- Dismiss: gold **OK** button.
+
+**Clearance preset** (~3s after intro hold)
+
+| Phase | Copy |
+|-------|------|
+| Progress title | **Requesting clearance** |
+| Intro | Initializing secure channel… |
+| Steps | Initiating secure connection… → Establishing agent identity… → Transferring clearance code… → Checking agency records… |
+| Success header | **Clearance** / **Granted** |
+| Success body | Your request for further clearance was approved, and Command has added the following mission(s) to your dashboard: — then mission list (singular/plural as needed) |
+| Invalid header | **Verification** / **Failed** |
+| Invalid body | Command could not verify this clearance code against agency records. Check the code and try again. |
+| Already done header | **Previously** / **Granted** |
+| Already done body | You have already been granted this clearance. |
+
+**Data preset** (~3.6s total)
+
+| Phase | Copy |
+|-------|------|
+| Progress title | **Transmitting field data** |
+| Prep step | Compressing and Encrypting data — same progress bar fills 0→100% (~600ms), then resets |
+| Steps | Initiating secure connection… → Establishing agent identity… → Transferring field data… → Checking agency records… (~3s) |
+| Success header | **Data** / **Accepted** |
+| Success body | Lab verification confirmed your field data. This mission is now marked as completed. |
+| Debrief line | Read the debrief for your after-action summary. |
+| Success + missions | The data you recovered has produced additional missions: — then mission list — then debrief line |
+| Invalid header | **Verification** / **Failed** |
+| Invalid body | We received your transmission, but the recovered data does not match mission parameters. Continue your fieldwork and submit again when you have the correct value. |
 
 ### Clearance links (`GET /unlock/<token>`)
 

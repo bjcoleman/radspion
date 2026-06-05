@@ -66,11 +66,11 @@ paths:
                   value:
                     outcome: already_done
                     new_missions: []
-                    message: Those missions are already on your dashboard.
+                    message: You have already been granted this clearance.
                 invalid:
                   value:
                     outcome: invalid
-                    message: We could not validate that clearance code against agency records.
+                    message: Command could not verify this clearance code against agency records.
         "400":
           description: Missing or empty `unlock_code`
         "401":
@@ -132,7 +132,7 @@ paths:
                 invalid:
                   value:
                     outcome: invalid
-                    message: We reviewed your transmission, and the data does not match mission requirements.
+                    message: We received your transmission, but the recovered data does not match mission parameters.
         "400":
           description: Missing or empty `completion_code`
         "401":
@@ -177,7 +177,9 @@ components:
           enum: [success, invalid, already_done]
         message:
           type: string
-          description: Optional agent-facing copy. Generic on invalid; explains already_done when present.
+          description: |
+            Optional agent-facing copy for modals. Canonical strings in `docs/design/06-agent-experience.md`.
+            Generic on invalid (no answer hints); explains already_done when present.
         new_missions:
           type: array
           items:
