@@ -28,14 +28,7 @@
   </main>
 
   {% block site_footer %}
-  <footer class="page__footer site-footer site-footer--inline">
-    <div class="site-footer__inline">
-      <a class="site-footer__link" href="{{ url_for('main.about') }}">What is Radspion?</a>
-      <span class="site-footer__meta">Moravian University · Educational Use</span>
-      <a class="site-footer__link" href="{{ url_for('main.privacy') }}">Privacy Policy</a>
-    </div>
-    <!-- ORUTNOIII UTIN -->
-  </footer>
+    {% include "_site_footer.html" %}
   {% endblock %}
   {% block extra_body %}{% endblock %}
 </body>
