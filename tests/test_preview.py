@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from radspion.missions_fs import MissionsFilesystemError, load_mission, load_missions_root
+from radspion.mission_files import MissionFilesError, load_mission, load_missions_root
 from radspion.preview_app import create_preview_app, preview_port
 from radspion.preview_cli import (
     PreviewCliError,
@@ -40,7 +40,7 @@ missions:
     (mission_dir / "brief.md").write_text("# Brief\n\nPreview **brief** text.\n", encoding="utf-8")
     (mission_dir / "debrief.md").write_text("# Debrief\n\nPreview debrief.\n", encoding="utf-8")
 
-    monkeypatch.setattr("radspion.missions_fs.load_dotenv", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr("radspion.mission_files.load_dotenv", lambda *_args, **_kwargs: None)
     monkeypatch.setenv("RADSPION_MISSIONS_ROOT", str(missions_root))
 
     return missions_root
@@ -63,7 +63,7 @@ def test_validate_preview_target_loads_mission(missions_env: Path):
 
 
 def test_validate_preview_target_raises_for_unknown_slug(missions_env: Path):
-    with pytest.raises(MissionsFilesystemError, match="not found"):
+    with pytest.raises(MissionFilesError, match="not found"):
         validate_preview_target("test-pack", "missing")
 
 
@@ -104,7 +104,7 @@ def test_load_mission_reads_pack_files(missions_env: Path):
 
 
 def test_load_mission_unknown_slug_raises(missions_env: Path):
-    with pytest.raises(MissionsFilesystemError, match="not found"):
+    with pytest.raises(MissionFilesError, match="not found"):
         load_mission("test-pack", "missing")
 
 
@@ -114,8 +114,8 @@ def test_load_missions_root_resolves_relative_path(tmp_path: Path, monkeypatch: 
     missions_root.mkdir()
     radspion_root.mkdir()
 
-    monkeypatch.setattr("radspion.missions_fs._radspion_root", lambda: radspion_root)
-    monkeypatch.setattr("radspion.missions_fs.load_dotenv", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr("radspion.mission_files._radspion_root", lambda: radspion_root)
+    monkeypatch.setattr("radspion.mission_files.load_dotenv", lambda *_args, **_kwargs: None)
     monkeypatch.setenv("RADSPION_MISSIONS_ROOT", "../missions")
 
     assert load_missions_root() == missions_root.resolve()
@@ -127,33 +127,33 @@ def test_load_missions_root_rejects_non_directory(tmp_path: Path, monkeypatch: p
     not_a_dir = radspion_root / "nope.txt"
     not_a_dir.write_text("x", encoding="utf-8")
 
-    monkeypatch.setattr("radspion.missions_fs._radspion_root", lambda: radspion_root)
-    monkeypatch.setattr("radspion.missions_fs.load_dotenv", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr("radspion.mission_files._radspion_root", lambda: radspion_root)
+    monkeypatch.setattr("radspion.mission_files.load_dotenv", lambda *_args, **_kwargs: None)
     monkeypatch.setenv("RADSPION_MISSIONS_ROOT", "nope.txt")
 
-    with pytest.raises(MissionsFilesystemError, match="not a directory"):
+    with pytest.raises(MissionFilesError, match="not a directory"):
         load_missions_root()
 
 
 def test_load_missions_root_requires_env(monkeypatch: pytest.MonkeyPatch):
-    monkeypatch.setattr("radspion.missions_fs.load_dotenv", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr("radspion.mission_files.load_dotenv", lambda *_args, **_kwargs: None)
     monkeypatch.delenv("RADSPION_MISSIONS_ROOT", raising=False)
 
-    with pytest.raises(MissionsFilesystemError, match="RADSPION_MISSIONS_ROOT"):
+    with pytest.raises(MissionFilesError, match="RADSPION_MISSIONS_ROOT"):
         load_missions_root()
 
 
 def test_load_mission_requires_pack_directory(
     missions_env: Path,
 ):
-    with pytest.raises(MissionsFilesystemError, match="Not a directory"):
+    with pytest.raises(MissionFilesError, match="Not a directory"):
         load_mission("missing-pack", "alpha")
 
 
 def test_load_mission_requires_brief_markdown(missions_env: Path):
     (missions_env / "test-pack" / "alpha" / "brief.md").unlink()
 
-    with pytest.raises(MissionsFilesystemError, match="Missing"):
+    with pytest.raises(MissionFilesError, match="Missing"):
         load_mission("test-pack", "alpha")
 
 
@@ -164,7 +164,7 @@ def test_load_mission_rejects_invalid_storyline_yaml(
     bad_pack.mkdir()
     (bad_pack / "storyline.yaml").write_text("not a mapping\n", encoding="utf-8")
 
-    with pytest.raises(MissionsFilesystemError, match="must be a YAML mapping"):
+    with pytest.raises(MissionFilesError, match="must be a YAML mapping"):
         load_mission("bad-pack", "alpha")
 
 
@@ -172,7 +172,7 @@ def test_load_mission_requires_storyline_yaml(missions_env: Path):
     empty_pack = missions_env / "empty-pack"
     empty_pack.mkdir()
 
-    with pytest.raises(MissionsFilesystemError, match="Missing"):
+    with pytest.raises(MissionFilesError, match="Missing"):
         load_mission("empty-pack", "alpha")
 
 
@@ -181,7 +181,7 @@ def test_load_mission_rejects_invalid_yaml_syntax(missions_env: Path):
     bad_pack.mkdir()
     (bad_pack / "storyline.yaml").write_text("missions: [\n", encoding="utf-8")
 
-    with pytest.raises(MissionsFilesystemError, match="Invalid YAML"):
+    with pytest.raises(MissionFilesError, match="Invalid YAML"):
         load_mission("syntax-pack", "alpha")
 
 
@@ -193,7 +193,7 @@ def test_load_mission_requires_missions_list(missions_env: Path):
         encoding="utf-8",
     )
 
-    with pytest.raises(MissionsFilesystemError, match="missions must be a list"):
+    with pytest.raises(MissionFilesError, match="missions must be a list"):
         load_mission("list-pack", "alpha")
 
 
@@ -210,9 +210,36 @@ def test_preview_route_renders_active_brief(missions_env: Path):
     assert "Preview <strong>brief</strong> text." in body
     assert "Author preview" in body
     assert "status=completed" in body
+    assert "Markdown theme" in body
+    assert 'id="preview-theme-select"' in body
     assert "recovered-data-form--multiline" in body
     assert "mission-detail-copy-data.js" in body
     assert "preview.css" in body
+    assert "css/markdown/legacy.css" in body
+
+
+def test_preview_route_accepts_theme_query(missions_env: Path):
+    app = create_preview_app(storyline="test-pack", mission_slug="alpha")
+    client = app.test_client()
+
+    response = client.get("/?theme=github-light")
+    body = response.data.decode()
+
+    assert response.status_code == 200
+    assert "github-markdown-light.css" in body
+    assert "pygments-friendly.css" in body
+    assert 'value="github-light" selected' in body
+
+
+def test_preview_route_rejects_unknown_theme(missions_env: Path):
+    app = create_preview_app(storyline="test-pack", mission_slug="alpha")
+    client = app.test_client()
+
+    response = client.get("/?theme=unknown")
+    body = response.data.decode()
+
+    assert response.status_code == 400
+    assert "Unknown markdown theme" in body
 
 
 def test_preview_route_renders_completed_debrief(missions_env: Path):

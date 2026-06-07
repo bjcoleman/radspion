@@ -11,6 +11,7 @@ requires-python = ">=3.12"
 
 [project.scripts]
 preview_mission = "radspion.preview_cli:main"
+generate_storyline = "radspion.storyline_cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

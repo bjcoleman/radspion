@@ -49,7 +49,7 @@
   }
 
   function init() {
-    document.querySelectorAll("article.markdown").forEach(function (article) {
+    document.querySelectorAll("article.mission-markdown").forEach(function (article) {
       article.querySelectorAll(".highlight").forEach(wrapBlock);
       article.querySelectorAll("pre").forEach(function (pre) {
         if (!pre.closest(".highlight")) {

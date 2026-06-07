@@ -1,0 +1,179 @@
+/* Radspion overrides on top of any mission markdown theme */
+
+.mission-detail .mission-markdown {
+  --brief-chevron-gutter: 1.75rem;
+  padding-left: calc(var(--space-lg) + var(--brief-chevron-gutter));
+}
+
+.mission-detail .mission-markdown.markdown-body,
+.mission-detail .mission-markdown.latex-document {
+  padding: var(--space-lg);
+  padding-left: calc(var(--space-lg) + var(--brief-chevron-gutter));
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+}
+
+.mission-detail .mission-markdown.markdown-body {
+  border-color: #d1d9e0;
+}
+
+.mission-detail .mission-markdown.latex-document {
+  border-color: #d0d0d0;
+}
+
+.mission-detail .mission-markdown.markdown-body a {
+  color: var(--color-accent);
+}
+
+.mission-detail .mission-markdown.markdown-body a:hover {
+  color: #1f2328;
+}
+
+.mission-detail .mission-markdown.latex-document a {
+  color: #0066cc;
+}
+
+/* Code block wrapper + copy button (all themes) */
+
+.mission-markdown .code-block {
+  position: relative;
+  margin: 0 0 var(--space-md);
+  overflow: hidden;
+}
+
+.mission-markdown .code-block .highlight {
+  margin: 0;
+}
+
+.mission-markdown .code-block .highlight > pre,
+.mission-markdown .code-block > pre {
+  margin: 0;
+  padding-top: 2.25rem;
+}
+
+.mission-markdown.markdown-body .code-block .highlight > pre,
+.mission-markdown.markdown-body .code-block > pre,
+.mission-markdown.latex-document .code-block .highlight > pre,
+.mission-markdown.latex-document .code-block > pre {
+  padding-top: 2.25rem;
+}
+
+.mission-markdown.markdown-body .copy-btn,
+.mission-markdown.latex-document .copy-btn {
+  color: #59636e;
+  background: #f6f8fa;
+  border-color: #d1d9e0;
+}
+
+.mission-markdown.markdown-body .copy-btn:hover,
+.mission-markdown.latex-document .copy-btn:hover {
+  color: #1f2328;
+  border-color: var(--color-accent-dim);
+}
+
+.brief-collapse .mission-markdown {
+  margin: 0;
+  border: none;
+  border-top: 1px solid var(--color-border-subtle);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  box-shadow: none;
+}
+
+.brief-collapse .mission-markdown.markdown-body,
+.brief-collapse .mission-markdown.latex-document {
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+/* Collapsible brief/debrief sections (## / ### with ??? suffix) */
+
+.mission-markdown details.brief-section {
+  margin: 0;
+  border: none;
+  background: none;
+}
+
+.mission-markdown.markdown details.brief-section--level2 {
+  margin-top: var(--space-xl);
+}
+
+.mission-markdown.markdown details.brief-section--level3 {
+  margin-top: var(--space-lg);
+}
+
+.mission-markdown.markdown-body details.brief-section--level2,
+.mission-markdown.markdown-body details.brief-section--level3,
+.mission-markdown.latex-document details.brief-section--level2,
+.mission-markdown.latex-document details.brief-section--level3 {
+  margin-top: 1.5rem;
+}
+
+.mission-markdown > details.brief-section:first-child {
+  margin-top: 0;
+}
+
+.mission-markdown details.brief-section > summary.brief-section__summary {
+  display: grid;
+  grid-template-columns: var(--brief-chevron-gutter, 1.75rem) minmax(0, 1fr);
+  align-items: center;
+  gap: 0;
+  margin: 0 0 0 calc(-1 * var(--brief-chevron-gutter, 1.75rem));
+  padding: 0;
+  width: calc(100% + var(--brief-chevron-gutter, 1.75rem));
+  list-style: none;
+  cursor: pointer;
+}
+
+.mission-markdown details.brief-section > summary::-webkit-details-marker {
+  display: none;
+}
+
+.mission-markdown details.brief-section > summary .mission-group__chevron {
+  display: flex;
+  grid-column: 1;
+  align-items: center;
+  justify-content: center;
+  justify-self: center;
+  align-self: center;
+  width: var(--brief-chevron-gutter, 1.75rem);
+  margin: 0;
+}
+
+.mission-markdown details.brief-section > summary .mission-group__chevron-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.mission-markdown details.brief-section[open] > summary .mission-group__chevron-path--closed {
+  display: none;
+}
+
+.mission-markdown details.brief-section[open] > summary .mission-group__chevron-path--open {
+  display: inline;
+}
+
+.mission-markdown details.brief-section > summary h2,
+.mission-markdown details.brief-section > summary h3 {
+  grid-column: 2;
+  margin: 0;
+  min-width: 0;
+}
+
+.mission-markdown.markdown details.brief-section--level2[open] > summary.brief-section__summary {
+  margin-bottom: var(--space-md);
+}
+
+.mission-markdown.markdown details.brief-section--level3[open] > summary.brief-section__summary {
+  margin-bottom: var(--space-sm);
+}
+
+.mission-markdown.markdown-body details.brief-section[open] > summary.brief-section__summary,
+.mission-markdown.latex-document details.brief-section[open] > summary.brief-section__summary {
+  margin-bottom: 1rem;
+}
+
+.mission-markdown hr {
+  margin: var(--space-xl) 0;
+  border: none;
+  border-top: 1px solid var(--color-border-subtle);
+}

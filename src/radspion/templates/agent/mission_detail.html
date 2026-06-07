@@ -1,7 +1,7 @@
 {% extends "agent/base_agent.html" %}
 
 {% block extra_head %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/pygments-native.css') }}">
+  {% include "_mission_markdown_styles.html" %}
 {% endblock %}
 
 {% block title %}{{ mission.title }} — Radspion{% endblock %}

@@ -1,7 +1,10 @@
 """Minimal Flask app for local mission brief/debrief preview."""
 
+from os import getenv
+
 from flask import Flask
 
+from radspion.markdown_themes import default_markdown_theme_key, register_markdown_theme_context
 from radspion.web.preview import preview_bp
 
 _PREVIEW_SECRET_KEY = "preview-secret-key-not-for-production"
@@ -15,6 +18,8 @@ def create_preview_app(*, storyline: str, mission_slug: str) -> Flask:
     app.config["TESTING"] = False
     app.config["PREVIEW_STORYLINE"] = storyline
     app.config["PREVIEW_MISSION_SLUG"] = mission_slug
+    app.config["MARKDOWN_THEME"] = getenv("RADSPION_MARKDOWN_THEME", default_markdown_theme_key())
+    register_markdown_theme_context(app)
     app.register_blueprint(preview_bp)
     return app
 
