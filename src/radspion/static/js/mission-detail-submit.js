@@ -32,7 +32,7 @@
       Outcome.okButton;
 
     outcomeEl.innerHTML = html;
-    Outcome.wireOkReload(outcomeEl);
+    Outcome.wireOkReloadTop(outcomeEl);
   }
 
   function renderInvalid(outcomeEl, message) {
