@@ -1,5 +1,6 @@
 """Tests for mission status sync (UC-012)."""
 
+import sqlite3
 from pathlib import Path
 
 import pytest
@@ -33,6 +34,18 @@ def test_sync_inserts_basic_training_for_new_agent(orientation_db: Path):
         slug="basic-training",
         expected_status="active",
     )
+    with sqlite3.connect(orientation_db) as conn:
+        row = conn.execute(
+            """
+            SELECT ams.listed_via
+            FROM agent_mission_status ams
+            JOIN missions m ON m.id = ams.mission_id
+            WHERE ams.user_id = ? AND m.slug = 'basic-training'
+            """,
+            (user.id,),
+        ).fetchone()
+    assert row is not None
+    assert row[0] == "open"
 
 
 def test_sync_is_idempotent(orientation_db: Path):

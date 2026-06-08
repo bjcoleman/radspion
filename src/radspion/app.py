@@ -5,6 +5,7 @@ import sys
 from dotenv import load_dotenv
 from flask import Flask, jsonify, render_template, request
 
+from radspion.activity import format_activity_relative_time, storyline_meta
 from radspion.config import Config, ConfigurationError, load_config
 from radspion.database import DatabaseError, DatabaseRadspionStorage
 from radspion.google_oauth import GoogleOAuth
@@ -33,6 +34,15 @@ def create_app(*, config: Config, radspion: Radspion, oauth) -> Flask:
     def personnel_date_filter(iso_timestamp: str) -> dict[str, str]:
         iso, label = format_personnel_date(iso_timestamp)
         return {"iso": iso, "label": label}
+
+    @app.template_filter("activity_relative_time")
+    def activity_relative_time_filter(iso_timestamp: str) -> dict[str, str]:
+        iso, label = format_activity_relative_time(iso_timestamp)
+        return {"iso": iso, "label": label}
+
+    @app.template_filter("storyline_meta")
+    def storyline_meta_filter(entry) -> str:
+        return storyline_meta(entry)
 
     app.register_blueprint(main_bp)
     app.register_blueprint(api_bp)

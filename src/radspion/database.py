@@ -3,6 +3,13 @@
 import sqlite3
 from pathlib import Path
 
+from radspion.activity import (
+    ActivityFeedEntry,
+    ActivityLeaderboardEntry,
+    ActivityStorylineEntry,
+    FieldActivity,
+    sort_storylines,
+)
 from radspion.codename import DUPLICATE_CODENAME_MESSAGE, SUCCESS_MESSAGE, CodenameUpdateResult
 from radspion.missions import (
     DashboardGroup,
@@ -216,6 +223,143 @@ class DatabaseRadspionStorage:
             service_record=tuple(events),
         )
 
+    def get_field_activity(self) -> FieldActivity:
+        """Load public Field Activity aggregates (non-operators only)."""
+        try:
+            leaderboard_rows = self._conn.execute(
+                """
+                SELECT u.codename,
+                       COUNT(*) AS completed_count,
+                       MAX(ams.completed_at) AS last_completed_at
+                FROM users u
+                JOIN agent_mission_status ams
+                  ON ams.user_id = u.id
+                 AND ams.status = 'completed'
+                WHERE u.is_operator = 0
+                GROUP BY u.id
+                ORDER BY completed_count DESC, last_completed_at DESC, u.codename ASC
+                LIMIT 10
+                """
+            ).fetchall()
+
+            group_rows = self._conn.execute(
+                """
+                SELECT g.id,
+                       g.name,
+                       (
+                           SELECT COUNT(*)
+                           FROM missions m
+                           WHERE m.group_id = g.id
+                       ) AS mission_count,
+                       (
+                           SELECT COUNT(*)
+                           FROM missions m
+                           WHERE m.group_id = g.id
+                             AND NOT EXISTS (
+                               SELECT 1
+                               FROM agent_mission_status ams
+                               JOIN users u ON u.id = ams.user_id
+                               WHERE ams.mission_id = m.id
+                                 AND ams.status = 'completed'
+                                 AND u.is_operator = 0
+                             )
+                       ) AS never_completed,
+                       (
+                           SELECT COUNT(*)
+                           FROM missions m
+                           WHERE m.group_id = g.id
+                             AND m.access_rule = 'clearance_code'
+                             AND NOT EXISTS (
+                               SELECT 1
+                               FROM agent_mission_status ams
+                               JOIN users u ON u.id = ams.user_id
+                               WHERE ams.mission_id = m.id
+                                 AND u.is_operator = 0
+                             )
+                       ) AS never_assigned
+                FROM groups g
+                ORDER BY g.id ASC
+                """
+            ).fetchall()
+
+            clearance_rows = self._conn.execute(
+                """
+                SELECT u.codename,
+                       g.name AS storyline_name,
+                       ams.listed_at AS occurred_at
+                FROM agent_mission_status ams
+                JOIN users u ON u.id = ams.user_id
+                JOIN missions m ON m.id = ams.mission_id
+                JOIN groups g ON g.id = m.group_id
+                WHERE ams.listed_via = 'clearance'
+                  AND u.is_operator = 0
+                GROUP BY ams.user_id, g.id, ams.listed_at
+                ORDER BY ams.listed_at DESC
+                LIMIT 10
+                """
+            ).fetchall()
+
+            completion_rows = self._conn.execute(
+                """
+                SELECT u.codename,
+                       g.name AS storyline_name,
+                       ams.completed_at AS occurred_at
+                FROM agent_mission_status ams
+                JOIN users u ON u.id = ams.user_id
+                JOIN missions m ON m.id = ams.mission_id
+                JOIN groups g ON g.id = m.group_id
+                WHERE ams.status = 'completed'
+                  AND ams.completed_at IS NOT NULL
+                  AND u.is_operator = 0
+                ORDER BY ams.completed_at DESC
+                LIMIT 10
+                """
+            ).fetchall()
+        except sqlite3.Error as exc:
+            raise DatabaseError(f"Database error loading field activity: {exc}") from exc
+
+        top_agents = tuple(
+            ActivityLeaderboardEntry(
+                rank=index,
+                codename=row["codename"],
+                completed_count=int(row["completed_count"]),
+            )
+            for index, row in enumerate(leaderboard_rows, start=1)
+        )
+        storylines = sort_storylines(
+            [
+                ActivityStorylineEntry(
+                    name=row["name"],
+                    mission_count=int(row["mission_count"]),
+                    never_completed=int(row["never_completed"]),
+                    never_assigned=int(row["never_assigned"]),
+                )
+                for row in group_rows
+            ]
+        )
+        recent_clearances = tuple(
+            ActivityFeedEntry(
+                codename=row["codename"],
+                storyline_name=row["storyline_name"],
+                occurred_at=row["occurred_at"],
+            )
+            for row in clearance_rows
+        )
+        recent_completions = tuple(
+            ActivityFeedEntry(
+                codename=row["codename"],
+                storyline_name=row["storyline_name"],
+                occurred_at=row["occurred_at"],
+            )
+            for row in completion_rows
+        )
+        return FieldActivity(
+            top_agents=top_agents,
+            storylines=storylines,
+            recent_clearances=recent_clearances,
+            recent_completions=recent_completions,
+        )
+
     def sync_mission_status(self, user_id: int) -> None:
         """
         Keep agent_mission_status aligned with listable missions (UC-012).
@@ -225,10 +369,15 @@ class DatabaseRadspionStorage:
         - clearance_code: no row until clearance is granted (handled elsewhere).
         """
         try:
+            listed_at = self._conn.execute(
+                "SELECT datetime('now') AS listed_at",
+            ).fetchone()["listed_at"]
             self._conn.execute(
                 """
-                INSERT INTO agent_mission_status (user_id, mission_id, status, listed_at)
-                SELECT ?, m.id, 'active', datetime('now')
+                INSERT INTO agent_mission_status (
+                    user_id, mission_id, status, listed_at, listed_via
+                )
+                SELECT ?, m.id, 'active', ?, 'open'
                 FROM missions m
                 WHERE m.access_rule = 'open'
                   AND NOT EXISTS (
@@ -236,12 +385,14 @@ class DatabaseRadspionStorage:
                     WHERE ams.user_id = ? AND ams.mission_id = m.id
                   )
                 """,
-                (user_id, user_id),
+                (user_id, listed_at, user_id),
             )
             self._conn.execute(
                 """
-                INSERT INTO agent_mission_status (user_id, mission_id, status, listed_at)
-                SELECT ?, m.id, 'active', datetime('now')
+                INSERT INTO agent_mission_status (
+                    user_id, mission_id, status, listed_at, listed_via
+                )
+                SELECT ?, m.id, 'active', ?, 'requires_complete'
                 FROM missions m
                 WHERE m.access_rule = 'requires_complete'
                   AND NOT EXISTS (
@@ -260,7 +411,7 @@ class DatabaseRadspionStorage:
                     WHERE mlr.mission_id = m.id
                   )
                 """,
-                (user_id, user_id, user_id),
+                (user_id, listed_at, user_id, user_id),
             )
             self._conn.commit()
         except sqlite3.Error as exc:
@@ -412,13 +563,19 @@ class DatabaseRadspionStorage:
                 )
 
             new_missions: list[MissionSummary] = []
+            listed_at = self._conn.execute(
+                "SELECT datetime('now') AS listed_at",
+            ).fetchone()["listed_at"]
+            self._conn.execute("BEGIN")
             for row in rows:
                 self._conn.execute(
                     """
-                    INSERT INTO agent_mission_status (user_id, mission_id, status, listed_at)
-                    VALUES (?, ?, 'active', datetime('now'))
+                    INSERT INTO agent_mission_status (
+                        user_id, mission_id, status, listed_at, listed_via
+                    )
+                    VALUES (?, ?, 'active', ?, 'clearance')
                     """,
-                    (user_id, row["mission_id"]),
+                    (user_id, row["mission_id"], listed_at),
                 )
                 new_missions.append(
                     MissionSummary(

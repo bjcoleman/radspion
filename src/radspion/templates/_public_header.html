@@ -1,0 +1,16 @@
+<header class="site-header site-header--sticky site-header--public">
+  <a class="site-header__brand" href="{{ url_for('main.index') }}">
+    <img
+      class="site-header__mark"
+      src="{{ url_for('static', filename='img/radspion_mark_white.svg') }}"
+      width="36"
+      height="36"
+      alt=""
+    >
+    <span class="site-header__title">Radspion</span>
+  </a>
+
+  <div class="site-header__end">
+    <a class="site-header__action site-header__action--link" href="{{ url_for('auth.google_login') }}">Sign in</a>
+  </div>
+</header>

@@ -35,6 +35,7 @@ Ordered by **dependency** — build from the top down. Each case lists **Require
 | Public agent identity | `codename` in header and Field Activity; `display_name` and email not shown to other agents |
 | Personnel File | `GET /agent/personnel` — personal info, field status, service record; codename update via `POST /api/codename` |
 | Service record | Derived from `users.created_at`, `agent_mission_status.listed_at`, `agent_mission_status.completed_at` — not a separate audit table |
+| Field Activity | Public `GET /activity`; codenames only; operators excluded from aggregates |
 
 **Sync invariant:** If a mission is listable (`open`, or `requires_complete` with prereqs met), an `active` row **must** exist for that agent. Missing row in that case is a **bug**, not a UI edge case.
 
@@ -72,7 +73,7 @@ Application stack connects to the Radspion SQLite database (`PRAGMA foreign_keys
 
 **Actor:** Developer  
 **Requires:** UC-003  
-Models (or equivalent data layer) for `users` (including `codename`, `created_at`, `is_operator`), `codename_counter`, `groups`, `missions`, constraint tables, and `agent_mission_status` (including `listed_at`, `completed_at`) with the same semantics as [03-database-schema.md](03-database-schema.md).
+Models (or equivalent data layer) for `users` (including `codename`, `created_at`, `is_operator`), `codename_counter`, `groups`, `missions`, constraint tables, and `agent_mission_status` (including `listed_at`, `listed_via`, `completed_at`) with the same semantics as [03-database-schema.md](03-database-schema.md).
 
 ---
 
@@ -187,6 +188,14 @@ Clearance from the Personnel File header uses the same transmission modal as the
 **Actor:** Agent  
 **Requires:** UC-038  
 Agent submits a new codename from the Personnel File. Client blocks unchanged values without calling the API. `POST /api/codename` trims outer whitespace, validates length (4–20 Unicode code points), and enforces case-sensitive uniqueness. Success reloads the page; outcomes and copy in [06-agent-experience.md](06-agent-experience.md) and [api.yaml](../api.yaml).
+
+---
+
+### UC-040 — View Field Activity
+
+**Actor:** Anyone (public); signed-in agents see the agent header  
+**Requires:** UC-012  
+Open **`GET /activity`**. Page shows Top Agents, Storylines, Recent Clearances Granted, and Recent Missions Completed derived from live data ([06-agent-experience.md](06-agent-experience.md)). Operators are excluded from all aggregates. Empty sections show explanatory copy — no placeholder fiction.
 
 ---
 

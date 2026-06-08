@@ -1,5 +1,6 @@
 """In-memory storage fakes for tests."""
 
+from radspion.activity import FieldActivity
 from radspion.codename import DUPLICATE_CODENAME_MESSAGE, SUCCESS_MESSAGE, CodenameUpdateResult
 from radspion.missions import DashboardGroup, DashboardMission
 from radspion.personnel import PersonnelFile
@@ -104,3 +105,11 @@ class InMemoryRadspionStorage:
     def get_personnel_file(self, user_id: int) -> PersonnelFile | None:
         _ = user_id
         return None
+
+    def get_field_activity(self) -> FieldActivity:
+        return FieldActivity(
+            top_agents=(),
+            storylines=(),
+            recent_clearances=(),
+            recent_completions=(),
+        )

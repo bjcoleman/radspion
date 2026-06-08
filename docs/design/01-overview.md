@@ -12,6 +12,7 @@ A web app where students act as **agents** in a spy-agency fiction. **Missions**
 | SQLite data model below | Story templates / publish pipeline |
 | **Groups** as story arcs (dashboard organization) | Full audit log (append-only event history) |
 | **Agent Personnel File** — personal info, field status, service record, codename update | Per-agent keyed codes |
+| **Field Activity** (`GET /activity`) — public agency-wide progress | |
 | Mission Brief / Debrief (markdown paths) | |
 | Event timestamps (`users.created_at`, listing/completion times on `agent_mission_status`) | |
 | `POST /api/codename` — agent updates field designation | |

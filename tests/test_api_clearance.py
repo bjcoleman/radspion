@@ -1,5 +1,6 @@
 """Tests for POST /api/clearance."""
 
+import sqlite3
 from pathlib import Path
 
 import pytest
@@ -40,6 +41,32 @@ def test_clearance_success_returns_new_missions(storyline_db: Path):
     slugs = {mission["slug"] for mission in data["new_missions"]}
     assert slugs == {"es-alpha", "es-beta"}
     assert data["new_missions"][0]["group_name"] == "Testing Storyline"
+
+
+def test_clearance_sets_listed_via_and_shared_listed_at(storyline_db: Path):
+    client = _client_for_db(storyline_db)
+    with client.session_transaction() as sess:
+        sess[SESSION_USER_ID] = SAMPLE_AGENTS["diana"]["id"]
+
+    client.post("/api/clearance", json={"clearance_code": "EXAMPLE-CLEARANCE"})
+
+    with sqlite3.connect(storyline_db) as conn:
+        rows = conn.execute(
+            """
+            SELECT ams.listed_via, ams.listed_at
+            FROM agent_mission_status ams
+            JOIN missions m ON m.id = ams.mission_id
+            JOIN users u ON u.id = ams.user_id
+            WHERE u.id = ? AND m.slug IN ('es-alpha', 'es-beta')
+            ORDER BY m.slug ASC
+            """,
+            (SAMPLE_AGENTS["diana"]["id"],),
+        ).fetchall()
+
+    assert len(rows) == 2
+    assert rows[0][0] == "clearance"
+    assert rows[1][0] == "clearance"
+    assert rows[0][1] == rows[1][1]
 
 
 def test_clearance_invalid_returns_message(storyline_db: Path):

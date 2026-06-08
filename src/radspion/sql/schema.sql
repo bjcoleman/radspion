@@ -72,6 +72,7 @@ CREATE TABLE agent_mission_status (
     mission_id  INTEGER NOT NULL REFERENCES missions (id) ON DELETE CASCADE,
     status      TEXT NOT NULL CHECK (status IN ('active', 'completed')),
     listed_at   TEXT NOT NULL DEFAULT (datetime('now')),
+    listed_via  TEXT NOT NULL CHECK (listed_via IN ('clearance', 'open', 'requires_complete')),
     completed_at TEXT,
     UNIQUE (user_id, mission_id)
 );

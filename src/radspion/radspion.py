@@ -1,5 +1,6 @@
 """Application (business) layer for Radspion."""
 
+from radspion.activity import FieldActivity
 from radspion.codename import (
     DUPLICATE_CODENAME_MESSAGE,
     INVALID_LENGTH_MESSAGE,
@@ -52,6 +53,10 @@ class Radspion:
     def get_personnel_file(self, user_id: int) -> PersonnelFile | None:
         """Load Agent Personnel File data for the signed-in agent."""
         return self._storage.get_personnel_file(user_id)
+
+    def get_field_activity(self) -> FieldActivity:
+        """Load public Field Activity aggregates."""
+        return self._storage.get_field_activity()
 
     def update_codename(self, user_id: int, raw_codename: str) -> CodenameUpdateResult:
         """

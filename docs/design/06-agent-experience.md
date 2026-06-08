@@ -85,6 +85,29 @@ Route: **`GET /agent/personnel`** (signed-in only). Mockup: [`agent-personnel-fi
 
 Success **OK** reloads the page (header codename and form value). Invalid **OK** dismisses the modal; the input keeps the typed value.
 
+### Field Activity
+
+Route: **`GET /activity`** (public, no sign-in required). Mockup: [`activity.html`](../ui/activity.html).
+
+| Element | Copy |
+|---------|------|
+| Page title | **Field Activity** |
+| Lede | Agency-wide mission progress. Codenames only — mission titles are classified. |
+
+**Layout** — two columns on desktop (Top Agents + Storylines · Recent Clearances + Recent Completions); single column on narrow viewports.
+
+**Header** — signed-out visitors see brand + **Sign in**. Signed-in agents see the standard agent header (codename, clearance, sign out). Entry points: landing page and Mission Dashboard **View Field Activity** link.
+
+**Privacy** — codenames and story arc names only; mission titles never appear. Operators (`is_operator = 1`) are excluded from all aggregates.
+
+**Empty sections** — when data is sparse, each block shows a short empty-state message (no fictional placeholder rows).
+
+**Recent Clearances Granted** — grouped by `(agent, storyline, listed_at)` where `listed_via = clearance`; limit 10; relative timestamps.
+
+**Recent Missions Completed** — most recent `completed_at` per completion; limit 10; relative timestamps.
+
+**Storylines** — sorted by never-assigned count ascending; **Orientation** always last.
+
 ### Mission Dashboard
 
 | Element | Copy |
