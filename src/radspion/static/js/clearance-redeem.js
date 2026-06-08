@@ -9,6 +9,15 @@
   var INVALID_FALLBACK =
     "Command could not verify this clearance code against agency records. Check the code and try again.";
 
+  var CLEARANCE_INPUT_SELECTOR =
+    '.clearance-form [name="clearance_code"], .clearance-confirm-form [name="clearance_code"]';
+
+  function clearClearanceInputs() {
+    global.document.querySelectorAll(CLEARANCE_INPUT_SELECTOR).forEach(function (input) {
+      input.value = "";
+    });
+  }
+
   function wireClearanceSuccessOk(outcomeEl) {
     var body = global.document.body;
     if (body.classList.contains("page--dashboard")) {
@@ -57,10 +66,12 @@
 
   function renderClearanceOutcome(data, outcomeEl) {
     if (data.outcome === "success") {
+      clearClearanceInputs();
       renderSuccess(outcomeEl, data.new_missions || []);
       return;
     }
     if (data.outcome === "already_done") {
+      clearClearanceInputs();
       renderAlreadyDone(outcomeEl, data.message);
       return;
     }
