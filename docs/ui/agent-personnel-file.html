@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<!-- Personnel File mockup — Iron-Sentinel (fixture: 08-example-activity-data.md) -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Agent Personnel File — confidential agent record on Radspion.">
+  <title>Agent Personnel File — Radspion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/radspion.css">
+</head>
+<body class="page page--personnel">
+  <header class="site-header site-header--sticky">
+    <a class="site-header__brand" href="agent-dashboard.html">
+      <img
+        class="site-header__mark"
+        src="../../logos/radspion_mark_white.svg"
+        width="36"
+        height="36"
+        alt=""
+      >
+      <span class="site-header__title">Radspion</span>
+    </a>
+
+    <form class="clearance-form site-header__clearance" action="#" method="post">
+      <label class="sr-only" for="clearance-code">Clearance code</label>
+      <input
+        class="clearance-form__input text-mono"
+        type="text"
+        id="clearance-code"
+        name="clearance_code"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="Clearance code"
+      >
+      <button class="clearance-form__submit" type="button">Request Access</button>
+    </form>
+
+    <div class="site-header__end">
+      <a class="site-header__agent-link site-header__agent-link--current" href="agent-personnel-file.html" aria-current="page">Iron-Sentinel</a>
+      <button type="button" class="site-header__action">Sign out</button>
+    </div>
+  </header>
+
+  <main class="page__main page__main--personnel">
+    <div class="personnel-file">
+      <nav class="mission-detail__nav">
+        <a class="mission-detail__back" href="#">← Mission Dashboard</a>
+      </nav>
+
+      <img
+        class="personnel-file__stamp"
+        src="confidential_your_eyes_only.png"
+        alt=""
+        aria-hidden="true"
+      >
+
+      <header class="personnel-file__intro">
+        <h1 class="personnel-file__heading">Agent Personnel File</h1>
+      </header>
+
+      <section class="personnel-section" aria-labelledby="personnel-personal-heading">
+        <h2 class="personnel-section__heading" id="personnel-personal-heading">Personal Information</h2>
+        <div class="personnel-panel">
+          <form class="personnel-form" action="#" method="post">
+            <div class="personnel-field">
+              <span class="personnel-field__label">Sign-in name</span>
+              <span class="personnel-field__value">Jordan Mercer</span>
+            </div>
+
+            <div class="personnel-field">
+              <span class="personnel-field__label">Email</span>
+              <span class="personnel-field__value text-mono">jordan.mercer@moravian.edu</span>
+            </div>
+
+            <div class="personnel-field personnel-field--editable">
+              <label class="personnel-field__label" for="personnel-codename">Codename</label>
+              <div class="personnel-form__codename-row">
+                <input
+                  class="personnel-form__input"
+                  type="text"
+                  id="personnel-codename"
+                  name="codename"
+                  value="Iron-Sentinel"
+                  autocomplete="off"
+                  spellcheck="false"
+                >
+                <button class="personnel-form__submit" type="button">Update</button>
+              </div>
+              <p class="personnel-form__hint text-muted">
+                Your codename should be appropriate for public display (4–20 characters).
+              </p>
+            </div>
+
+            <div class="personnel-field">
+              <span class="personnel-field__label">Recruited on</span>
+              <time class="personnel-field__value" datetime="2026-04-12">April 12, 2026</time>
+            </div>
+
+            <p class="personnel-form__scope text-muted">
+              Your sign-in name and email are retained only for Radspion Command operations.
+            </p>
+          </form>
+        </div>
+      </section>
+
+      <section class="personnel-section" aria-labelledby="personnel-status-heading">
+        <h2 class="personnel-section__heading" id="personnel-status-heading">Field Status</h2>
+        <div class="personnel-panel">
+          <dl class="personnel-stats">
+            <div class="personnel-stats__item">
+              <dt class="personnel-stats__label">Missions completed</dt>
+              <dd class="personnel-stats__value">15</dd>
+            </div>
+            <div class="personnel-stats__item">
+              <dt class="personnel-stats__label">Active missions</dt>
+              <dd class="personnel-stats__value">2</dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="personnel-section" aria-labelledby="personnel-record-heading">
+        <h2 class="personnel-section__heading" id="personnel-record-heading">Service Record</h2>
+        <div class="personnel-panel personnel-panel--scroll">
+          <ol class="service-record">
+            <li class="service-record__item">
+              <time class="service-record__date text-mono" datetime="2026-06-08">Jun 8, 2026</time>
+              <span class="service-record__verb">Mission Completed</span>
+              <span class="service-record__detail">Deep Meridian</span>
+            </li>
+            <li class="service-record__item">
+              <time class="service-record__date text-mono" datetime="2026-06-07">Jun 7, 2026</time>
+              <span class="service-record__verb">Clearance Granted</span>
+              <span class="service-record__detail">Meridian Archive</span>
+            </li>
+            <li class="service-record__item">
+              <time class="service-record__date text-mono" datetime="2026-06-07">Jun 7, 2026</time>
+              <span class="service-record__verb">Clearance Granted</span>
+              <span class="service-record__detail">Protocol Cascade</span>
+            </li>
+            <li class="service-record__item">
+              <time class="service-record__date text-mono" datetime="2026-06-05">Jun 5, 2026</time>
+              <span class="service-record__verb">Mission Completed</span>
+              <span class="service-record__detail">Vault Signal</span>
+            </li>
+            <li class="service-record__item">
+              <time class="service-record__date text-mono" datetime="2026-06-04">Jun 4, 2026</time>
+              <span class="service-record__verb">Mission Completed</span>
+              <span class="service-record__detail">Harbour Crossing</span>
+            </li>
+            <li class="service-record__item">
+              <time class="service-record__date text-mono" datetime="2026-05-28">May 28, 2026</time>
+              <span class="service-record__verb">Mission Completed</span>
+              <span class="service-record__detail">Signal Relay</span>
+            </li>
+            <li class="service-record__item">
+              <time class="service-record__date text-mono" datetime="2026-05-22">May 22, 2026</time>
+              <span class="service-record__verb">Mission Completed</span>
+              <span class="service-record__detail">Anchor Point</span>
+            </li>
+            <li class="service-record__item">
+              <time class="service-record__date text-mono" datetime="2026-05-18">May 18, 2026</time>
+              <span class="service-record__verb">Mission Completed</span>
+              <span class="service-record__detail">Glass Intake</span>
+            </li>
+            <li class="service-record__item">
+              <time class="service-record__date text-mono" datetime="2026-05-14">May 14, 2026</time>
+              <span class="service-record__verb">Mission Completed</span>
+              <span class="service-record__detail">Harbour Approach</span>
+            </li>
+            <li class="service-record__item">
+              <time class="service-record__date text-mono" datetime="2026-05-10">May 10, 2026</time>
+              <span class="service-record__verb">Mission Completed</span>
+              <span class="service-record__detail">Protocol Zero</span>
+            </li>
+            <li class="service-record__item">
+              <time class="service-record__date text-mono" datetime="2026-05-08">May 8, 2026</time>
+              <span class="service-record__verb">Mission Completed</span>
+              <span class="service-record__detail">Meridian Entry</span>
+            </li>
+            <li class="service-record__item">
+              <time class="service-record__date text-mono" datetime="2026-05-06">May 6, 2026</time>
+              <span class="service-record__verb">Clearance Granted</span>
+              <span class="service-record__detail">Harbour Approach</span>
+            </li>
+            <li class="service-record__item">
+              <time class="service-record__date text-mono" datetime="2026-05-05">May 5, 2026</time>
+              <span class="service-record__verb">Mission Completed</span>
+              <span class="service-record__detail">Agent Certification</span>
+            </li>
+            <li class="service-record__item">
+              <time class="service-record__date text-mono" datetime="2026-05-03">May 3, 2026</time>
+              <span class="service-record__verb">Mission Completed</span>
+              <span class="service-record__detail">Handler Briefing</span>
+            </li>
+            <li class="service-record__item">
+              <time class="service-record__date text-mono" datetime="2026-05-01">May 1, 2026</time>
+              <span class="service-record__verb">Mission Completed</span>
+              <span class="service-record__detail">Riddle Training</span>
+            </li>
+            <li class="service-record__item">
+              <time class="service-record__date text-mono" datetime="2026-04-28">Apr 28, 2026</time>
+              <span class="service-record__verb">Mission Completed</span>
+              <span class="service-record__detail">Cipher Training</span>
+            </li>
+            <li class="service-record__item">
+              <time class="service-record__date text-mono" datetime="2026-04-25">Apr 25, 2026</time>
+              <span class="service-record__verb">Mission Completed</span>
+              <span class="service-record__detail">Basic Training</span>
+            </li>
+            <li class="service-record__item">
+              <time class="service-record__date text-mono" datetime="2026-04-20">Apr 20, 2026</time>
+              <span class="service-record__verb">Clearance Granted</span>
+              <span class="service-record__detail">Basic Training</span>
+            </li>
+            <li class="service-record__item">
+              <time class="service-record__date text-mono" datetime="2026-04-18">Apr 18, 2026</time>
+              <span class="service-record__verb">Mission Completed</span>
+              <span class="service-record__detail">Orientation: Open Assignment</span>
+            </li>
+            <li class="service-record__item">
+              <time class="service-record__date text-mono" datetime="2026-04-15">Apr 15, 2026</time>
+              <span class="service-record__verb">Clearance Granted</span>
+              <span class="service-record__detail">Orientation: Open Assignment</span>
+            </li>
+            <li class="service-record__item">
+              <time class="service-record__date text-mono" datetime="2026-04-12">Apr 12, 2026</time>
+              <span class="service-record__verb">Enlisted</span>
+              <span class="service-record__detail">Personnel file opened</span>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <nav class="mission-detail__nav mission-detail__nav--bottom" aria-label="Mission dashboard">
+        <a class="mission-detail__back" href="#">← Mission Dashboard</a>
+      </nav>
+    </div>
+  </main>
+</body>
+</html>
