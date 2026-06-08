@@ -13,6 +13,7 @@ class InMemoryRadspionStorage:
     ) -> None:
         self._users: dict[int, User] = {}
         self._next_user_id = 1
+        self._next_codename_sequence = 0
         for user in users or ():
             self._users[user.id] = user
             self._next_user_id = max(self._next_user_id, user.id + 1)
@@ -32,6 +33,16 @@ class InMemoryRadspionStorage:
     def find_user_by_id(self, user_id: int) -> User | None:
         return self._users.get(user_id)
 
+    def find_user_by_codename(self, codename: str) -> User | None:
+        for user in self._users.values():
+            if user.codename == codename:
+                return user
+        return None
+
+    def _create_codename(self) -> str:
+        self._next_codename_sequence += 1
+        return f"AGENT{self._next_codename_sequence:04d}"
+
     def create_user(
         self,
         *,
@@ -40,6 +51,7 @@ class InMemoryRadspionStorage:
         display_name: str,
         is_operator: bool = False,
     ) -> User:
+        codename = self._create_codename()
         user_id = self._next_user_id
         self._next_user_id += 1
         user = User(
@@ -47,6 +59,7 @@ class InMemoryRadspionStorage:
             email=email,
             google_subject_id=google_subject_id,
             display_name=display_name,
+            codename=codename,
             is_operator=is_operator,
         )
         self._users[user_id] = user

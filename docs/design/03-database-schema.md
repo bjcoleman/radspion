@@ -25,8 +25,19 @@ SQLite has no separate enum types. Allowed values are enforced on the column:
 | `id` | `INTEGER` | PK, `AUTOINCREMENT` |
 | `email` | `TEXT` | NOT NULL, UNIQUE |
 | `google_subject_id` | `TEXT` | NOT NULL, UNIQUE |
-| `display_name` | `TEXT` | NOT NULL |
+| `display_name` | `TEXT` | NOT NULL — Google sign-in name; not shown on Field Activity |
+| `codename` | `TEXT` | NOT NULL, UNIQUE — public agent identifier (header, Field Activity) |
 | `is_operator` | `INTEGER` | NOT NULL, DEFAULT `0`, CHECK `IN (0, 1)` |
+
+**Codename validation:** no length or character `CHECK` on this column. Rules (`4 <= len(codename) <= 20`, Unicode allowed) are enforced in application code when an agent changes their codename. Default codenames (`AGENT0001`, …) are assigned at provisioning only.
+
+### `codename_counter`
+
+Single-row table. On each new user, the app increments `next_value` and assigns `AGENT` + zero-padded sequence (e.g. `next_value` `1` → `AGENT0001`). Increment and user insert run in one transaction.
+
+| Column | Type | Constraints |
+|--------|------|-------------|
+| `next_value` | `INTEGER` | NOT NULL, CHECK `>= 0` |
 
 ### `groups`
 

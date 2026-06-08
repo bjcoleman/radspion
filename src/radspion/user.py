@@ -11,4 +11,5 @@ class User:
     email: str
     google_subject_id: str
     display_name: str
+    codename: str
     is_operator: bool = False

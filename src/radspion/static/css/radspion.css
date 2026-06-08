@@ -681,6 +681,19 @@ a:hover {
   color: var(--color-text);
 }
 
+.site-header__agent-link {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+}
+
+.site-header__agent-link:hover {
+  color: var(--color-text);
+}
+
 .site-header form {
   margin: 0;
 }

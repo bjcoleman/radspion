@@ -55,8 +55,17 @@ Used with `requires_complete`. Prereqs may span story arcs if you design them th
 
 ## Users
 
+Each agent has two names:
+
+| Field | Source | Visibility |
+|-------|--------|------------|
+| `display_name` | Google OAuth profile | Private — Personnel File and operator views only |
+| `codename` | Assigned at first sign-in; agent may change later | Public — site header, Field Activity |
+
 - **`is_operator`**: SQLite `INTEGER` `0` or `1` (not a native boolean); `1` may use read-only operator progress UI (V1)
 - Signed-in agents are provisioned on first OAuth; the operator uses one `users` row (`is_operator = 1`)
+- **Default codename:** on first sign-in the system allocates the next sequential name (`AGENT0001`, `AGENT0002`, …) via `codename_counter` in the same transaction as user creation. The agent does not choose a codename at signup.
+- **Codename changes:** validated in application code when the agent updates their Personnel File (4–20 characters by Python `len()`; Unicode allowed). See [use-cases.md](use-cases.md) resolved decisions.
 
 ## Agent progress
 

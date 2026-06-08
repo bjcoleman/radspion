@@ -31,11 +31,11 @@ Placeholder. Shown after completion only.
 
 INSERT INTO groups (name) VALUES ('Testing Storyline');
 
-INSERT INTO users (id, email, google_subject_id, display_name) VALUES
-    (1, 'alice@moravian.edu', 'google-alice', 'Alice'),
-    (2, 'bob@moravian.edu', 'google-bob', 'Bob'),
-    (3, 'charlie@moravian.edu', 'google-charlie', 'Charlie'),
-    (4, 'diana@moravian.edu', 'google-diana', 'Diana');
+INSERT INTO users (id, email, google_subject_id, display_name, codename) VALUES
+    (1, 'alice@moravian.edu', 'google-alice', 'Alice', 'Alice'),
+    (2, 'bob@moravian.edu', 'google-bob', 'Bob', 'Field-Bob'),
+    (3, 'charlie@moravian.edu', 'google-charlie', 'Charlie', 'Charlie'),
+    (4, 'diana@moravian.edu', 'google-diana', 'Diana', 'Diana');
 
 INSERT INTO missions (slug, title, brief_markdown, debrief_markdown, group_id, access_rule, completion_data) VALUES
     ('es-alpha', 'ES: Alpha', '# ES: Alpha — Brief

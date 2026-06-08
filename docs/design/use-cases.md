@@ -30,6 +30,9 @@ Ordered by **dependency** — build from the top down. Each case lists **Require
 | `users.is_operator` | SQLite `INTEGER` `0`/`1`; gates operator routes |
 | Sync timing | **Immediate** on login, clearance grant, data submit — never deferred |
 | Operator arc list | All groups; **Orientation** section at the **bottom** |
+| Default codename | Sequential `AGENT0001`, `AGENT0002`, … via `codename_counter` at first sign-in |
+| Codename validation | App layer only: `4 <= len(codename) <= 20` (Unicode code points); no character-class restriction |
+| Public agent identity | `codename` in header and Field Activity; `display_name` and email not shown to other agents |
 
 **Sync invariant:** If a mission is listable (`open`, or `requires_complete` with prereqs met), an `active` row **must** exist for that agent. Missing row in that case is a **bug**, not a UI edge case.
 
@@ -67,7 +70,7 @@ Application stack connects to the Radspion SQLite database (`PRAGMA foreign_keys
 
 **Actor:** Developer  
 **Requires:** UC-003  
-Models (or equivalent data layer) for `users` (including `is_operator`), `groups`, `missions`, constraint tables, and `agent_mission_status` with the same semantics as [03-database-schema.md](03-database-schema.md).
+Models (or equivalent data layer) for `users` (including `codename`, `is_operator`), `codename_counter`, `groups`, `missions`, constraint tables, and `agent_mission_status` with the same semantics as [03-database-schema.md](03-database-schema.md).
 
 ---
 
@@ -96,8 +99,7 @@ Agent authenticates with Google (any Google account); app establishes a session 
 **Actor:** System  
 **Requires:** UC-006  
 - If `users` row exists for `google_subject_id` or email → attach session.  
-- If no `users` row → create user from OAuth profile.
-- Create user from OAuth profile (`email`, `google_subject_id`, `display_name`).  
+- If no `users` row → create user from OAuth profile (`email`, `google_subject_id`, `display_name`) and allocate default `codename` from `codename_counter` (`AGENT0001`, …) in the same transaction.  
 - Run mission-status sync (UC-012) before showing the dashboard.
 
 ---

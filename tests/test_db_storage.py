@@ -93,6 +93,7 @@ def test_closed_connection_raises_database_error_for_all_queries(tmp_path: Path)
                 email TEXT NOT NULL UNIQUE,
                 google_subject_id TEXT NOT NULL UNIQUE,
                 display_name TEXT NOT NULL,
+                codename TEXT NOT NULL UNIQUE,
                 is_operator INTEGER NOT NULL DEFAULT 0
             );
             """
@@ -106,6 +107,7 @@ def test_closed_connection_raises_database_error_for_all_queries(tmp_path: Path)
         (lambda: storage.find_user_by_google_subject_id("sub-1"), "loading user"),
         (lambda: storage.find_user_by_email("agent@example.com"), "loading user"),
         (lambda: storage.find_user_by_id(1), "loading user"),
+        (lambda: storage.find_user_by_codename("Field-Agent"), "loading user"),
         (
             lambda: storage.create_user(
                 email="agent@example.com",

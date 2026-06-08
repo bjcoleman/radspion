@@ -14,24 +14,28 @@ SAMPLE_AGENTS = {
         "email": "alice@moravian.edu",
         "google_subject_id": "google-alice",
         "display_name": "Alice",
+        "codename": "Alice",
     },
     "bob": {
         "id": 2,
         "email": "bob@moravian.edu",
         "google_subject_id": "google-bob",
         "display_name": "Bob",
+        "codename": "Field-Bob",
     },
     "charlie": {
         "id": 3,
         "email": "charlie@moravian.edu",
         "google_subject_id": "google-charlie",
         "display_name": "Charlie",
+        "codename": "Charlie",
     },
     "diana": {
         "id": 4,
         "email": "diana@moravian.edu",
         "google_subject_id": "google-diana",
         "display_name": "Diana",
+        "codename": "Diana",
     },
 }
 

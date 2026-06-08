@@ -25,11 +25,7 @@
   </form>
 
   <div class="site-header__end">
-    <div class="site-header__agent">
-      <span class="site-header__agent-label">Agent</span>
-      <span class="site-header__agent-name">{{ user.display_name }}</span>
-      <span class="site-header__agent-email text-mono">{{ user.email }}</span>
-    </div>
+    <a class="site-header__agent-link" href="#">{{ user.codename }}</a>
     <form action="{{ url_for('auth.logout') }}" method="post">
       <button type="submit" class="site-header__action">Sign out</button>
     </form>

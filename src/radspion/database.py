@@ -34,13 +34,14 @@ class DatabaseRadspionStorage:
             email=row["email"],
             google_subject_id=row["google_subject_id"],
             display_name=row["display_name"],
+            codename=row["codename"],
             is_operator=bool(row["is_operator"]),
         )
 
     def find_user_by_google_subject_id(self, google_subject_id: str) -> User | None:
         try:
             row = self._conn.execute(
-                "SELECT id, email, google_subject_id, display_name, is_operator "
+                "SELECT id, email, google_subject_id, display_name, codename, is_operator "
                 "FROM users WHERE google_subject_id = ?",
                 (google_subject_id,),
             ).fetchone()
@@ -51,7 +52,7 @@ class DatabaseRadspionStorage:
     def find_user_by_email(self, email: str) -> User | None:
         try:
             row = self._conn.execute(
-                "SELECT id, email, google_subject_id, display_name, is_operator "
+                "SELECT id, email, google_subject_id, display_name, codename, is_operator "
                 "FROM users WHERE email = ?",
                 (email,),
             ).fetchone()
@@ -62,13 +63,32 @@ class DatabaseRadspionStorage:
     def find_user_by_id(self, user_id: int) -> User | None:
         try:
             row = self._conn.execute(
-                "SELECT id, email, google_subject_id, display_name, is_operator "
+                "SELECT id, email, google_subject_id, display_name, codename, is_operator "
                 "FROM users WHERE id = ?",
                 (user_id,),
             ).fetchone()
         except sqlite3.Error as exc:
             raise DatabaseError(f"Database error loading user: {exc}") from exc
         return self._row_to_user(row) if row else None
+
+    def find_user_by_codename(self, codename: str) -> User | None:
+        try:
+            row = self._conn.execute(
+                "SELECT id, email, google_subject_id, display_name, codename, is_operator "
+                "FROM users WHERE codename = ?",
+                (codename,),
+            ).fetchone()
+        except sqlite3.Error as exc:
+            raise DatabaseError(f"Database error loading user: {exc}") from exc
+        return self._row_to_user(row) if row else None
+
+    def _create_codename(self) -> str:
+        counter_row = self._conn.execute(
+            "UPDATE codename_counter SET next_value = next_value + 1 RETURNING next_value"
+        ).fetchone()
+        if counter_row is None:
+            raise DatabaseError("Database error creating user: codename counter missing")
+        return f"AGENT{counter_row['next_value']:04d}"
 
     def create_user(
         self,
@@ -79,11 +99,13 @@ class DatabaseRadspionStorage:
         is_operator: bool = False,
     ) -> User:
         try:
+            self._conn.execute("BEGIN")
+            codename = self._create_codename()
             row = self._conn.execute(
-                "INSERT INTO users (email, google_subject_id, display_name, is_operator) "
-                "VALUES (?, ?, ?, ?) "
-                "RETURNING id, email, google_subject_id, display_name, is_operator",
-                (email, google_subject_id, display_name, 1 if is_operator else 0),
+                "INSERT INTO users (email, google_subject_id, display_name, codename, is_operator) "
+                "VALUES (?, ?, ?, ?, ?) "
+                "RETURNING id, email, google_subject_id, display_name, codename, is_operator",
+                (email, google_subject_id, display_name, codename, 1 if is_operator else 0),
             ).fetchone()
             self._conn.commit()
         except sqlite3.Error as exc:
