@@ -114,6 +114,83 @@ Body.
     assert "## Fake ???" in parts[0].source
 
 
+def test_parse_collapsible_records_heading_lines():
+    source = """## Later ???
+
+Hidden body.
+
+---
+
+### Hint ???
+
+Hint text.
+"""
+    parts = parse_mission_markdown(source)
+    assert parts[0].heading_line == 1
+    assert parts[0].body_start_line == 2
+    assert parts[2].heading_line == 7
+    assert parts[2].body_start_line == 8
+
+
+def test_parse_prose_with_fence_before_collapsible():
+    source = """Intro.
+
+```
+not a collapsible trigger
+```
+
+## Later ???
+
+Hidden.
+"""
+    parts = parse_mission_markdown(source)
+    assert [part.kind for part in parts] == ["markdown", "collapsible"]
+    assert "```" in parts[0].source
+    assert parts[1].title == "Later"
+
+
+def test_validate_empty_source():
+    assert validate_collapsible_markdown("") == []
+
+
+def test_validate_ignores_collapsible_marker_inside_fence_in_body():
+    source = """## Outer ???
+
+```markdown
+### Fake ???
+```
+
+Real body.
+"""
+    errors = validate_collapsible_markdown(source, path="brief.md")
+    assert not any("nested inside" in error for error in errors)
+
+
+def test_validate_nested_collapsible_reports_line_number():
+    source = """## Outer ???
+
+### Inner ???
+
+Nope.
+"""
+    errors = validate_collapsible_markdown(source, path="brief.md")
+    assert any("brief.md:3:" in error and "Inner" in error for error in errors)
+
+
+def test_render_segments_includes_hr_and_skips_whitespace_markdown():
+    parts = [
+        MarkdownPart(kind="markdown", source="   \n"),
+        MarkdownPart(kind="hr"),
+        MarkdownPart(kind="markdown", source="Footer.\n"),
+    ]
+    html = render_segments_html(
+        parts,
+        lambda source: f"<p>{source.strip()}</p>",
+        chevron_html=CHEVRON_STUB,
+    )
+    assert html == "<hr><p>Footer.</p>"
+
+
 @pytest.mark.parametrize(
     ("lines", "start", "trigger_level", "in_fence", "expected_body", "expected_end", "hr_after"),
     [
@@ -155,6 +232,29 @@ def test_collect_section_body_boundaries(
 def test_validate_rejects_invalid_heading_levels(source: str, needle: str):
     errors = validate_collapsible_markdown(source, path="brief.md")
     assert any(needle in error for error in errors)
+
+
+def test_validate_accepts_sibling_hint_sections():
+    source = """## Fieldwork ???
+
+Do the work.
+
+---
+
+### Hint 1 ???
+
+First hint.
+
+### Hint 2 ???
+
+Second hint.
+
+---
+
+Submit line.
+"""
+    errors = validate_collapsible_markdown(source, path="brief.md")
+    assert not any("nested inside" in error for error in errors)
 
 
 def test_validate_rejects_nested_collapsible():

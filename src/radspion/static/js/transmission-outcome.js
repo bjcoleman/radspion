@@ -90,18 +90,40 @@
     return '<div class="outcome-missions-groups">' + sections + "</div>";
   }
 
-  function wireOkReload(outcomeEl) {
+  function disableScrollRestoration() {
+    if ("scrollRestoration" in global.history) {
+      global.history.scrollRestoration = "manual";
+    }
+  }
+
+  function dashboardUrl() {
+    var modal = global.document.querySelector("[data-transmission-modal]");
+    return modal ? modal.getAttribute("data-dashboard-url") || "" : "";
+  }
+
+  function wireOkCallback(outcomeEl, callback) {
     var ok = outcomeEl.querySelector(".transmission-modal__ok");
     if (!ok) {
       return;
     }
-    ok.addEventListener(
-      "click",
-      function () {
-        global.location.reload();
-      },
-      { once: true },
-    );
+    ok.addEventListener("click", callback, { once: true });
+  }
+
+  function wireOkReloadTop(outcomeEl) {
+    wireOkCallback(outcomeEl, function () {
+      disableScrollRestoration();
+      global.location.reload();
+    });
+  }
+
+  function wireOkNavigateTop(outcomeEl, url) {
+    if (!url) {
+      return;
+    }
+    wireOkCallback(outcomeEl, function () {
+      disableScrollRestoration();
+      global.location.assign(url);
+    });
   }
 
   var OK_BUTTON = '<button type="button" class="transmission-modal__ok">OK</button>';
@@ -110,7 +132,9 @@
     escapeHtml: escapeHtml,
     outcomeHeaderHtml: outcomeHeaderHtml,
     missionGroupsHtml: missionGroupsHtml,
-    wireOkReload: wireOkReload,
+    dashboardUrl: dashboardUrl,
+    wireOkReloadTop: wireOkReloadTop,
+    wireOkNavigateTop: wireOkNavigateTop,
     okButton: OK_BUTTON,
   };
 })(window);

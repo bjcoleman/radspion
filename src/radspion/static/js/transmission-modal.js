@@ -186,7 +186,7 @@
       global.setTimeout(function () {
         self.barEl.style.width = "100%";
         global.setTimeout(function () {
-          self.barEl.style.transition = "width 0.2s ease";
+          self.barEl.style.transition = "none";
           self.barEl.style.width = "0%";
           global.setTimeout(resolve, 150);
         }, 600);

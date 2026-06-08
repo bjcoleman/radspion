@@ -24,6 +24,8 @@ class MarkdownPart:
     source: str = ""
     title: str | None = None
     level: int | None = None
+    heading_line: int | None = None
+    body_start_line: int | None = None
 
 
 def _is_fence_line(line: str) -> bool:
@@ -79,6 +81,35 @@ def collect_section_body(
     return body, position, False, in_fence
 
 
+def _iter_invalid_collapse_headings(source: str) -> Iterable[tuple[int, str]]:
+    """Yield ``(line_number, title)`` for `` ???`` markers on invalid heading levels."""
+    in_fence = False
+    for line_number, line in enumerate(source.splitlines(), start=1):
+        if _is_fence_line(line):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+        match = _INVALID_COLLAPSE_HEADING.match(line)
+        if match is not None:
+            yield line_number, match.group(2)
+
+
+def _first_nested_collapsible_in_body(body: str) -> tuple[int, str] | None:
+    """Return ``(body_line_number, title)`` for the first nested `` ???`` heading."""
+    in_fence = False
+    for line_number, line in enumerate(body.splitlines(), start=1):
+        if _is_fence_line(line):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+        collapsible = _parse_collapsible_heading(line)
+        if collapsible is not None:
+            return line_number, collapsible[1]
+    return None
+
+
 def parse_mission_markdown(source: str) -> list[MarkdownPart]:
     """Split mission markdown into prose, collapsible sections, and horizontal rules."""
     if not source:
@@ -110,8 +141,10 @@ def parse_mission_markdown(source: str) -> list[MarkdownPart]:
             collapsible = _parse_collapsible_heading(line)
             if collapsible is not None:
                 flush_prose()
+                heading_line = index + 1
                 level, title = collapsible
                 index += 1
+                body_start_line = index + 1
                 body_lines, index, hr_after, in_fence = collect_section_body(
                     lines,
                     index,
@@ -124,6 +157,8 @@ def parse_mission_markdown(source: str) -> list[MarkdownPart]:
                         source="".join(body_lines),
                         title=title,
                         level=level,
+                        heading_line=heading_line,
+                        body_start_line=body_start_line,
                     ),
                 )
                 if hr_after:
@@ -147,52 +182,31 @@ def validate_collapsible_markdown(source: str, *, path: str = "") -> list[str]:
     """Return lint messages for collapsible-section authoring mistakes."""
     prefix = f"{path}:" if path else ""
     errors: list[str] = []
-    lines = source.splitlines()
-    in_fence = False
-    inside_collapsible = False
-    collapsible_trigger_level: int | None = None
 
-    for line_number, line in enumerate(lines, start=1):
-        if _is_fence_line(line):
-            in_fence = not in_fence
-            continue
-        if in_fence:
+    for line_number, _title in _iter_invalid_collapse_headings(source):
+        errors.append(
+            f"{prefix}{line_number}: collapsible marker {COLLAPSE_SUFFIX!r} "
+            "is only allowed on ## and ### headings",
+        )
+
+    for part in parse_mission_markdown(source):
+        if part.kind != "collapsible":
             continue
 
-        if _INVALID_COLLAPSE_HEADING.match(line):
+        if not part.source.strip():
             errors.append(
-                f"{prefix}{line_number}: collapsible marker {COLLAPSE_SUFFIX!r} "
-                "is only allowed on ## and ### headings",
+                f"{prefix}{part.heading_line}: collapsible section {part.title!r} "
+                "has no body content",
             )
-            continue
 
-        collapsible = _parse_collapsible_heading(line)
-        if collapsible is not None:
-            level, title = collapsible
-            if inside_collapsible:
-                errors.append(
-                    f"{prefix}{line_number}: collapsible heading {title!r} is nested inside "
-                    f"another collapsible section; add --- or an intervening ## heading",
-                )
-            inside_collapsible = True
-            collapsible_trigger_level = level
-            body_start = line_number
-            body_lines, _, _, _ = collect_section_body(lines, line_number, level, False)
-            if not "".join(body_lines).strip():
-                errors.append(
-                    f"{prefix}{body_start}: collapsible section {title!r} has no body content",
-                )
-            continue
-
-        if inside_collapsible:
-            level = _heading_level(line)
-            if _HR_LINE.match(line):
-                inside_collapsible = False
-                collapsible_trigger_level = None
-            elif level is not None and collapsible_trigger_level is not None:
-                if level <= collapsible_trigger_level:
-                    inside_collapsible = False
-                    collapsible_trigger_level = None
+        nested = _first_nested_collapsible_in_body(part.source)
+        if nested is not None and part.body_start_line is not None:
+            nested_body_line, nested_title = nested
+            nested_line = part.body_start_line + nested_body_line - 1
+            errors.append(
+                f"{prefix}{nested_line}: collapsible heading {nested_title!r} is nested inside "
+                f"another collapsible section; add --- or an intervening ## heading",
+            )
 
     return errors
 

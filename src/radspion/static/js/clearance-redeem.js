@@ -9,6 +9,17 @@
   var INVALID_FALLBACK =
     "Command could not verify this clearance code against agency records. Check the code and try again.";
 
+  function wireClearanceSuccessOk(outcomeEl) {
+    var body = global.document.body;
+    if (body.classList.contains("page--dashboard")) {
+      Outcome.wireOkReloadTop(outcomeEl);
+      return;
+    }
+    if (body.classList.contains("page--clearance")) {
+      Outcome.wireOkNavigateTop(outcomeEl, Outcome.dashboardUrl());
+    }
+  }
+
   function renderSuccess(outcomeEl, newMissions) {
     var missionWord = newMissions.length === 1 ? "mission" : "missions";
     outcomeEl.innerHTML =
@@ -21,7 +32,7 @@
       "</p>" +
       Outcome.missionGroupsHtml(newMissions) +
       Outcome.okButton;
-    Outcome.wireOkReload(outcomeEl);
+    wireClearanceSuccessOk(outcomeEl);
   }
 
   function renderInvalid(outcomeEl, message) {
