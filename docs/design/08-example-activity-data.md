@@ -2,7 +2,7 @@
 
 Reference **fixture** for the public **Field Activity** page (`/activity`) and related UI mockups. Not loaded into the database — this document is the canonical story the mockup should tell.
 
-Agents are identified by **codenames** (adjective–noun pairs). Mission titles never appear on Field Activity; only storyline names and counts.
+Agents are identified by **codenames** (4–20 characters; agents choose on the Personnel File). Mission titles never appear on Field Activity; only storyline names and counts.
 
 See [02-entities.md](02-entities.md) for vocabulary. Operator views (later) show codename, email, and Google `display_name`.
 

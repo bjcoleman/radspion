@@ -1,4 +1,4 @@
-"""Tests for Agent Personnel File (read-only)."""
+"""Tests for Agent Personnel File."""
 
 from pathlib import Path
 

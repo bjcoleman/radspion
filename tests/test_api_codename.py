@@ -97,6 +97,19 @@ def test_codename_invalid_length_returns_message(storyline_db: Path):
     }
 
 
+def test_codename_rejects_codename_over_max_length(storyline_db: Path):
+    client = _client_for_db(storyline_db)
+    with client.session_transaction() as sess:
+        sess[SESSION_USER_ID] = SAMPLE_AGENTS["diana"]["id"]
+
+    response = client.post("/api/codename", json={"codename": "a" * 21})
+    assert response.status_code == 200
+    assert response.get_json() == {
+        "outcome": "invalid",
+        "message": INVALID_LENGTH_MESSAGE,
+    }
+
+
 def test_codename_rejects_missing_body(storyline_db: Path):
     client = _client_for_db(storyline_db)
     with client.session_transaction() as sess:
