@@ -11,7 +11,7 @@ Ordered by **dependency** — build from the top down. Each case lists **Require
 | Who can sign in | Google OAuth (any account); first sign-in auto-creates `users` row |
 | Story arcs | `groups` organize missions on the dashboard; **do not** gate access |
 | Mission visibility | `access_rule` + `mission_clearance_codes` + `mission_list_requires` |
-| Agent channels | **Clearance** (`POST /api/clearance`) and **data** (`POST /api/missions/<slug>/submit`); separate UI controls |
+| Agent channels | **Clearance** (`POST /api/clearance`), **data** (`POST /api/missions/<slug>/submit`), **codename** (`POST /api/codename`); separate UI controls |
 | Clearance format | Letters, digits, hyphen only; human-readable strings encouraged |
 | Data format | Any text (including newlines); exact match after outer trim |
 | `open` missions | Rare — walk-up puzzle content with minimal prerequisites |
@@ -23,7 +23,7 @@ Ordered by **dependency** — build from the top down. Each case lists **Require
 | Transmission modals | Distinct presets for clearance request vs data submission; canonical copy in [06-agent-experience.md](06-agent-experience.md) |
 | Agent UI copy | Mockups in `docs/ui/`; header **Request Access**, active **Data** panel, completed **Recovered Data** archives |
 | Error copy (UC-020, UC-022) | Modal strings in [06-agent-experience.md](06-agent-experience.md); API `message` examples in [api.yaml](../api.yaml) |
-| Web framework | **Flask + Jinja** SSR; JSON API at `/api/clearance`, `/api/missions/<slug>/submit` |
+| Web framework | **Flask + Jinja** SSR; JSON API at `/api/clearance`, `/api/codename`, `/api/missions/<slug>/submit` |
 | Brief/Debrief bodies | `missions.brief_markdown` / `debrief_markdown` (seed SQL generated from **radspion-missions**) |
 | Operator config V1 | SQL/seed only — no in-app mission editor |
 | Operator progress V1 | Read-only UI: story arcs → missions → agent status |
@@ -33,7 +33,7 @@ Ordered by **dependency** — build from the top down. Each case lists **Require
 | Default codename | Sequential `AGENT0001`, `AGENT0002`, … via `codename_counter` at first sign-in |
 | Codename validation | App layer only: `4 <= len(codename) <= 20` (Unicode code points); no character-class restriction |
 | Public agent identity | `codename` in header and Field Activity; `display_name` and email not shown to other agents |
-| Personnel File | `GET /agent/personnel` — personal info, field status, service record; codename readonly, **Update** disabled |
+| Personnel File | `GET /agent/personnel` — personal info, field status, service record; codename update via `POST /api/codename` |
 | Service record | Derived from `users.created_at`, `agent_mission_status.listed_at`, `agent_mission_status.completed_at` — not a separate audit table |
 
 **Sync invariant:** If a mission is listable (`open`, or `requires_complete` with prereqs met), an `active` row **must** exist for that agent. Missing row in that case is a **bug**, not a UI edge case.
@@ -176,9 +176,17 @@ After login (post-sync), dashboard lists all `agent_mission_status` rows (`activ
 
 **Actor:** Agent  
 **Requires:** UC-007  
-Signed-in agent opens **`GET /agent/personnel`** (header codename link). Page shows Personal Information (`display_name`, `email`, `codename`, **Recruited on** from `created_at`), Field Status counts, and Service Record events derived per [02-entities.md](02-entities.md). Codename is a **readonly** input; **Update** is disabled.
+Signed-in agent opens **`GET /agent/personnel`** (header codename link). Page shows Personal Information (`display_name`, `email`, `codename`, **Recruited on** from `created_at`), Field Status counts, and Service Record events derived per [02-entities.md](02-entities.md).
 
 Clearance from the Personnel File header uses the same transmission modal as the dashboard. On clearance **success**, **OK** reloads the page so Field Status and Service Record reflect new listings ([06-agent-experience.md](06-agent-experience.md)).
+
+---
+
+### UC-039 — Update agent codename
+
+**Actor:** Agent  
+**Requires:** UC-038  
+Agent submits a new codename from the Personnel File. Client blocks unchanged values without calling the API. `POST /api/codename` trims outer whitespace, validates length (4–20 Unicode code points), and enforces case-sensitive uniqueness. Success reloads the page; outcomes and copy in [06-agent-experience.md](06-agent-experience.md) and [api.yaml](../api.yaml).
 
 ---
 
@@ -396,4 +404,4 @@ Diana has no Testing Storyline status rows until she grants storyline clearance.
 
 ## Out of scope for this list (V1)
 
-Per [01-overview.md](01-overview.md): faculty wizard, story templates, full audit log, per-agent keyed codes, agent codename update on Personnel File, in-app operator **configuration**, operator CLI helpers (later).
+Per [01-overview.md](01-overview.md): faculty wizard, story templates, full audit log, per-agent keyed codes, in-app operator **configuration**, operator CLI helpers (later).

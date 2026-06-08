@@ -1,5 +1,6 @@
 """In-memory storage fakes for tests."""
 
+from radspion.codename import DUPLICATE_CODENAME_MESSAGE, SUCCESS_MESSAGE, CodenameUpdateResult
 from radspion.missions import DashboardGroup, DashboardMission
 from radspion.personnel import PersonnelFile
 from radspion.user import User
@@ -65,6 +66,27 @@ class InMemoryRadspionStorage:
         )
         self._users[user_id] = user
         return user
+
+    def update_user_codename(self, user_id: int, codename: str) -> CodenameUpdateResult:
+        user = self._users.get(user_id)
+        if user is None:
+            return CodenameUpdateResult(outcome="invalid", message=DUPLICATE_CODENAME_MESSAGE)
+        for other in self._users.values():
+            if other.id != user_id and other.codename == codename:
+                return CodenameUpdateResult(
+                    outcome="invalid",
+                    message=DUPLICATE_CODENAME_MESSAGE,
+                )
+        updated = User(
+            id=user.id,
+            email=user.email,
+            google_subject_id=user.google_subject_id,
+            display_name=user.display_name,
+            codename=codename,
+            is_operator=user.is_operator,
+        )
+        self._users[user_id] = updated
+        return CodenameUpdateResult(outcome="success", message=SUCCESS_MESSAGE)
 
     def sync_mission_status(self, user_id: int) -> None:
         """No-op — mission tests use SQLite fixtures."""

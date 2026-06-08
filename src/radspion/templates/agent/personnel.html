@@ -25,7 +25,13 @@
     <section class="personnel-section" aria-labelledby="personnel-personal-heading">
       <h2 class="personnel-section__heading" id="personnel-personal-heading">Personal Information</h2>
       <div class="personnel-panel">
-        <div class="personnel-form">
+        <form
+          class="personnel-form personnel-codename-form"
+          data-personnel-codename-form
+          data-current-codename="{{ personnel.codename }}"
+          action="#"
+          method="post"
+        >
           <div class="personnel-field">
             <span class="personnel-field__label">Sign-in name</span>
             <span class="personnel-field__value">{{ personnel.display_name }}</span>
@@ -47,9 +53,9 @@
                 value="{{ personnel.codename }}"
                 autocomplete="off"
                 spellcheck="false"
-                readonly
+                maxlength="20"
               >
-              <button class="personnel-form__submit" type="button" disabled>Update</button>
+              <button class="personnel-form__submit" type="submit">Update</button>
             </div>
             <p class="personnel-form__hint text-muted">
               Your codename should be appropriate for public display (4–20 characters).
@@ -65,7 +71,7 @@
           <p class="personnel-form__scope text-muted">
             Your sign-in name and email are retained only for Radspion Command operations.
           </p>
-        </div>
+        </form>
       </div>
     </section>
 
@@ -107,4 +113,7 @@
   </div>
 {% endblock %}
 
-{% block agent_extra_body %}{% endblock %}
+{% block agent_extra_body %}
+  {% include "_codename_modal.html" %}
+  <script src="{{ url_for('static', filename='js/personnel-codename.js') }}"></script>
+{% endblock %}

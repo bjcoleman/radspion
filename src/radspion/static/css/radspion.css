@@ -1447,6 +1447,41 @@ body.has-transmission-modal {
   overflow: hidden;
 }
 
+body.has-codename-modal {
+  overflow: hidden;
+}
+
+.codename-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+}
+
+.codename-modal[hidden] {
+  display: none;
+}
+
+.codename-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+}
+
+.codename-modal__dialog {
+  position: relative;
+  width: 100%;
+  max-width: 22rem;
+  padding: var(--space-xl);
+  background: var(--color-bg-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-panel);
+}
+
 .transmission-modal {
   position: fixed;
   inset: 0;

@@ -60,13 +60,13 @@ Each agent has two names:
 | Field | Source | Visibility |
 |-------|--------|------------|
 | `display_name` | Google OAuth profile | Private — Personnel File and operator views only |
-| `codename` | Assigned at first sign-in | Public — site header, Field Activity; readonly on Personnel File |
+| `codename` | Assigned at first sign-in; agent may change on Personnel File | Public — site header, Field Activity |
 | `created_at` | Set on first sign-in (`DEFAULT datetime('now')`) | Personnel File **Recruited on**; service record **Enlisted** |
 
 - **`is_operator`**: SQLite `INTEGER` `0` or `1` (not a native boolean); `1` may use read-only operator progress UI (V1)
 - Signed-in agents are provisioned on first OAuth; the operator uses one `users` row (`is_operator = 1`)
 - **Default codename:** on first sign-in the system allocates the next sequential name (`AGENT0001`, `AGENT0002`, …) via `codename_counter` in the same transaction as user creation. The agent does not choose a codename at signup.
-- **Codename on Personnel File:** readonly input; **Update** disabled. Hint copy references 4–20 characters ([06-agent-experience.md](06-agent-experience.md)).
+- **Codename update:** `POST /api/codename` from the Personnel File. Trim outer whitespace; `4 <= len(codename) <= 20` (Unicode code points); case-sensitive exact uniqueness. No service record entry on change.
 
 ### Service record (Personnel File)
 

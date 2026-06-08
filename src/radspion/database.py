@@ -3,6 +3,7 @@
 import sqlite3
 from pathlib import Path
 
+from radspion.codename import DUPLICATE_CODENAME_MESSAGE, SUCCESS_MESSAGE, CodenameUpdateResult
 from radspion.missions import (
     DashboardGroup,
     DashboardMission,
@@ -82,6 +83,23 @@ class DatabaseRadspionStorage:
         except sqlite3.Error as exc:
             raise DatabaseError(f"Database error loading user: {exc}") from exc
         return self._row_to_user(row) if row else None
+
+    def update_user_codename(self, user_id: int, codename: str) -> CodenameUpdateResult:
+        """Persist a new codename for the agent."""
+        try:
+            self._conn.execute(
+                "UPDATE users SET codename = ? WHERE id = ?",
+                (codename, user_id),
+            )
+            self._conn.commit()
+        except sqlite3.IntegrityError:
+            return CodenameUpdateResult(
+                outcome="invalid",
+                message=DUPLICATE_CODENAME_MESSAGE,
+            )
+        except sqlite3.Error as exc:
+            raise DatabaseError(f"Database error updating codename: {exc}") from exc
+        return CodenameUpdateResult(outcome="success", message=SUCCESS_MESSAGE)
 
     def _create_codename(self) -> str:
         counter_row = self._conn.execute(

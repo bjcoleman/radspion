@@ -6,6 +6,7 @@ info:
 
     **Agent vocabulary:** clearance codes are submitted as `clearance_code` on `POST /api/clearance`.
     Recovered mission data is submitted as `completion_data` on `POST /api/missions/{slug}/submit`.
+    Codename updates use `codename` on `POST /api/codename`.
     See `docs/design/06-agent-experience.md`.
   version: 0.1.0
   contact:
@@ -73,6 +74,61 @@ paths:
                     message: Command could not verify this clearance code against agency records.
         "400":
           description: Missing or empty `clearance_code`
+        "401":
+          description: Not signed in
+
+  /api/codename:
+    post:
+      tags: [Agent]
+      summary: Update agent codename
+      description: |
+        Trims leading and trailing whitespace from `codename`. Length must be 4–20 Unicode
+        code points (`len()` in application code). Uniqueness is a case-sensitive exact
+        string match against other agents' codenames.
+
+        When the trimmed codename equals the agent's current codename, the response is
+        `success` with no database write.
+
+        Response shape is `CodenameResponse` — not `MissionListResponse`.
+      operationId: updateCodename
+      security:
+        - sessionCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CodenameRequest"
+      responses:
+        "200":
+          description: Codename update result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CodenameResponse"
+              examples:
+                success:
+                  value:
+                    outcome: success
+                    message: Your codename has been updated.
+                invalid_length:
+                  value:
+                    outcome: invalid
+                    message: Codenames must be 4–20 characters.
+                invalid_duplicate:
+                  value:
+                    outcome: invalid
+                    message: Another agent is using this codename.
+        "400":
+          description: Missing or empty `codename`
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: missing codename
         "401":
           description: Not signed in
 
@@ -197,3 +253,24 @@ components:
         completion_data:
           type: string
           description: Recovered mission data (may include newlines)
+
+    CodenameRequest:
+      type: object
+      required: [codename]
+      properties:
+        codename:
+          type: string
+          description: New field designation (4–20 characters after trim)
+
+    CodenameResponse:
+      type: object
+      required: [outcome]
+      properties:
+        outcome:
+          type: string
+          enum: [success, invalid]
+        message:
+          type: string
+          description: |
+            Agent-facing copy for the Personnel File outcome modal. Canonical strings in
+            `docs/design/06-agent-experience.md`.

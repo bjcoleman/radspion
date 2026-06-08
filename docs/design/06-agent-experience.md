@@ -64,7 +64,7 @@ Route: **`GET /agent/personnel`** (signed-in only). Mockup: [`agent-personnel-fi
 |-------|--------|-------|
 | Sign-in name | `users.display_name` | Read-only |
 | Email | `users.email` | Read-only; monospace |
-| Codename | `users.codename` | Readonly input with hint; **Update** button disabled |
+| Codename | `users.codename` | Editable; **Update** calls `POST /api/codename` |
 | Codename hint | — | *Your codename should be appropriate for public display (4–20 characters).* |
 | Recruited on | `users.created_at` | Formatted date (`<time>`) |
 | Scope note | — | *Your sign-in name and email are retained only for Radspion Command operations.* |
@@ -72,6 +72,18 @@ Route: **`GET /agent/personnel`** (signed-in only). Mockup: [`agent-personnel-fi
 **Field Status** — counts from `agent_mission_status`: **Missions completed** (`completed`), **Active missions** (`active`).
 
 **Service Record** — scrollable list, newest first. Verbs and sources: [02-entities.md](02-entities.md) (*Service record*). Each row: date, verb, detail (mission title or *Personnel file opened* for **Enlisted**).
+
+**Codename update** — separate outcome modal (same visual chrome as transmission modals; no progress animation). Client validates unchanged codename and length before calling the API.
+
+| Case | Outcome header | Message |
+|------|----------------|---------|
+| Updated | **Codename** / **Updated** | Your codename has been updated. |
+| Unchanged (client only) | **Codename** / **Unchanged** | Your codename is unchanged. |
+| Invalid length | **Verification** / **Failed** | Codenames must be 4–20 characters. |
+| Duplicate | **Verification** / **Failed** | Another agent is using this codename. |
+| Network / server error | **Verification** / **Failed** | Update could not be completed. Try again. |
+
+Success **OK** reloads the page (header codename and form value). Invalid **OK** dismisses the modal; the input keeps the typed value.
 
 ### Mission Dashboard
 
@@ -140,7 +152,7 @@ Missions that are not yet listable are **not shown** on the dashboard.
 
 ## Interactive actions (hybrid SSR + JSON)
 
-Pages are **Flask + Jinja** (dashboard, mission detail). Clearance and data call the **JSON API** under `/api/` with the same session cookie so the browser can run a transmission modal (progress animation) and render outcome-specific copy without a full page reload.
+Pages are **Flask + Jinja** (dashboard, mission detail, Personnel File). Clearance, data, and codename updates call the **JSON API** under `/api/` with the same session cookie so the browser can show outcome modals without a full page reload until the agent dismisses success.
 
 Canonical request/response shapes: [`docs/api.yaml`](../api.yaml). Static mockups in `docs/ui/` **hard-code** modal outcomes (no `fetch`); production uses `RadspionTransmission.transmit()` against these endpoints.
 
@@ -211,6 +223,21 @@ QR codes and field handouts link to `https://…/clearance/<token>` where `<toke
 **HTTP 401** when not signed in.
 
 Granting clearance creates an `active` row for each matching `clearance_code` mission that has no status row yet. The same `clearance_code` value may appear on multiple missions.
+
+### `POST /api/codename`
+
+**Auth:** signed-in agent (session cookie).
+
+**Request:** `{ "codename": "..." }`
+
+**Response:** [`CodenameResponse`](../api.yaml) — not `MissionListResponse`.
+
+| `outcome` | When | Response body |
+|-----------|------|----------------|
+| `success` | Valid codename; row updated, or trimmed value equals current codename (no write) | `message`: *Your codename has been updated.* |
+| `invalid` | Length out of range, or another agent has this codename (case-sensitive exact match) | `message`: see codename update table under *Agent Personnel File* |
+
+**HTTP 400** when `codename` is missing or empty after trim. **HTTP 401** when not signed in.
 
 ### `POST /api/missions/<slug>/submit`
 

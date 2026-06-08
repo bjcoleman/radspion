@@ -67,9 +67,11 @@ def test_personnel_page_shows_agent_record(testing_storyline_db: Path):
     assert "Mission Completed" in body
     assert "Clearance Granted" in body
     assert "confidential_your_eyes_only.png" in body
-    assert "readonly" in body
-    assert "Update" in body
-    assert "disabled" in body
+    assert "personnel-codename.js" in body
+    assert "data-personnel-codename-form" in body
+    assert 'name="codename"' in body
+    assert "readonly" not in body
+    assert ">Update</button>" in body
 
 
 def test_get_personnel_file_counts_and_service_record(testing_storyline_db: Path):
