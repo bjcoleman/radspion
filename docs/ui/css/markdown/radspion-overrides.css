@@ -1,0 +1,143 @@
+/* Radspion overrides on GitHub-dark mission markdown */
+
+.mission-detail .mission-markdown {
+  --brief-chevron-gutter: 1.75rem;
+  padding-left: calc(var(--space-lg) + var(--brief-chevron-gutter));
+}
+
+.mission-detail .mission-markdown.markdown-body {
+  padding: var(--space-lg);
+  padding-left: calc(var(--space-lg) + var(--brief-chevron-gutter));
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+}
+
+.mission-detail .mission-markdown.markdown-body a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.mission-detail .mission-markdown.markdown-body a:hover {
+  color: var(--color-text);
+}
+
+.mission-markdown.markdown-body h1,
+.mission-markdown.markdown-body h2,
+.mission-markdown.markdown-body h3,
+.mission-markdown.markdown-body h4,
+.mission-markdown.markdown-body h5,
+.mission-markdown.markdown-body h6 {
+  color: var(--color-accent);
+}
+
+.mission-markdown.markdown-body strong,
+.mission-markdown.markdown-body b {
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+/* Code block wrapper + copy button */
+
+.mission-markdown .code-block {
+  position: relative;
+  margin: 0 0 var(--space-md);
+  overflow: hidden;
+}
+
+.mission-markdown .code-block .highlight {
+  margin: 0;
+}
+
+.mission-markdown .code-block .highlight > pre,
+.mission-markdown .code-block > pre {
+  margin: 0;
+  padding-top: 2.25rem;
+}
+
+.brief-collapse .mission-markdown {
+  margin: 0;
+  border: none;
+  border-top: 1px solid var(--color-border-subtle);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  box-shadow: none;
+}
+
+.brief-collapse .mission-markdown.markdown-body {
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+/* Collapsible brief/debrief sections (## / ### with ??? suffix) */
+
+.mission-markdown details.brief-section {
+  margin: 0;
+  border: none;
+  background: none;
+}
+
+.mission-markdown.markdown-body details.brief-section--level2,
+.mission-markdown.markdown-body details.brief-section--level3 {
+  margin-top: 1.5rem;
+}
+
+.mission-markdown > details.brief-section:first-child {
+  margin-top: 0;
+}
+
+.mission-markdown details.brief-section > summary.brief-section__summary {
+  display: grid;
+  grid-template-columns: var(--brief-chevron-gutter, 1.75rem) minmax(0, 1fr);
+  align-items: center;
+  gap: 0;
+  margin: 0 0 0 calc(-1 * var(--brief-chevron-gutter, 1.75rem));
+  padding: 0;
+  width: calc(100% + var(--brief-chevron-gutter, 1.75rem));
+  list-style: none;
+  cursor: pointer;
+}
+
+.mission-markdown details.brief-section > summary::-webkit-details-marker {
+  display: none;
+}
+
+.mission-markdown details.brief-section > summary .mission-group__chevron {
+  display: flex;
+  grid-column: 1;
+  align-items: center;
+  justify-content: center;
+  justify-self: center;
+  align-self: center;
+  width: var(--brief-chevron-gutter, 1.75rem);
+  margin: 0;
+}
+
+.mission-markdown details.brief-section > summary .mission-group__chevron-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.mission-markdown details.brief-section[open] > summary .mission-group__chevron-path--closed {
+  display: none;
+}
+
+.mission-markdown details.brief-section[open] > summary .mission-group__chevron-path--open {
+  display: inline;
+}
+
+.mission-markdown details.brief-section > summary h2,
+.mission-markdown details.brief-section > summary h3 {
+  grid-column: 2;
+  margin: 0;
+  min-width: 0;
+}
+
+.mission-markdown.markdown-body details.brief-section[open] > summary.brief-section__summary {
+  margin-bottom: 1rem;
+}
+
+.mission-markdown hr {
+  margin: var(--space-xl) 0;
+  border: none;
+  border-top: 1px solid var(--color-border-subtle);
+}

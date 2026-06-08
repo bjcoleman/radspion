@@ -3,8 +3,8 @@
 from flask import Blueprint, abort, current_app, render_template, request
 
 from radspion.markdown_render import render_mission_markdown
+from radspion.mission_files import MissionFilesError, load_mission
 from radspion.missions import MissionDetail
-from radspion.missions_fs import MissionsFilesystemError, load_mission
 
 preview_bp = Blueprint("preview", __name__)
 
@@ -26,7 +26,7 @@ def mission_detail():
 
     try:
         source = load_mission(storyline, mission_slug)
-    except MissionsFilesystemError as exc:
+    except MissionFilesError as exc:
         abort(404, description=str(exc))
 
     recovered_data = source.completion_data if status == "completed" else None

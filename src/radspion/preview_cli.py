@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import sys
 
-from radspion.missions_fs import FilesystemMission, MissionsFilesystemError, load_mission
+from radspion.mission_files import LoadedMission, MissionFilesError, load_mission
 from radspion.preview_app import create_preview_app, preview_port
 
 
@@ -23,7 +23,7 @@ def parse_preview_args(argv: list[str]) -> tuple[str, str]:
     return argv[0], argv[1]
 
 
-def validate_preview_target(storyline: str, mission_slug: str) -> FilesystemMission:
+def validate_preview_target(storyline: str, mission_slug: str) -> LoadedMission:
     """Ensure the pack and mission exist on disk."""
     return load_mission(storyline, mission_slug)
 
@@ -43,7 +43,7 @@ def main(argv: list[str] | None = None) -> None:
     except PreviewCliError as exc:
         print(str(exc), file=sys.stderr)
         raise SystemExit(1) from exc
-    except MissionsFilesystemError as exc:
+    except MissionFilesError as exc:
         print(f"Error: {exc}", file=sys.stderr)
         raise SystemExit(1) from exc
 

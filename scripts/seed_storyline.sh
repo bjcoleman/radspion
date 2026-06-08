@@ -58,8 +58,8 @@ fi
 
 if [ ! -f "$PACK_SQL" ]; then
     echo "Error: Missing $PACK_SQL"
-    echo "Generate it in radspion-missions with:"
-    echo "  .venv/bin/python scripts/generate_storyline_sql.py $PACK_NAME"
+    echo "Generate it from radspion with:"
+    echo "  .venv/bin/generate_storyline $PACK_NAME"
     exit 1
 fi
 

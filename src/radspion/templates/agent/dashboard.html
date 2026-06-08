@@ -29,12 +29,7 @@
         {% if group.active_count > 0 %}open{% endif %}
       >
         <summary class="mission-group__summary">
-          <span class="mission-group__chevron" aria-hidden="true">
-            <svg class="mission-group__chevron-icon" viewBox="0 0 24 24" aria-hidden="true">
-              <polyline class="mission-group__chevron-path mission-group__chevron-path--closed" points="12,6 18,12 12,18" />
-              <polyline class="mission-group__chevron-path mission-group__chevron-path--open" points="6,10 12,16 18,10" />
-            </svg>
-          </span>
+          {% include "agent/_mission_chevron.html" %}
           <span class="mission-group__title">{{ group.name }}</span>
           <span class="mission-group__counts text-muted" data-group-counts>{{ group.counts_label() }}</span>
         </summary>

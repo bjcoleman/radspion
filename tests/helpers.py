@@ -81,3 +81,27 @@ def group_titles_in_order(html: str) -> list[str]:
     import re
 
     return re.findall(r'class="mission-group__title">([^<]+)<', html)
+
+
+def write_minimal_pack(
+    pack_root: Path,
+    *,
+    storyline: str | None = None,
+) -> None:
+    """Create a minimal valid storyline pack directory under ``pack_root``."""
+    pack_root.mkdir(parents=True, exist_ok=True)
+    (pack_root / "storyline.yaml").write_text(
+        storyline
+        or """group: Test Group
+missions:
+  - slug: alpha
+    title: Alpha
+    access: open
+    completion_data: ALPHA-DATA
+""",
+        encoding="utf-8",
+    )
+    mission_dir = pack_root / "alpha"
+    mission_dir.mkdir(exist_ok=True)
+    (mission_dir / "brief.md").write_text("## Brief\n\nHello.\n", encoding="utf-8")
+    (mission_dir / "debrief.md").write_text("## Debrief\n\nDone.\n", encoding="utf-8")

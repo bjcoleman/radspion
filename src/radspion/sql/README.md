@@ -7,13 +7,12 @@
 
 ## Production storyline packs
 
-Mission packs are authored in **radspion-missions** (`storyline.yaml` + per-mission `brief.md` / `debrief.md`). Generate SQL in that repo, then load into a database that already has `schema.sql` applied:
+Mission packs are authored in **radspion-missions** (`storyline.yaml` + per-mission `brief.md` / `debrief.md`). Generate SQL from **radspion**, then load into a database that already has `schema.sql` applied:
 
 ```bash
-# In radspion-missions (see that repo README)
-.venv/bin/python scripts/generate_storyline_sql.py orientation
-
 # In radspion (.env must set RADSPION_MISSIONS_ROOT)
+.venv/bin/generate_storyline orientation --check
+.venv/bin/generate_storyline orientation
 ./scripts/seed_storyline.sh orientation
 ```
 

@@ -20,6 +20,29 @@ def test_render_mission_markdown_fenced_code_without_language():
     assert '<span class="k">' not in html
 
 
+def test_render_mission_markdown_collapsible_section():
+    source = """## Visible
+
+Now.
+
+## Later ???
+
+Hidden paragraph.
+
+---
+
+Footer.
+"""
+    html = str(render_mission_markdown(source))
+    assert "<details" in html
+    assert "<h2>Later</h2>" in html
+    assert 'class="mission-group__chevron"' in html
+    assert "<p>Hidden paragraph.</p>" in html
+    assert "<hr>" in html
+    assert "<p>Footer.</p>" in html
+    assert "Hidden paragraph." not in html[: html.index("<details")]
+
+
 def test_render_mission_markdown_fenced_code_inside_list():
     source = """* First
 
