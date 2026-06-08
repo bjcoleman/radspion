@@ -7,13 +7,15 @@
 </header>
 
 {% if mission.status == 'active' %}
-  <section class="mission-detail__section" aria-labelledby="brief-heading">
-    <h2 id="brief-heading" class="mission-detail__section-title text-mono">Mission Brief</h2>
+  <section class="mission-detail__section mission-content-panel" aria-labelledby="brief-heading">
+    <div class="mission-panel__header">
+      <h2 id="brief-heading" class="mission-panel__title">Mission Brief</h2>
+    </div>
     <article class="mission-markdown markdown-body">{{ mission.brief_html }}</article>
   </section>
 
   <section class="mission-detail__section recovered-data-panel" aria-labelledby="recovered-data-heading">
-    <h2 id="recovered-data-heading" class="recovered-data-panel__title">Recovered Data</h2>
+    <h2 id="recovered-data-heading" class="mission-panel__title">Recovered Data</h2>
     <p class="recovered-data-panel__lede text-muted">
       Enter the data you recovered from this mission. Spacing and line breaks must be exact.
     </p>
@@ -36,30 +38,35 @@
   </section>
 {% else %}
   <section class="mission-detail__section recovered-data-panel" aria-labelledby="recovered-data-heading">
-    <h2 id="recovered-data-heading" class="recovered-data-panel__title">Recovered Data</h2>
-    <p class="recovered-data-panel__lede text-muted">
-      The following data is secured in agency archives.
-    </p>
-    <div class="recovered-data__block">
-      <pre class="recovered-data__value text-mono">{{ mission.recovered_data }}</pre>
-    </div>
+    <details class="mission-panel__collapse">
+      <summary class="mission-panel__summary">
+        {% include "agent/_mission_chevron.html" %}
+        <h2 id="recovered-data-heading" class="mission-panel__title">Recovered Data</h2>
+      </summary>
+      <p class="recovered-data-panel__lede text-muted">
+        The following data is secured in agency archives.
+      </p>
+      <div class="recovered-data__block">
+        <pre class="recovered-data__value text-mono">{{ mission.recovered_data }}</pre>
+      </div>
+    </details>
   </section>
 
-  <section class="mission-detail__section" aria-labelledby="debrief-heading">
-    <details class="mission-group mission-group--collapsible" open>
-      <summary class="mission-group__summary">
+  <section class="mission-detail__section mission-content-panel" aria-labelledby="debrief-heading">
+    <details class="mission-panel__collapse" open>
+      <summary class="mission-panel__summary">
         {% include "agent/_mission_chevron.html" %}
-        <span id="debrief-heading" class="mission-detail__section-title text-mono">Mission Debrief</span>
+        <h2 id="debrief-heading" class="mission-panel__title">Mission Debrief</h2>
       </summary>
       <article class="mission-markdown markdown-body">{{ mission.debrief_html }}</article>
     </details>
   </section>
 
-  <section class="mission-detail__section" aria-labelledby="brief-heading">
-    <details class="mission-group mission-group--collapsible">
-      <summary class="mission-group__summary">
+  <section class="mission-detail__section mission-content-panel" aria-labelledby="brief-heading">
+    <details class="mission-panel__collapse">
+      <summary class="mission-panel__summary">
         {% include "agent/_mission_chevron.html" %}
-        <span id="brief-heading" class="mission-detail__section-title text-mono">Mission Brief</span>
+        <h2 id="brief-heading" class="mission-panel__title">Mission Brief</h2>
       </summary>
       <article class="mission-markdown markdown-body">{{ mission.brief_html }}</article>
     </details>

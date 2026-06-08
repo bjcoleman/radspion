@@ -4,6 +4,7 @@
   --color-bg: #121416;
   --color-bg-elevated: #1a1d21;
   --color-bg-panel: #1e2228;
+  --color-bg-markdown: #0d1117;
   --color-border: #2e343c;
   --color-border-subtle: #252a31;
   --color-text: #e8eaed;
@@ -1122,20 +1123,6 @@ a:hover {
   color: var(--color-text-faint);
 }
 
-/* Collapsible Brief / Debrief (completed mission detail) */
-
-.mission-detail .mission-group--collapsible > .mission-group__summary .mission-detail__section-title {
-  margin: 0;
-}
-
-.mission-detail .mission-group--collapsible[open] > .mission-group__summary {
-  margin-bottom: var(--space-lg);
-}
-
-.mission-detail .mission-group--collapsible:not([open]) > .mission-group__summary {
-  margin-bottom: 0;
-}
-
 /* Copy to clipboard */
 
 .copy-btn {
@@ -1176,7 +1163,50 @@ a:hover {
   display: block;
 }
 
-/* Recovered data (completed mission) */
+/* Mission detail panels (Recovered Data, Debrief, Brief) */
+
+.mission-panel__collapse {
+  margin: 0;
+}
+
+.mission-panel__summary {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  list-style: none;
+}
+
+.mission-panel__summary::-webkit-details-marker {
+  display: none;
+}
+
+.mission-panel__summary .mission-panel__title {
+  margin: 0;
+}
+
+.mission-panel__summary .mission-group__chevron {
+  margin-right: var(--space-sm);
+}
+
+.mission-panel__collapse[open] > .mission-panel__summary {
+  margin-bottom: var(--space-sm);
+}
+
+.mission-panel__collapse[open] > .mission-panel__summary .mission-group__chevron-path--closed {
+  display: none;
+}
+
+.mission-panel__collapse[open] > .mission-panel__summary .mission-group__chevron-path--open {
+  display: inline;
+}
+
+.mission-panel__title {
+  margin: 0 0 var(--space-sm);
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--color-accent);
+}
 
 .recovered-data-panel {
   padding: var(--space-xl);
@@ -1186,12 +1216,29 @@ a:hover {
   border-top: 2px solid var(--color-accent-dim);
 }
 
-.recovered-data-panel__title {
-  margin: 0 0 var(--space-sm);
-  font-size: 1.125rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  color: var(--color-accent);
+.mission-content-panel {
+  background: var(--color-bg-markdown);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+}
+
+.mission-content-panel .mission-panel__header,
+.mission-content-panel .mission-panel__summary {
+  padding: var(--space-lg);
+}
+
+.mission-content-panel .mission-panel__header {
+  padding-bottom: var(--space-sm);
+}
+
+.mission-content-panel .mission-panel__header .mission-panel__title {
+  margin: 0;
+}
+
+.mission-content-panel .mission-panel__collapse[open] > .mission-panel__summary {
+  margin-bottom: 0;
+  padding-bottom: var(--space-sm);
 }
 
 .recovered-data-panel__lede {

@@ -61,8 +61,10 @@
         <p class="mission-detail__meta text-mono">es-beta · <span class="status-badge status-badge--active">active</span></p>
       </header>
 
-      <section class="mission-detail__section" aria-labelledby="brief-heading">
-        <h2 id="brief-heading" class="mission-detail__section-title text-mono">Mission Brief</h2>
+      <section class="mission-detail__section mission-content-panel" aria-labelledby="brief-heading">
+        <div class="mission-panel__header">
+          <h2 id="brief-heading" class="mission-panel__title">Mission Brief</h2>
+        </div>
         <!-- Production: server-side markdown -->
         <article class="mission-markdown markdown-body">
           <h2>Overview</h2>
@@ -78,7 +80,7 @@
       </section>
 
       <section class="mission-detail__section recovered-data-panel" aria-labelledby="recovered-data-heading">
-        <h2 id="recovered-data-heading" class="recovered-data-panel__title">Recovered Data</h2>
+        <h2 id="recovered-data-heading" class="mission-panel__title">Recovered Data</h2>
         <p class="recovered-data-panel__lede text-muted">
           Enter the data you recovered from this mission. Spacing and line breaks must be exact.
         </p>

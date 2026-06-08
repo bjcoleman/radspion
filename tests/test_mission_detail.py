@@ -45,6 +45,10 @@ def test_active_mission_shows_brief_and_enabled_recovered_data_form(storyline_db
     assert "recovered-data-form__textarea" in body
     assert "Submit data" in body
     assert ">Recovered Data</h2>" in body
+    assert body.count("mission-content-panel") == 1
+    assert "mission-panel__header" in body
+    assert "mission-panel__collapse" not in body
+    assert "mission-group__chevron" not in body
     assert "Enter the data you recovered from this mission" in body
     assert "mission-detail-submit.js" in body
     assert 'id="recovered-data-input"' in body
@@ -62,6 +66,20 @@ def test_completed_mission_shows_recovered_data_debrief_and_brief(storyline_db: 
 
     assert response.status_code == 200
     assert "ES: Alpha" in body
+    assert body.count("mission-content-panel") == 2
+    assert body.count("mission-panel__collapse") == 3
+    before_recovered = body.split('id="recovered-data-heading"')[0]
+    recovered_panel = before_recovered.rsplit("mission-panel__collapse", 1)[1]
+    recovered_panel = recovered_panel.split("</details>")[0]
+    assert " open" not in recovered_panel.split(">")[0]
+    before_debrief = body.split('id="debrief-heading"')[0]
+    debrief_panel = before_debrief.rsplit("mission-panel__collapse", 1)[1]
+    debrief_panel = debrief_panel.split("</details>")[0]
+    assert " open" in debrief_panel.split(">")[0]
+    before_brief = body.split('id="brief-heading"')[0]
+    brief_panel = before_brief.rsplit("mission-panel__collapse", 1)[1]
+    brief_panel = brief_panel.split("</details>")[0]
+    assert " open" not in brief_panel.split(">")[0]
     assert "recovered-data__value" in body
     assert "COMPLETE es-alpha" in body
     assert "Mission Debrief" in body
