@@ -15,10 +15,27 @@
 
 .mission-detail .mission-markdown.markdown-body a {
   color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
 }
 
 .mission-detail .mission-markdown.markdown-body a:hover {
   color: var(--color-text);
+}
+
+.mission-markdown.markdown-body h1,
+.mission-markdown.markdown-body h2,
+.mission-markdown.markdown-body h3,
+.mission-markdown.markdown-body h4,
+.mission-markdown.markdown-body h5,
+.mission-markdown.markdown-body h6 {
+  color: var(--color-accent);
+}
+
+.mission-markdown.markdown-body strong,
+.mission-markdown.markdown-body b {
+  font-weight: 700;
+  color: var(--color-accent);
 }
 
 /* Code block wrapper + copy button */
