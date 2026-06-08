@@ -8,6 +8,7 @@ from flask import Flask, jsonify, render_template, request
 from radspion.config import Config, ConfigurationError, load_config
 from radspion.database import DatabaseError, DatabaseRadspionStorage
 from radspion.google_oauth import GoogleOAuth
+from radspion.personnel import format_personnel_date
 from radspion.radspion import Radspion
 from radspion.web.agent import agent_bp
 from radspion.web.api import api_bp
@@ -27,6 +28,11 @@ def create_app(*, config: Config, radspion: Radspion, oauth) -> Flask:
     app.config["SESSION_COOKIE_SECURE"] = config.base_url.startswith("https://")
     app.extensions["radspion"] = radspion
     app.extensions["oauth"] = oauth
+
+    @app.template_filter("personnel_date")
+    def personnel_date_filter(iso_timestamp: str) -> dict[str, str]:
+        iso, label = format_personnel_date(iso_timestamp)
+        return {"iso": iso, "label": label}
 
     app.register_blueprint(main_bp)
     app.register_blueprint(api_bp)

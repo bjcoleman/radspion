@@ -25,7 +25,12 @@
   </form>
 
   <div class="site-header__end">
-    <a class="site-header__agent-link" href="#">{{ user.codename }}</a>
+    {% set on_personnel = request.endpoint == 'agent.personnel' %}
+    <a
+      class="site-header__agent-link{% if on_personnel %} site-header__agent-link--current{% endif %}"
+      href="{{ url_for('agent.personnel') }}"
+      {% if on_personnel %}aria-current="page"{% endif %}
+    >{{ user.codename }}</a>
     <form action="{{ url_for('auth.logout') }}" method="post">
       <button type="submit" class="site-header__action">Sign out</button>
     </form>

@@ -1,6 +1,7 @@
 """In-memory storage fakes for tests."""
 
 from radspion.missions import DashboardGroup, DashboardMission
+from radspion.personnel import PersonnelFile
 from radspion.user import User
 
 
@@ -76,4 +77,8 @@ class InMemoryRadspionStorage:
     def find_listed_mission(self, user_id: int, slug: str) -> DashboardMission | None:
         _ = user_id
         _ = slug
+        return None
+
+    def get_personnel_file(self, user_id: int) -> PersonnelFile | None:
+        _ = user_id
         return None

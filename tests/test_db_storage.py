@@ -108,6 +108,7 @@ def test_closed_connection_raises_database_error_for_all_queries(tmp_path: Path)
         (lambda: storage.find_user_by_email("agent@example.com"), "loading user"),
         (lambda: storage.find_user_by_id(1), "loading user"),
         (lambda: storage.find_user_by_codename("Field-Agent"), "loading user"),
+        (lambda: storage.get_personnel_file(1), "loading personnel file"),
         (
             lambda: storage.create_user(
                 email="agent@example.com",

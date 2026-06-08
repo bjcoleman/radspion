@@ -10,9 +10,11 @@ A web app where students act as **agents** in a spy-agency fiction. **Missions**
 |----------|------------------------------------------|
 | Google OAuth (any account) | Faculty self-service wizard |
 | SQLite data model below | Story templates / publish pipeline |
-| **Groups** as story arcs (dashboard organization) | Audit log, timestamps |
-| Mission Brief / Debrief (markdown paths) | Per-agent keyed codes |
-| `access_rule`: open, clearance_code, requires_complete | |
+| **Groups** as story arcs (dashboard organization) | Full audit log (append-only event history) |
+| **Agent Personnel File** (`GET /agent/personnel`) — personal info, field status, service record | Agent codename update on Personnel File |
+| Mission Brief / Debrief (markdown paths) | |
+| Event timestamps (`users.created_at`, listing/completion times on `agent_mission_status`) | |
+| `access_rule`: open, clearance_code, requires_complete | Per-agent keyed codes |
 | `mission_clearance_codes`, `mission_list_requires` | |
 | **Operator** (you)—configure via SQL seed | |
 | Operator **progress** UI (`is_operator`, read-only) | |

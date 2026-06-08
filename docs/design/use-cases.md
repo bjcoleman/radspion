@@ -33,6 +33,8 @@ Ordered by **dependency** — build from the top down. Each case lists **Require
 | Default codename | Sequential `AGENT0001`, `AGENT0002`, … via `codename_counter` at first sign-in |
 | Codename validation | App layer only: `4 <= len(codename) <= 20` (Unicode code points); no character-class restriction |
 | Public agent identity | `codename` in header and Field Activity; `display_name` and email not shown to other agents |
+| Personnel File | `GET /agent/personnel` — personal info, field status, service record; codename readonly, **Update** disabled |
+| Service record | Derived from `users.created_at`, `agent_mission_status.listed_at`, `agent_mission_status.completed_at` — not a separate audit table |
 
 **Sync invariant:** If a mission is listable (`open`, or `requires_complete` with prereqs met), an `active` row **must** exist for that agent. Missing row in that case is a **bug**, not a UI edge case.
 
@@ -70,7 +72,7 @@ Application stack connects to the Radspion SQLite database (`PRAGMA foreign_keys
 
 **Actor:** Developer  
 **Requires:** UC-003  
-Models (or equivalent data layer) for `users` (including `codename`, `is_operator`), `codename_counter`, `groups`, `missions`, constraint tables, and `agent_mission_status` with the same semantics as [03-database-schema.md](03-database-schema.md).
+Models (or equivalent data layer) for `users` (including `codename`, `created_at`, `is_operator`), `codename_counter`, `groups`, `missions`, constraint tables, and `agent_mission_status` (including `listed_at`, `completed_at`) with the same semantics as [03-database-schema.md](03-database-schema.md).
 
 ---
 
@@ -165,6 +167,18 @@ Do not remove rows for completed missions.
 **Actor:** Agent  
 **Requires:** UC-012  
 After login (post-sync), dashboard lists all `agent_mission_status` rows (`active` or `completed`), grouped by story arc (`groups`). Toggle to show/hide completed missions.
+
+---
+
+## Agent Personnel File
+
+### UC-038 — View Agent Personnel File
+
+**Actor:** Agent  
+**Requires:** UC-007  
+Signed-in agent opens **`GET /agent/personnel`** (header codename link). Page shows Personal Information (`display_name`, `email`, `codename`, **Recruited on** from `created_at`), Field Status counts, and Service Record events derived per [02-entities.md](02-entities.md). Codename is a **readonly** input; **Update** is disabled.
+
+Clearance from the Personnel File header uses the same transmission modal as the dashboard. On clearance **success**, **OK** reloads the page so Field Status and Service Record reflect new listings ([06-agent-experience.md](06-agent-experience.md)).
 
 ---
 
@@ -382,4 +396,4 @@ Diana has no Testing Storyline status rows until she grants storyline clearance.
 
 ## Out of scope for this list (V1)
 
-Per [01-overview.md](01-overview.md): faculty wizard, story templates, audit log, per-agent keyed codes, in-app operator **configuration**, operator CLI helpers (later).
+Per [01-overview.md](01-overview.md): faculty wizard, story templates, full audit log, per-agent keyed codes, agent codename update on Personnel File, in-app operator **configuration**, operator CLI helpers (later).

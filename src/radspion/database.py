@@ -10,6 +10,7 @@ from radspion.missions import (
     MissionListResult,
     MissionSummary,
 )
+from radspion.personnel import PersonnelFile, ServiceRecordEntry
 from radspion.user import User
 
 
@@ -112,6 +113,91 @@ class DatabaseRadspionStorage:
             raise DatabaseError(f"Database error creating user: {exc}") from exc
         return self._row_to_user(row)
 
+    def get_personnel_file(self, user_id: int) -> PersonnelFile | None:
+        """Load Agent Personnel File data for the signed-in agent."""
+        try:
+            user_row = self._conn.execute(
+                """
+                SELECT display_name, email, codename, created_at
+                FROM users
+                WHERE id = ?
+                """,
+                (user_id,),
+            ).fetchone()
+            if user_row is None:
+                return None
+
+            counts = self._conn.execute(
+                """
+                SELECT
+                    SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) AS completed,
+                    SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) AS active
+                FROM agent_mission_status
+                WHERE user_id = ?
+                """,
+                (user_id,),
+            ).fetchone()
+
+            listing_rows = self._conn.execute(
+                """
+                SELECT ams.listed_at AS occurred_at, m.title AS detail
+                FROM agent_mission_status ams
+                JOIN missions m ON m.id = ams.mission_id
+                WHERE ams.user_id = ?
+                ORDER BY ams.listed_at DESC
+                """,
+                (user_id,),
+            ).fetchall()
+
+            completion_rows = self._conn.execute(
+                """
+                SELECT ams.completed_at AS occurred_at, m.title AS detail
+                FROM agent_mission_status ams
+                JOIN missions m ON m.id = ams.mission_id
+                WHERE ams.user_id = ?
+                  AND ams.completed_at IS NOT NULL
+                ORDER BY ams.completed_at DESC
+                """,
+                (user_id,),
+            ).fetchall()
+        except sqlite3.Error as exc:
+            raise DatabaseError(f"Database error loading personnel file: {exc}") from exc
+
+        events: list[ServiceRecordEntry] = [
+            ServiceRecordEntry(
+                occurred_at=user_row["created_at"],
+                verb="Enlisted",
+                detail="Personnel file opened",
+            )
+        ]
+        events.extend(
+            ServiceRecordEntry(
+                occurred_at=row["occurred_at"],
+                verb="Clearance Granted",
+                detail=row["detail"],
+            )
+            for row in listing_rows
+        )
+        events.extend(
+            ServiceRecordEntry(
+                occurred_at=row["occurred_at"],
+                verb="Mission Completed",
+                detail=row["detail"],
+            )
+            for row in completion_rows
+        )
+        events.sort(key=lambda entry: entry.occurred_at, reverse=True)
+
+        return PersonnelFile(
+            display_name=user_row["display_name"],
+            email=user_row["email"],
+            codename=user_row["codename"],
+            recruited_at=user_row["created_at"],
+            missions_completed=int(counts["completed"] or 0),
+            active_missions=int(counts["active"] or 0),
+            service_record=tuple(events),
+        )
+
     def sync_mission_status(self, user_id: int) -> None:
         """
         Keep agent_mission_status aligned with listable missions (UC-012).
@@ -123,8 +209,8 @@ class DatabaseRadspionStorage:
         try:
             self._conn.execute(
                 """
-                INSERT INTO agent_mission_status (user_id, mission_id, status)
-                SELECT ?, m.id, 'active'
+                INSERT INTO agent_mission_status (user_id, mission_id, status, listed_at)
+                SELECT ?, m.id, 'active', datetime('now')
                 FROM missions m
                 WHERE m.access_rule = 'open'
                   AND NOT EXISTS (
@@ -136,8 +222,8 @@ class DatabaseRadspionStorage:
             )
             self._conn.execute(
                 """
-                INSERT INTO agent_mission_status (user_id, mission_id, status)
-                SELECT ?, m.id, 'active'
+                INSERT INTO agent_mission_status (user_id, mission_id, status, listed_at)
+                SELECT ?, m.id, 'active', datetime('now')
                 FROM missions m
                 WHERE m.access_rule = 'requires_complete'
                   AND NOT EXISTS (
@@ -311,8 +397,8 @@ class DatabaseRadspionStorage:
             for row in rows:
                 self._conn.execute(
                     """
-                    INSERT INTO agent_mission_status (user_id, mission_id, status)
-                    VALUES (?, ?, 'active')
+                    INSERT INTO agent_mission_status (user_id, mission_id, status, listed_at)
+                    VALUES (?, ?, 'active', datetime('now'))
                     """,
                     (user_id, row["mission_id"]),
                 )
@@ -392,7 +478,8 @@ class DatabaseRadspionStorage:
             self._conn.execute(
                 """
                 UPDATE agent_mission_status
-                SET status = 'completed'
+                SET status = 'completed',
+                    completed_at = datetime('now')
                 WHERE user_id = ? AND mission_id = ?
                 """,
                 (user_id, row["mission_id"]),

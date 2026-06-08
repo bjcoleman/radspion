@@ -20,6 +20,7 @@ def database_path(tmp_path: Path) -> Path:
                 google_subject_id TEXT NOT NULL UNIQUE,
                 display_name TEXT NOT NULL,
                 codename TEXT NOT NULL UNIQUE,
+                created_at TEXT NOT NULL DEFAULT (datetime('now')),
                 is_operator INTEGER NOT NULL DEFAULT 0
             );
             CREATE TABLE codename_counter (

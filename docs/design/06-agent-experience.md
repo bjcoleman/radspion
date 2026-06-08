@@ -29,7 +29,7 @@ The **Orientation** story arc is public and teaches this model. Orientation **da
 ## Sign-in
 
 - Agents sign in with Google OAuth (any Google account).
-- First sign-in creates the agent (`users` row).
+- First sign-in creates the agent (`users` row) with default **`codename`** (`AGENT0001`, `AGENT0002`, … from `codename_counter`) and **`created_at`** (first sign-in time).
 - After login, the app **syncs** `agent_mission_status` so the mission list is current. A listable `open` mission without an `active` row is a system error.
 
 ## Layout
@@ -38,14 +38,40 @@ Static mockups in [`docs/ui/`](../ui/README.md) are the reference for agent-faci
 
 ### Site header
 
-The agent header is **sticky** on dashboard and mission pages. It includes brand, agent identity, a **clearance** field, **Request Access**, and sign out (text-only control, not a filled button).
+The agent header is **sticky** on dashboard, mission, and Personnel File pages. It includes brand, the agent's **codename** (link), a **clearance** field, **Request Access**, and sign out (text-only control, not a filled button).
 
-| Control | Copy |
-|---------|------|
+| Control | Copy / behavior |
+|---------|-----------------|
+| Codename link | Agent `codename` → `GET /agent/personnel`; on the Personnel File page the link uses `--current` and `aria-current="page"` |
 | Clearance input placeholder | `Clearance code` |
 | Submit clearance | **Request Access** |
 
-The Mission Dashboard does **not** include a second clearance field in the body.
+Clearance works from the header on every page that includes it (dashboard, mission detail, Personnel File). The Mission Dashboard does **not** include a second clearance field in the body.
+
+### Agent Personnel File
+
+Route: **`GET /agent/personnel`** (signed-in only). Mockup: [`agent-personnel-file.html`](../ui/agent-personnel-file.html).
+
+| Element | Copy |
+|---------|------|
+| Page title | **Agent Personnel File** |
+| Back nav | **← Mission Dashboard** (top and bottom) |
+| Stamp | Confidential / your-eyes-only image (decorative) |
+
+**Personal Information**
+
+| Field | Source | Notes |
+|-------|--------|-------|
+| Sign-in name | `users.display_name` | Read-only |
+| Email | `users.email` | Read-only; monospace |
+| Codename | `users.codename` | Readonly input with hint; **Update** button disabled |
+| Codename hint | — | *Your codename should be appropriate for public display (4–20 characters).* |
+| Recruited on | `users.created_at` | Formatted date (`<time>`) |
+| Scope note | — | *Your sign-in name and email are retained only for Radspion Command operations.* |
+
+**Field Status** — counts from `agent_mission_status`: **Missions completed** (`completed`), **Active missions** (`active`).
+
+**Service Record** — scrollable list, newest first. Verbs and sources: [02-entities.md](02-entities.md) (*Service record*). Each row: date, verb, detail (mission title or *Personnel file opened* for **Enlisted**).
 
 ### Mission Dashboard
 
@@ -208,6 +234,8 @@ Granting clearance creates an `active` row for each matching `clearance_code` mi
 
 - `new_missions` **empty** — clearance: confirm clearance recorded (nothing new); data: congratulate completion; **OK** → dashboard refresh or mission detail **completed** view (debrief).
 - `new_missions` **non-empty** — list each new mission (title, slug, group name); **OK** → dashboard refresh (clearance) or completed view (data).
+
+On **Mission Dashboard** and **Agent Personnel File**, clearance **success** **OK** reloads the page (so the mission list or service record reflects new listings). Invalid and already-done outcomes dismiss without reload. Other pages keep their existing OK behavior (e.g. clearance landing → dashboard).
 
 **Already done UX:** show optional `message`; **OK** dismisses without changing the list.
 

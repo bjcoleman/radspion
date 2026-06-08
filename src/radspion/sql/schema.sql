@@ -18,6 +18,7 @@ CREATE TABLE users (
     google_subject_id   TEXT NOT NULL UNIQUE,
     display_name        TEXT NOT NULL,
     codename            TEXT NOT NULL UNIQUE,
+    created_at          TEXT NOT NULL DEFAULT (datetime('now')),
     is_operator         INTEGER NOT NULL DEFAULT 0 CHECK (is_operator IN (0, 1))
 );
 
@@ -70,6 +71,8 @@ CREATE TABLE agent_mission_status (
     user_id     INTEGER NOT NULL REFERENCES users (id) ON DELETE CASCADE,
     mission_id  INTEGER NOT NULL REFERENCES missions (id) ON DELETE CASCADE,
     status      TEXT NOT NULL CHECK (status IN ('active', 'completed')),
+    listed_at   TEXT NOT NULL DEFAULT (datetime('now')),
+    completed_at TEXT,
     UNIQUE (user_id, mission_id)
 );
 

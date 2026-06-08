@@ -3,6 +3,7 @@
 from radspion.markdown_render import render_mission_markdown
 from radspion.missions import DashboardGroup, DashboardMission, MissionDetail, MissionListResult
 from radspion.oauth_types import GoogleProfile
+from radspion.personnel import PersonnelFile
 from radspion.user import User
 
 
@@ -40,6 +41,10 @@ class Radspion:
         )
         self.sync_mission_status(user.id)
         return user
+
+    def get_personnel_file(self, user_id: int) -> PersonnelFile | None:
+        """Load Agent Personnel File data for the signed-in agent."""
+        return self._storage.get_personnel_file(user_id)
 
     def sync_mission_status(self, user_id: int) -> None:
         """Keep agent_mission_status in sync for listable missions (UC-012)."""
