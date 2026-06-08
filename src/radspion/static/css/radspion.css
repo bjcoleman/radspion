@@ -739,6 +739,37 @@ a:hover {
   outline-offset: 2px;
 }
 
+@media (max-width: 48rem) {
+  .site-header:has(.site-header__clearance) {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "brand end"
+      "clearance clearance";
+    gap: var(--space-sm) var(--space-md);
+    padding: var(--space-md);
+  }
+
+  .site-header:has(.site-header__clearance) .site-header__brand {
+    grid-area: brand;
+  }
+
+  .site-header:has(.site-header__clearance) .site-header__clearance {
+    grid-area: clearance;
+    max-width: none;
+    justify-self: stretch;
+  }
+
+  .site-header:has(.site-header__clearance) .site-header__end {
+    grid-area: end;
+  }
+}
+
+@media (max-width: 30rem) {
+  .site-header__agent-email {
+    display: none;
+  }
+}
+
 /* Agent dashboard */
 
 .dashboard {
