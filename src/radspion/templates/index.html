@@ -30,8 +30,12 @@
         </svg>
         Sign in with Google
       </a>
-    </section>
-  </div>
+      </section>
+
+      <p class="landing__activity-link text-muted">
+        <a href="{{ url_for('main.activity') }}">Field Activity</a> — agency-wide mission progress
+      </p>
+    </div>
 {% endblock %}
 
 {% block extra_body %}

@@ -10,8 +10,12 @@ A web app where students act as **agents** in a spy-agency fiction. **Missions**
 |----------|------------------------------------------|
 | Google OAuth (any account) | Faculty self-service wizard |
 | SQLite data model below | Story templates / publish pipeline |
-| **Groups** as story arcs (dashboard organization) | Audit log, timestamps |
-| Mission Brief / Debrief (markdown paths) | Per-agent keyed codes |
+| **Groups** as story arcs (dashboard organization) | Full audit log (append-only event history) |
+| **Agent Personnel File** — personal info, field status, service record, codename update | Per-agent keyed codes |
+| **Field Activity** (`GET /activity`) — public agency-wide progress | |
+| Mission Brief / Debrief (markdown paths) | |
+| Event timestamps (`users.created_at`, listing/completion times on `agent_mission_status`) | |
+| `POST /api/codename` — agent updates field designation | |
 | `access_rule`: open, clearance_code, requires_complete | |
 | `mission_clearance_codes`, `mission_list_requires` | |
 | **Operator** (you)—configure via SQL seed | |
@@ -26,7 +30,7 @@ A web app where students act as **agents** in a spy-agency fiction. **Missions**
 
 ## Stack
 
-- **Flask + Jinja** for server-rendered pages; JSON API at `/api/clearance` and `/api/missions/<slug>/submit` — see [api.yaml](../api.yaml). Agent UI copy: [06-agent-experience.md](06-agent-experience.md); mockups: [ui/README.md](../ui/README.md)
+- **Flask + Jinja** for server-rendered pages; JSON API at `/api/clearance`, `/api/codename`, and `/api/missions/<slug>/submit` — see [api.yaml](../api.yaml). Agent UI copy: [06-agent-experience.md](06-agent-experience.md); mockups: [ui/README.md](../ui/README.md)
 - SQLite 3
 - Mission Brief/Debrief markdown in DB (`brief_markdown` / `debrief_markdown`), seeded from **radspion-missions**; UI mockups in `docs/ui/` inline HTML for layout review
 

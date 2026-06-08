@@ -1,0 +1,119 @@
+{% extends "agent/base_agent.html" %}
+
+{% block title %}Agent Personnel File — Radspion{% endblock %}
+{% block meta_description %}Agent Personnel File — confidential agent record on Radspion.{% endblock %}
+{% block body_class %}page--personnel{% endblock %}
+{% block main_class %}page__main--personnel{% endblock %}
+
+{% block agent_content %}
+  <div class="personnel-file">
+    <nav class="mission-detail__nav">
+      <a class="mission-detail__back" href="{{ url_for('agent.dashboard') }}">← Mission Dashboard</a>
+    </nav>
+
+    <img
+      class="personnel-file__stamp"
+      src="{{ url_for('static', filename='img/confidential_your_eyes_only.png') }}"
+      alt=""
+      aria-hidden="true"
+    >
+
+    <header class="personnel-file__intro">
+      <h1 class="personnel-file__heading">Agent Personnel File</h1>
+    </header>
+
+    <section class="personnel-section" aria-labelledby="personnel-personal-heading">
+      <h2 class="personnel-section__heading" id="personnel-personal-heading">Personal Information</h2>
+      <div class="personnel-panel">
+        <form
+          class="personnel-form personnel-codename-form"
+          data-personnel-codename-form
+          data-current-codename="{{ personnel.codename }}"
+          action="#"
+          method="post"
+        >
+          <div class="personnel-field">
+            <span class="personnel-field__label">Sign-in name</span>
+            <span class="personnel-field__value">{{ personnel.display_name }}</span>
+          </div>
+
+          <div class="personnel-field">
+            <span class="personnel-field__label">Email</span>
+            <span class="personnel-field__value text-mono">{{ personnel.email }}</span>
+          </div>
+
+          <div class="personnel-field personnel-field--editable">
+            <label class="personnel-field__label" for="personnel-codename">Codename</label>
+            <div class="personnel-form__codename-row">
+              <input
+                class="personnel-form__input"
+                type="text"
+                id="personnel-codename"
+                name="codename"
+                value="{{ personnel.codename }}"
+                autocomplete="off"
+                spellcheck="false"
+                maxlength="20"
+              >
+              <button class="personnel-form__submit" type="submit">Update</button>
+            </div>
+            <p class="personnel-form__hint text-muted">
+              Your codename should be appropriate for public display (4–20 characters).
+            </p>
+          </div>
+
+          <div class="personnel-field">
+            <span class="personnel-field__label">Recruited on</span>
+            {% set recruited_date = personnel.recruited_at | personnel_date %}
+            <time class="personnel-field__value" datetime="{{ recruited_date.iso }}">{{ recruited_date.label }}</time>
+          </div>
+
+          <p class="personnel-form__scope text-muted">
+            Your sign-in name and email are retained only for Radspion Command operations.
+          </p>
+        </form>
+      </div>
+    </section>
+
+    <section class="personnel-section" aria-labelledby="personnel-status-heading">
+      <h2 class="personnel-section__heading" id="personnel-status-heading">Field Status</h2>
+      <div class="personnel-panel">
+        <dl class="personnel-stats">
+          <div class="personnel-stats__item">
+            <dt class="personnel-stats__label">Missions completed</dt>
+            <dd class="personnel-stats__value">{{ personnel.missions_completed }}</dd>
+          </div>
+          <div class="personnel-stats__item">
+            <dt class="personnel-stats__label">Active missions</dt>
+            <dd class="personnel-stats__value">{{ personnel.active_missions }}</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="personnel-section" aria-labelledby="personnel-record-heading">
+      <h2 class="personnel-section__heading" id="personnel-record-heading">Service Record</h2>
+      <div class="personnel-panel personnel-panel--scroll">
+        <ol class="service-record">
+          {% for entry in personnel.service_record %}
+            {% set entry_date = entry.occurred_at | personnel_date %}
+            <li class="service-record__item">
+              <time class="service-record__date text-mono" datetime="{{ entry_date.iso }}">{{ entry_date.label }}</time>
+              <span class="service-record__verb">{{ entry.verb }}</span>
+              <span class="service-record__detail">{{ entry.detail }}</span>
+            </li>
+          {% endfor %}
+        </ol>
+      </div>
+    </section>
+
+    <nav class="mission-detail__nav mission-detail__nav--bottom" aria-label="Mission dashboard">
+      <a class="mission-detail__back" href="{{ url_for('agent.dashboard') }}">← Mission Dashboard</a>
+    </nav>
+  </div>
+{% endblock %}
+
+{% block agent_extra_body %}
+  {% include "_codename_modal.html" %}
+  <script src="{{ url_for('static', filename='js/personnel-codename.js') }}"></script>
+{% endblock %}

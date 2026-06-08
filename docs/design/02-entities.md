@@ -55,12 +55,40 @@ Used with `requires_complete`. Prereqs may span story arcs if you design them th
 
 ## Users
 
+Each agent has two names:
+
+| Field | Source | Visibility |
+|-------|--------|------------|
+| `display_name` | Google OAuth profile | Private — Personnel File and operator views only |
+| `codename` | Assigned at first sign-in; agent may change on Personnel File | Public — site header, Field Activity |
+| `created_at` | Set on first sign-in (`DEFAULT datetime('now')`) | Personnel File **Recruited on**; service record **Enlisted** |
+
 - **`is_operator`**: SQLite `INTEGER` `0` or `1` (not a native boolean); `1` may use read-only operator progress UI (V1)
 - Signed-in agents are provisioned on first OAuth; the operator uses one `users` row (`is_operator = 1`)
+- **Default codename:** on first sign-in the system allocates the next sequential name (`AGENT0001`, `AGENT0002`, …) via `codename_counter` in the same transaction as user creation. The agent does not choose a codename at signup.
+- **Codename update:** `POST /api/codename` from the Personnel File. Trim outer whitespace; `4 <= len(codename) <= 20` (Unicode code points); case-sensitive exact uniqueness. No service record entry on change.
+
+### Service record (Personnel File)
+
+The **Service Record** on the Agent Personnel File is **derived at read time** — not stored in a separate audit table. Events are assembled from `users.created_at` and `agent_mission_status` timestamps, sorted newest first:
+
+| Verb | Source | Detail |
+|------|--------|--------|
+| **Enlisted** | `users.created_at` | Fixed copy: *Personnel file opened* |
+| **Clearance Granted** | `agent_mission_status.listed_at` | Mission `title` — one row per status row (includes `open` sync and `requires_complete` auto-listing, not only clearance codes) |
+| **Mission Completed** | `agent_mission_status.completed_at` | Mission `title` — only rows where `completed_at` is set |
+
+**Field Status** counts on the same page: `completed` and `active` rows in `agent_mission_status` for the signed-in agent.
 
 ## Agent progress
 
-**`agent_mission_status`**: `(user_id, mission_id, status)` — `active` | `completed`.
+**`agent_mission_status`**: `(user_id, mission_id, status)` — `active` | `completed`, plus:
+
+| Column | Purpose |
+|--------|---------|
+| `listed_at` | When the mission was added to the agent's dashboard (`DEFAULT datetime('now')` on insert) |
+| `listed_via` | How the mission was listed: `clearance`, `open`, or `requires_complete` |
+| `completed_at` | Set when `status` becomes `completed`; `NULL` while `active` |
 
 - Completed missions may display `missions.completion_data` (data); never expose it for `active` missions
 - **No row** means not listable yet (clearance not granted, or list prereqs not met). Missions that are not listable are **hidden** from the agent dashboard — not shown as locked placeholders

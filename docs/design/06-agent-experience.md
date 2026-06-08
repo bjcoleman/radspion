@@ -29,7 +29,7 @@ The **Orientation** story arc is public and teaches this model. Orientation **da
 ## Sign-in
 
 - Agents sign in with Google OAuth (any Google account).
-- First sign-in creates the agent (`users` row).
+- First sign-in creates the agent (`users` row) with default **`codename`** (`AGENT0001`, `AGENT0002`, … from `codename_counter`) and **`created_at`** (first sign-in time).
 - After login, the app **syncs** `agent_mission_status` so the mission list is current. A listable `open` mission without an `active` row is a system error.
 
 ## Layout
@@ -38,14 +38,75 @@ Static mockups in [`docs/ui/`](../ui/README.md) are the reference for agent-faci
 
 ### Site header
 
-The agent header is **sticky** on dashboard and mission pages. It includes brand, agent identity, a **clearance** field, **Request Access**, and sign out (text-only control, not a filled button).
+The agent header is **sticky** on dashboard, mission, and Personnel File pages. It includes brand, the agent's **codename** (link), a **clearance** field, **Request Access**, and sign out (text-only control, not a filled button).
 
-| Control | Copy |
-|---------|------|
+| Control | Copy / behavior |
+|---------|-----------------|
+| Codename link | Agent `codename` → `GET /agent/personnel`; on the Personnel File page the link uses `--current` and `aria-current="page"` |
 | Clearance input placeholder | `Clearance code` |
 | Submit clearance | **Request Access** |
 
-The Mission Dashboard does **not** include a second clearance field in the body.
+Clearance works from the header on every page that includes it (dashboard, mission detail, Personnel File). The Mission Dashboard does **not** include a second clearance field in the body.
+
+### Agent Personnel File
+
+Route: **`GET /agent/personnel`** (signed-in only). Mockup: [`agent-personnel-file.html`](../ui/agent-personnel-file.html).
+
+| Element | Copy |
+|---------|------|
+| Page title | **Agent Personnel File** |
+| Back nav | **← Mission Dashboard** (top and bottom) |
+| Stamp | Confidential / your-eyes-only image (decorative) |
+
+**Personal Information**
+
+| Field | Source | Notes |
+|-------|--------|-------|
+| Sign-in name | `users.display_name` | Read-only |
+| Email | `users.email` | Read-only; monospace |
+| Codename | `users.codename` | Editable; **Update** calls `POST /api/codename` |
+| Codename hint | — | *Your codename should be appropriate for public display (4–20 characters).* |
+| Recruited on | `users.created_at` | Formatted date (`<time>`) |
+| Scope note | — | *Your sign-in name and email are retained only for Radspion Command operations.* |
+
+**Field Status** — counts from `agent_mission_status`: **Missions completed** (`completed`), **Active missions** (`active`).
+
+**Service Record** — scrollable list, newest first. Verbs and sources: [02-entities.md](02-entities.md) (*Service record*). Each row: date, verb, detail (mission title or *Personnel file opened* for **Enlisted**).
+
+**Codename update** — separate outcome modal (same visual chrome as transmission modals; no progress animation). Client validates unchanged codename and length before calling the API.
+
+| Case | Outcome header | Message |
+|------|----------------|---------|
+| Updated | **Codename** / **Updated** | Your codename has been updated. |
+| Unchanged (client only) | **Codename** / **Unchanged** | Your codename is unchanged. |
+| Invalid length | **Verification** / **Failed** | Codenames must be 4–20 characters. |
+| Duplicate | **Verification** / **Failed** | Another agent is using this codename. |
+| Network / server error | **Verification** / **Failed** | Update could not be completed. Try again. |
+
+Success **OK** reloads the page (header codename and form value). Invalid **OK** dismisses the modal; the input keeps the typed value.
+
+### Field Activity
+
+Route: **`GET /activity`** (public, no sign-in required). Mockup: [`activity.html`](../ui/activity.html).
+
+| Element | Copy |
+|---------|------|
+| Page title | **Field Activity** |
+| Lede | Agency-wide mission progress. Codenames only — mission titles are classified. |
+
+**Layout** — two columns on desktop (Top Agents + Storylines · Recent Clearances + Recent Completions); single column on narrow viewports.
+
+**Header** — signed-out visitors see brand + **Sign in**. Signed-in agents see the standard agent header (codename, clearance, sign out). Entry points: landing page and Mission Dashboard **View Field Activity** link.
+
+**Privacy** — codenames and story arc names only; mission titles never appear. Operators (`is_operator = 1`) are excluded from all aggregates.
+
+**Empty sections** — when data is sparse, each block shows a short empty-state message (no fictional placeholder rows).
+
+**Recent Clearances Granted** — grouped by `(agent, storyline, listed_at)` where `listed_via = clearance`; limit 10; relative timestamps.
+
+**Recent Missions Completed** — most recent `completed_at` per completion; limit 10; relative timestamps.
+
+**Storylines** — sorted by never-assigned count ascending; **Orientation** always last.
 
 ### Mission Dashboard
 
@@ -114,7 +175,7 @@ Missions that are not yet listable are **not shown** on the dashboard.
 
 ## Interactive actions (hybrid SSR + JSON)
 
-Pages are **Flask + Jinja** (dashboard, mission detail). Clearance and data call the **JSON API** under `/api/` with the same session cookie so the browser can run a transmission modal (progress animation) and render outcome-specific copy without a full page reload.
+Pages are **Flask + Jinja** (dashboard, mission detail, Personnel File). Clearance, data, and codename updates call the **JSON API** under `/api/` with the same session cookie so the browser can show outcome modals without a full page reload until the agent dismisses success.
 
 Canonical request/response shapes: [`docs/api.yaml`](../api.yaml). Static mockups in `docs/ui/` **hard-code** modal outcomes (no `fetch`); production uses `RadspionTransmission.transmit()` against these endpoints.
 
@@ -186,6 +247,21 @@ QR codes and field handouts link to `https://…/clearance/<token>` where `<toke
 
 Granting clearance creates an `active` row for each matching `clearance_code` mission that has no status row yet. The same `clearance_code` value may appear on multiple missions.
 
+### `POST /api/codename`
+
+**Auth:** signed-in agent (session cookie).
+
+**Request:** `{ "codename": "..." }`
+
+**Response:** [`CodenameResponse`](../api.yaml) — not `MissionListResponse`.
+
+| `outcome` | When | Response body |
+|-----------|------|----------------|
+| `success` | Valid codename; row updated, or trimmed value equals current codename (no write) | `message`: *Your codename has been updated.* |
+| `invalid` | Length out of range, or another agent has this codename (case-sensitive exact match) | `message`: see codename update table under *Agent Personnel File* |
+
+**HTTP 400** when `codename` is missing or empty after trim. **HTTP 401** when not signed in.
+
 ### `POST /api/missions/<slug>/submit`
 
 **Auth:** signed-in agent (session cookie).
@@ -208,6 +284,8 @@ Granting clearance creates an `active` row for each matching `clearance_code` mi
 
 - `new_missions` **empty** — clearance: confirm clearance recorded (nothing new); data: congratulate completion; **OK** → dashboard refresh or mission detail **completed** view (debrief).
 - `new_missions` **non-empty** — list each new mission (title, slug, group name); **OK** → dashboard refresh (clearance) or completed view (data).
+
+On **Mission Dashboard** and **Agent Personnel File**, clearance **success** **OK** reloads the page (so the mission list or service record reflects new listings). Invalid and already-done outcomes dismiss without reload. Other pages keep their existing OK behavior (e.g. clearance landing → dashboard).
 
 **Already done UX:** show optional `message`; **OK** dismisses without changing the list.
 

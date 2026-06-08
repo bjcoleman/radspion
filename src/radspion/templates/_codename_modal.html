@@ -1,0 +1,17 @@
+{# Codename update outcome modal — personnel-codename.js (separate from transmission modal) #}
+<div
+  class="codename-modal"
+  data-codename-modal
+  data-mark-src="{{ url_for('static', filename='img/radspion_mark_white.svg') }}"
+  hidden
+>
+  <div class="codename-modal__backdrop"></div>
+  <section
+    class="codename-modal__dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="codename-modal-heading"
+  >
+    <div class="codename-modal__outcome" data-codename-outcome></div>
+  </section>
+</div>

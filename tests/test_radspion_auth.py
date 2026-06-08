@@ -54,4 +54,5 @@ def test_sign_in_provisions_new_user():
     user = app.sign_in_with_google(_profile())
 
     assert user.email == "new@example.com"
+    assert user.codename == "AGENT0001"
     assert storage.find_user_by_id(user.id) is not None

@@ -37,3 +37,19 @@ def mission_detail(slug: str):
         user=g.user,
         mission=mission,
     )
+
+
+@agent_bp.get("/personnel")
+@login_required
+def personnel():
+    """Agent Personnel File."""
+    radspion = current_app.extensions["radspion"]
+    personnel_file = radspion.get_personnel_file(g.user.id)
+    if personnel_file is None:
+        abort(404)
+
+    return render_template(
+        "agent/personnel.html",
+        user=g.user,
+        personnel=personnel_file,
+    )

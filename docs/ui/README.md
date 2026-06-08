@@ -36,6 +36,12 @@ Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snaps
 |------|--------|-----------------|-----------|
 | [index.html](index.html) | done | Signed-out landing; Sign in with Google | UC-006 |
 
+### Field Activity (public)
+
+| File | Status | Persona / state | Use cases |
+|------|--------|-----------------|-----------|
+| [activity.html](activity.html) | done | Public `/activity`; fixture [08-example-activity-data.md](../design/08-example-activity-data.md) | — |
+
 ### Agent dashboard
 
 | File | Status | Persona / state | Use cases |
@@ -45,6 +51,7 @@ Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snaps
 | [agent-dashboard-clearance-success.html](agent-dashboard-clearance-success.html) | done | Diana; **EXAMPLE-CLEARANCE** granted modal | UC-020, UC-027 |
 | [agent-dashboard-clearance-invalid.html](agent-dashboard-clearance-invalid.html) | done | Invalid clearance modal | UC-020 |
 | [agent-dashboard-clearance-already-done.html](agent-dashboard-clearance-already-done.html) | done | **EXAMPLE-CLEARANCE** re-submitted (Alice) | UC-020 |
+| [agent-personnel-file.html](agent-personnel-file.html) | done | **Iron-Sentinel**; Agent Personnel File + confidential stamp | — |
 
 ### Mission detail
 
@@ -82,8 +89,9 @@ Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snaps
 2. Auth landing + errors ✓  
 3. Agent dashboard + clearance modals ✓  
 4. Mission detail (active, completed, data modals) ✓  
-5. Implement Jinja templates + `src/` against these mockups  
-6. Operator pages (TODO)
+5. Field Activity mockup ✓  
+6. Implement Jinja templates + `src/` against these mockups  
+7. Operator pages (TODO)
 
 ---
 
@@ -92,7 +100,12 @@ Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snaps
 ### Site header (all agent pages)
 
 - Sticky header with clearance input + **Request Access**
-- Agent identity + sign out
+- Codename link (Personnel File) + sign out
+
+### Agent Personnel File
+
+- **Iron-Sentinel** fixture; confidential stamp; Personal Information, Field Status, scrollable Service Record.
+- Header on this page uses `site-header__agent-link--current` (codename not linked).
 
 ### Agent dashboard
 

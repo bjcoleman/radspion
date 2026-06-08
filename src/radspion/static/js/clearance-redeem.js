@@ -20,7 +20,7 @@
 
   function wireClearanceSuccessOk(outcomeEl) {
     var body = global.document.body;
-    if (body.classList.contains("page--dashboard")) {
+    if (body.classList.contains("page--dashboard") || body.classList.contains("page--personnel") || body.classList.contains("page--activity")) {
       Outcome.wireOkReloadTop(outcomeEl);
       return;
     }

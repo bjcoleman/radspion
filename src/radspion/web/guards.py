@@ -18,6 +18,11 @@ def _resolve_session_user() -> User | None:
     return current_app.extensions["radspion"].get_user(user_id)
 
 
+def resolve_optional_session_user() -> User | None:
+    """Return the signed-in agent when the session is valid, else None."""
+    return _resolve_session_user()
+
+
 def login_required(view):
     """Require a signed-in agent with a live user row; redirect or 401 on failure."""
 

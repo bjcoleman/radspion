@@ -20,6 +20,9 @@
         Missions are assigned by Command, or listed when you are granted clearance
         for a new assignment.
       </p>
+      <p class="dashboard__activity-link text-muted">
+        <a href="{{ url_for('main.activity') }}">View Field Activity</a> — agency-wide mission progress
+      </p>
     </header>
 
     {% for group in dashboard_groups %}

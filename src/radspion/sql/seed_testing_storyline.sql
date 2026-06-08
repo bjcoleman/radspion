@@ -31,11 +31,11 @@ Placeholder. Shown after completion only.
 
 INSERT INTO groups (name) VALUES ('Testing Storyline');
 
-INSERT INTO users (id, email, google_subject_id, display_name) VALUES
-    (1, 'alice@moravian.edu', 'google-alice', 'Alice'),
-    (2, 'bob@moravian.edu', 'google-bob', 'Bob'),
-    (3, 'charlie@moravian.edu', 'google-charlie', 'Charlie'),
-    (4, 'diana@moravian.edu', 'google-diana', 'Diana');
+INSERT INTO users (id, email, google_subject_id, display_name, codename, created_at) VALUES
+    (1, 'alice@moravian.edu', 'google-alice', 'Alice', 'Alice', '2026-04-12 08:00:00'),
+    (2, 'bob@moravian.edu', 'google-bob', 'Bob', 'Field-Bob', '2026-04-12 08:00:00'),
+    (3, 'charlie@moravian.edu', 'google-charlie', 'Charlie', 'Charlie', '2026-04-12 08:00:00'),
+    (4, 'diana@moravian.edu', 'google-diana', 'Diana', 'Diana', '2026-04-12 08:00:00');
 
 INSERT INTO missions (slug, title, brief_markdown, debrief_markdown, group_id, access_rule, completion_data) VALUES
     ('es-alpha', 'ES: Alpha', '# ES: Alpha — Brief
@@ -163,33 +163,43 @@ JOIN missions parent ON parent.slug = 'es-gamma'
 WHERE child.slug = 'es-delta';
 
 -- Diana: orientation only (no storyline clearance granted).
-INSERT INTO agent_mission_status (user_id, mission_id, status)
-SELECT 4, id, 'active' FROM missions WHERE slug = 'basic-training';
+INSERT INTO agent_mission_status (user_id, mission_id, status, listed_at, listed_via)
+SELECT 4, id, 'active', '2026-04-12 09:00:00', 'open' FROM missions WHERE slug = 'basic-training';
 
 -- Alice: EXAMPLE-CLEARANCE path — alpha complete, beta active, gamma active.
-INSERT INTO agent_mission_status (user_id, mission_id, status)
-SELECT 1, id, 'completed' FROM missions WHERE slug = 'basic-training';
-INSERT INTO agent_mission_status (user_id, mission_id, status)
-SELECT 1, id, 'completed' FROM missions WHERE slug = 'es-alpha';
-INSERT INTO agent_mission_status (user_id, mission_id, status)
-SELECT 1, id, 'active' FROM missions WHERE slug = 'es-beta';
-INSERT INTO agent_mission_status (user_id, mission_id, status)
-SELECT 1, id, 'active' FROM missions WHERE slug = 'es-gamma';
+INSERT INTO agent_mission_status (user_id, mission_id, status, listed_at, listed_via, completed_at)
+SELECT 1, id, 'completed', '2026-04-12 09:00:00', 'open', '2026-04-13 10:00:00' FROM missions WHERE slug = 'basic-training';
+INSERT INTO agent_mission_status (user_id, mission_id, status, listed_at, listed_via, completed_at)
+SELECT 1, id, 'completed', '2026-04-14 11:00:00', 'clearance', '2026-04-15 12:00:00' FROM missions WHERE slug = 'es-alpha';
+INSERT INTO agent_mission_status (user_id, mission_id, status, listed_at, listed_via)
+SELECT 1, id, 'active', '2026-04-16 13:00:00', 'clearance' FROM missions WHERE slug = 'es-beta';
+INSERT INTO agent_mission_status (user_id, mission_id, status, listed_at, listed_via)
+SELECT 1, id, 'active', '2026-04-17 14:00:00', 'requires_complete' FROM missions WHERE slug = 'es-gamma';
 
 -- Charlie: beta complete, alpha still active (gamma and delta not listable).
-INSERT INTO agent_mission_status (user_id, mission_id, status)
-SELECT 3, id, 'completed' FROM missions WHERE slug = 'basic-training';
-INSERT INTO agent_mission_status (user_id, mission_id, status)
-SELECT 3, id, 'active' FROM missions WHERE slug = 'es-alpha';
-INSERT INTO agent_mission_status (user_id, mission_id, status)
-SELECT 3, id, 'completed' FROM missions WHERE slug = 'es-beta';
+INSERT INTO agent_mission_status (user_id, mission_id, status, listed_at, listed_via, completed_at)
+SELECT 3, id, 'completed', '2026-04-12 09:00:00', 'open', '2026-04-13 10:00:00' FROM missions WHERE slug = 'basic-training';
+INSERT INTO agent_mission_status (user_id, mission_id, status, listed_at, listed_via)
+SELECT 3, id, 'active', '2026-04-14 11:00:00', 'clearance' FROM missions WHERE slug = 'es-alpha';
+INSERT INTO agent_mission_status (user_id, mission_id, status, listed_at, listed_via, completed_at)
+SELECT 3, id, 'completed', '2026-04-15 12:00:00', 'clearance', '2026-04-16 13:00:00' FROM missions WHERE slug = 'es-beta';
 
 -- Bob: all storyline missions completed (including hidden dead-end).
-INSERT INTO agent_mission_status (user_id, mission_id, status)
-SELECT 2, id, 'completed' FROM missions WHERE slug = 'basic-training';
-INSERT INTO agent_mission_status (user_id, mission_id, status)
-SELECT 2, id, 'completed' FROM missions WHERE slug IN (
-    'es-alpha', 'es-beta', 'es-hidden', 'es-gamma', 'es-delta'
-);
+INSERT INTO agent_mission_status (user_id, mission_id, status, listed_at, listed_via, completed_at)
+SELECT 2, id, 'completed', '2026-04-12 09:00:00', 'open', '2026-04-13 10:00:00' FROM missions WHERE slug = 'basic-training';
+INSERT INTO agent_mission_status (user_id, mission_id, status, listed_at, listed_via, completed_at)
+SELECT
+    2,
+    m.id,
+    'completed',
+    '2026-04-14 11:00:00',
+    CASE m.access_rule
+        WHEN 'clearance_code' THEN 'clearance'
+        WHEN 'requires_complete' THEN 'requires_complete'
+        ELSE 'open'
+    END,
+    '2026-04-20 12:00:00'
+FROM missions m
+WHERE m.slug IN ('es-alpha', 'es-beta', 'es-hidden', 'es-gamma', 'es-delta');
 
 COMMIT;

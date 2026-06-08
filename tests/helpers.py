@@ -14,24 +14,28 @@ SAMPLE_AGENTS = {
         "email": "alice@moravian.edu",
         "google_subject_id": "google-alice",
         "display_name": "Alice",
+        "codename": "Alice",
     },
     "bob": {
         "id": 2,
         "email": "bob@moravian.edu",
         "google_subject_id": "google-bob",
         "display_name": "Bob",
+        "codename": "Field-Bob",
     },
     "charlie": {
         "id": 3,
         "email": "charlie@moravian.edu",
         "google_subject_id": "google-charlie",
         "display_name": "Charlie",
+        "codename": "Charlie",
     },
     "diana": {
         "id": 4,
         "email": "diana@moravian.edu",
         "google_subject_id": "google-diana",
         "display_name": "Diana",
+        "codename": "Diana",
     },
 }
 
@@ -39,6 +43,14 @@ SAMPLE_AGENTS = {
 def execute_sql_file(connection: sqlite3.Connection, sql_path: Path) -> None:
     """Run a SQL file against an open connection."""
     connection.executescript(sql_path.read_text(encoding="utf-8"))
+
+
+def load_schema_only(db_path: Path) -> None:
+    """Apply schema.sql only."""
+    with sqlite3.connect(db_path) as conn:
+        conn.execute("PRAGMA foreign_keys = ON")
+        execute_sql_file(conn, SQL_DIR / "schema.sql")
+        conn.commit()
 
 
 def load_testing_storyline_database(db_path: Path) -> None:

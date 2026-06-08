@@ -10,6 +10,7 @@ INVALID_CLEARANCE_MESSAGE = "Command could not verify this clearance code agains
 INVALID_SUBMIT_MESSAGE = (
     "We received your transmission, but the recovered data does not match mission parameters."
 )
+MISSING_CODENAME_ERROR = "missing codename"
 
 
 @api_bp.post("/clearance")
@@ -31,6 +32,23 @@ def grant_clearance():
             {"outcome": "invalid", "message": INVALID_CLEARANCE_MESSAGE},
         )
 
+    return jsonify(result.to_api_dict())
+
+
+@api_bp.post("/codename")
+@api_login_required
+def update_codename():
+    """Update the signed-in agent's codename (POST /api/codename)."""
+    payload = request.get_json(silent=True)
+    if not isinstance(payload, dict):
+        return jsonify({"error": MISSING_CODENAME_ERROR}), 400
+
+    raw_codename = payload.get("codename")
+    if not isinstance(raw_codename, str) or not raw_codename.strip():
+        return jsonify({"error": MISSING_CODENAME_ERROR}), 400
+
+    radspion = current_app.extensions["radspion"]
+    result = radspion.update_codename(g.user.id, raw_codename)
     return jsonify(result.to_api_dict())
 
 

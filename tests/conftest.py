@@ -5,6 +5,7 @@ import pytest
 from radspion.app import create_app
 from radspion.config import load_config
 from radspion.radspion import Radspion
+from radspion.user import User
 from tests.fakes.google_oauth import FakeGoogleOAuth
 from tests.fakes.storage import InMemoryRadspionStorage
 
@@ -43,11 +44,15 @@ def client(app):
 @pytest.fixture
 def existing_user(storage):
     """Alice-like user already in storage."""
-    user = storage.create_user(
+    user = User(
+        id=1,
         email="alice@example.com",
         google_subject_id="google-alice",
         display_name="Alice",
+        codename="Alice",
     )
+    storage._users[user.id] = user
+    storage._next_user_id = 2
     return user
 
 

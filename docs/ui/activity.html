@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<!-- Field Activity mockup — public /activity page (fixture: 08-example-activity-data.md) -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Field Activity — mission progress across Radspion storylines.">
+  <title>Field Activity — Radspion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/radspion.css">
+</head>
+<body class="page page--activity">
+  <!-- Public page: no nav — agents reach Field Activity via Mission Dashboard link -->
+  <header class="site-header site-header--sticky site-header--public">
+    <a class="site-header__brand" href="index.html">
+      <img
+        class="site-header__mark"
+        src="../../logos/radspion_mark_white.svg"
+        width="36"
+        height="36"
+        alt=""
+      >
+      <span class="site-header__title">Radspion</span>
+    </a>
+
+    <div class="site-header__end">
+      <a class="site-header__action site-header__action--link" href="index.html">Sign in</a>
+    </div>
+  </header>
+
+  <main class="page__main page__main--activity">
+    <div class="activity">
+      <header class="activity__intro">
+        <h1 class="activity__heading">Field Activity</h1>
+        <p class="activity__lede text-muted">
+          Agency-wide mission progress. Codenames only — mission titles are classified.
+        </p>
+      </header>
+
+      <div class="activity__columns">
+        <div class="activity__column">
+          <section class="activity-section" aria-labelledby="activity-leaderboard-heading">
+            <h2 class="activity-section__heading" id="activity-leaderboard-heading">Top Agents</h2>
+            <ol class="activity-leaderboard">
+              <li class="activity-leaderboard__item">
+                <span class="activity-leaderboard__rank text-mono" aria-hidden="true">1</span>
+                <span class="activity-leaderboard__agent">Silent-Fox</span>
+                <span class="activity-leaderboard__score">26 missions completed</span>
+              </li>
+              <li class="activity-leaderboard__item">
+                <span class="activity-leaderboard__rank text-mono" aria-hidden="true">2</span>
+                <span class="activity-leaderboard__agent">Crimson-Vector</span>
+                <span class="activity-leaderboard__score">20 missions completed</span>
+              </li>
+              <li class="activity-leaderboard__item">
+                <span class="activity-leaderboard__rank text-mono" aria-hidden="true">3</span>
+                <span class="activity-leaderboard__agent">Midnight-Broker</span>
+                <span class="activity-leaderboard__score">16 missions completed</span>
+              </li>
+              <li class="activity-leaderboard__item">
+                <span class="activity-leaderboard__rank text-mono" aria-hidden="true">4</span>
+                <span class="activity-leaderboard__agent">Iron-Sentinel</span>
+                <span class="activity-leaderboard__score">15 missions completed</span>
+              </li>
+              <li class="activity-leaderboard__item">
+                <span class="activity-leaderboard__rank text-mono" aria-hidden="true">5</span>
+                <span class="activity-leaderboard__agent">Velvet-Courier</span>
+                <span class="activity-leaderboard__score">12 missions completed</span>
+              </li>
+              <li class="activity-leaderboard__item">
+                <span class="activity-leaderboard__rank text-mono" aria-hidden="true">6</span>
+                <span class="activity-leaderboard__agent">Amber-Lantern</span>
+                <span class="activity-leaderboard__score">12 missions completed</span>
+              </li>
+              <li class="activity-leaderboard__item">
+                <span class="activity-leaderboard__rank text-mono" aria-hidden="true">7</span>
+                <span class="activity-leaderboard__agent">Shadow-Archive</span>
+                <span class="activity-leaderboard__score">9 missions completed</span>
+              </li>
+              <li class="activity-leaderboard__item">
+                <span class="activity-leaderboard__rank text-mono" aria-hidden="true">8</span>
+                <span class="activity-leaderboard__agent">Pale-Handler</span>
+                <span class="activity-leaderboard__score">7 missions completed</span>
+              </li>
+              <li class="activity-leaderboard__item">
+                <span class="activity-leaderboard__rank text-mono" aria-hidden="true">9</span>
+                <span class="activity-leaderboard__agent">Burning-Asset</span>
+                <span class="activity-leaderboard__score">7 missions completed</span>
+              </li>
+              <li class="activity-leaderboard__item">
+                <span class="activity-leaderboard__rank text-mono" aria-hidden="true">10</span>
+                <span class="activity-leaderboard__agent">Hollow-Signal</span>
+                <span class="activity-leaderboard__score">6 missions completed</span>
+              </li>
+            </ol>
+          </section>
+
+          <section class="activity-section" aria-labelledby="activity-storylines-heading">
+            <h2 class="activity-section__heading" id="activity-storylines-heading">Storylines</h2>
+            <ul class="activity-storyline-list">
+              <li class="activity-storyline">
+                <span class="activity-storyline__name">Veil of Cinders</span>
+                <span class="activity-storyline__meta text-muted">
+                  5 missions · 3 never completed
+                </span>
+              </li>
+              <li class="activity-storyline">
+                <span class="activity-storyline__name">Operation Glass Harbour</span>
+                <span class="activity-storyline__meta text-muted">
+                  8 missions · 1 never completed · 1 never assigned
+                </span>
+              </li>
+              <li class="activity-storyline">
+                <span class="activity-storyline__name">The Meridian Protocol</span>
+                <span class="activity-storyline__meta text-muted">
+                  10 missions · 2 never completed · 1 never assigned
+                </span>
+              </li>
+              <li class="activity-storyline">
+                <span class="activity-storyline__name">Cold Relay</span>
+                <span class="activity-storyline__meta text-muted">
+                  7 missions · 3 never completed · 1 never assigned
+                </span>
+              </li>
+              <li class="activity-storyline">
+                <span class="activity-storyline__name">Orientation</span>
+                <span class="activity-storyline__meta text-muted">6 missions</span>
+              </li>
+            </ul>
+          </section>
+        </div>
+
+        <div class="activity__column">
+          <section class="activity-section" aria-labelledby="activity-clearances-heading">
+            <h2 class="activity-section__heading" id="activity-clearances-heading">Recent Clearances Granted</h2>
+            <div class="activity-feed-panel">
+              <ul class="activity-feed">
+              <li class="activity-feed__item">
+                <span class="activity-feed__text"><span class="activity-feed__agent">Distant-Cipher</span> in <span class="activity-feed__storyline">Cold Relay</span></span>
+                <time class="activity-feed__time text-mono" datetime="2026-06-08T14:35:00">25m</time>
+              </li>
+              <li class="activity-feed__item">
+                <span class="activity-feed__text"><span class="activity-feed__agent">Amber-Lantern</span> in <span class="activity-feed__storyline">The Meridian Protocol</span></span>
+                <time class="activity-feed__time text-mono" datetime="2026-06-08T13:50:00">1h</time>
+              </li>
+              <li class="activity-feed__item">
+                <span class="activity-feed__text"><span class="activity-feed__agent">Crimson-Vector</span> in <span class="activity-feed__storyline">Operation Glass Harbour</span></span>
+                <time class="activity-feed__time text-mono" datetime="2026-06-08T10:00:00">5h</time>
+              </li>
+              <li class="activity-feed__item">
+                <span class="activity-feed__text"><span class="activity-feed__agent">Iron-Sentinel</span> in <span class="activity-feed__storyline">The Meridian Protocol</span></span>
+                <time class="activity-feed__time text-mono" datetime="2026-06-07T22:15:00">1d</time>
+              </li>
+              <li class="activity-feed__item">
+                <span class="activity-feed__text"><span class="activity-feed__agent">Pale-Handler</span> in <span class="activity-feed__storyline">The Meridian Protocol</span></span>
+                <time class="activity-feed__time text-mono" datetime="2026-06-07T19:40:00">1d</time>
+              </li>
+              <li class="activity-feed__item">
+                <span class="activity-feed__text"><span class="activity-feed__agent">Hollow-Signal</span> in <span class="activity-feed__storyline">Operation Glass Harbour</span></span>
+                <time class="activity-feed__time text-mono" datetime="2026-06-06T15:20:00">2d</time>
+              </li>
+              <li class="activity-feed__item">
+                <span class="activity-feed__text"><span class="activity-feed__agent">Sharp-Meridian</span> in <span class="activity-feed__storyline">Veil of Cinders</span></span>
+                <time class="activity-feed__time text-mono" datetime="2026-06-05T12:00:00">3d</time>
+              </li>
+              <li class="activity-feed__item">
+                <span class="activity-feed__text"><span class="activity-feed__agent">Velvet-Courier</span> in <span class="activity-feed__storyline">Operation Glass Harbour</span></span>
+                <time class="activity-feed__time text-mono" datetime="2026-06-04T09:30:00">4d</time>
+              </li>
+              <li class="activity-feed__item">
+                <span class="activity-feed__text"><span class="activity-feed__agent">Ghostly-Ledger</span> in <span class="activity-feed__storyline">Orientation</span></span>
+                <time class="activity-feed__time text-mono" datetime="2026-06-03T16:00:00">5d</time>
+              </li>
+              <li class="activity-feed__item">
+                <span class="activity-feed__text"><span class="activity-feed__agent">Shadow-Archive</span> in <span class="activity-feed__storyline">Operation Glass Harbour</span></span>
+                <time class="activity-feed__time text-mono" datetime="2026-06-02T10:15:00">6d</time>
+              </li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="activity-section activity-section--spaced" aria-labelledby="activity-completions-heading">
+            <h2 class="activity-section__heading" id="activity-completions-heading">Recent Missions Completed</h2>
+            <div class="activity-feed-panel">
+              <ul class="activity-feed">
+              <li class="activity-feed__item">
+                <span class="activity-feed__text"><span class="activity-feed__agent">Quiet-Raven</span> in <span class="activity-feed__storyline">Operation Glass Harbour</span></span>
+                <time class="activity-feed__time text-mono" datetime="2026-06-08T14:42:00">18m</time>
+              </li>
+              <li class="activity-feed__item">
+                <span class="activity-feed__text"><span class="activity-feed__agent">Iron-Sentinel</span> in <span class="activity-feed__storyline">The Meridian Protocol</span></span>
+                <time class="activity-feed__time text-mono" datetime="2026-06-08T12:30:00">2h</time>
+              </li>
+              <li class="activity-feed__item">
+                <span class="activity-feed__text"><span class="activity-feed__agent">Silent-Fox</span> in <span class="activity-feed__storyline">The Meridian Protocol</span></span>
+                <time class="activity-feed__time text-mono" datetime="2026-06-08T11:15:00">3h</time>
+              </li>
+              <li class="activity-feed__item">
+                <span class="activity-feed__text"><span class="activity-feed__agent">Crimson-Vector</span> in <span class="activity-feed__storyline">Operation Glass Harbour</span></span>
+                <time class="activity-feed__time text-mono" datetime="2026-06-07T20:00:00">1d</time>
+              </li>
+              <li class="activity-feed__item">
+                <span class="activity-feed__text"><span class="activity-feed__agent">Amber-Lantern</span> in <span class="activity-feed__storyline">Orientation</span></span>
+                <time class="activity-feed__time text-mono" datetime="2026-06-07T16:45:00">1d</time>
+              </li>
+              <li class="activity-feed__item">
+                <span class="activity-feed__text"><span class="activity-feed__agent">Midnight-Broker</span> in <span class="activity-feed__storyline">The Meridian Protocol</span></span>
+                <time class="activity-feed__time text-mono" datetime="2026-06-06T09:20:00">2d</time>
+              </li>
+              <li class="activity-feed__item">
+                <span class="activity-feed__text"><span class="activity-feed__agent">Velvet-Courier</span> in <span class="activity-feed__storyline">Operation Glass Harbour</span></span>
+                <time class="activity-feed__time text-mono" datetime="2026-06-05T18:10:00">3d</time>
+              </li>
+              <li class="activity-feed__item">
+                <span class="activity-feed__text"><span class="activity-feed__agent">Sharp-Meridian</span> in <span class="activity-feed__storyline">Veil of Cinders</span></span>
+                <time class="activity-feed__time text-mono" datetime="2026-06-04T14:00:00">4d</time>
+              </li>
+              <li class="activity-feed__item">
+                <span class="activity-feed__text"><span class="activity-feed__agent">Ghostly-Ledger</span> in <span class="activity-feed__storyline">Orientation</span></span>
+                <time class="activity-feed__time text-mono" datetime="2026-06-03T11:30:00">5d</time>
+              </li>
+              <li class="activity-feed__item">
+                <span class="activity-feed__text"><span class="activity-feed__agent">Hollow-Signal</span> in <span class="activity-feed__storyline">Orientation</span></span>
+                <time class="activity-feed__time text-mono" datetime="2026-06-02T08:45:00">6d</time>
+              </li>
+              </ul>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="page__footer site-footer site-footer--inline">
+    <div class="site-footer__inline">
+      <a class="site-footer__link" href="index.html">Sign in</a>
+      <span class="site-footer__meta">Moravian University · Educational Use</span>
+      <a class="site-footer__link" href="privacy.html">Privacy Policy</a>
+    </div>
+  </footer>
+</body>
+</html>
