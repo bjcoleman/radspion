@@ -62,28 +62,38 @@
       </header>
 
       <section class="mission-detail__section recovered-data-panel" aria-labelledby="recovered-data-heading">
-        <h2 id="recovered-data-heading" class="recovered-data-panel__title">Recovered Data</h2>
-        <p class="recovered-data-panel__lede text-muted">
-          The following data is secured in agency archives.
-        </p>
-        <div class="recovered-data__block">
-          <!-- Multi-line field data (seed es-alpha uses COMPLETE es-alpha) -->
-          <pre class="recovered-data__value text-mono">COMPLETE es-alpha
-VERIFIED: field-site-alpha
-TIMESTAMP: 2026-06-04T14:32:00Z</pre>
-        </div>
-      </section>
-
-      <section class="mission-detail__section" aria-labelledby="debrief-heading">
-        <details class="mission-group mission-group--collapsible" open>
-          <summary class="mission-group__summary">
+        <details class="mission-panel__collapse">
+          <summary class="mission-panel__summary">
             <span class="mission-group__chevron" aria-hidden="true">
               <svg class="mission-group__chevron-icon" viewBox="0 0 24 24" aria-hidden="true">
                 <polyline class="mission-group__chevron-path mission-group__chevron-path--closed" points="12,6 18,12 12,18" />
                 <polyline class="mission-group__chevron-path mission-group__chevron-path--open" points="6,10 12,16 18,10" />
               </svg>
             </span>
-            <span id="debrief-heading" class="mission-detail__section-title text-mono">Mission Debrief</span>
+            <h2 id="recovered-data-heading" class="mission-panel__title">Recovered Data</h2>
+          </summary>
+          <p class="recovered-data-panel__lede text-muted">
+            The following data is secured in agency archives.
+          </p>
+          <div class="recovered-data__block">
+            <!-- Multi-line field data (seed es-alpha uses COMPLETE es-alpha) -->
+            <pre class="recovered-data__value text-mono">COMPLETE es-alpha
+VERIFIED: field-site-alpha
+TIMESTAMP: 2026-06-04T14:32:00Z</pre>
+          </div>
+        </details>
+      </section>
+
+      <section class="mission-detail__section mission-content-panel" aria-labelledby="debrief-heading">
+        <details class="mission-panel__collapse" open>
+          <summary class="mission-panel__summary">
+            <span class="mission-group__chevron" aria-hidden="true">
+              <svg class="mission-group__chevron-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <polyline class="mission-group__chevron-path mission-group__chevron-path--closed" points="12,6 18,12 12,18" />
+                <polyline class="mission-group__chevron-path mission-group__chevron-path--open" points="6,10 12,16 18,10" />
+              </svg>
+            </span>
+            <h2 id="debrief-heading" class="mission-panel__title">Mission Debrief</h2>
           </summary>
           <!-- Production: server-side markdown -->
           <article class="mission-markdown markdown-body">
@@ -93,16 +103,16 @@ TIMESTAMP: 2026-06-04T14:32:00Z</pre>
         </details>
       </section>
 
-      <section class="mission-detail__section" aria-labelledby="brief-heading">
-        <details class="mission-group mission-group--collapsible">
-          <summary class="mission-group__summary">
+      <section class="mission-detail__section mission-content-panel" aria-labelledby="brief-heading">
+        <details class="mission-panel__collapse">
+          <summary class="mission-panel__summary">
             <span class="mission-group__chevron" aria-hidden="true">
               <svg class="mission-group__chevron-icon" viewBox="0 0 24 24" aria-hidden="true">
                 <polyline class="mission-group__chevron-path mission-group__chevron-path--closed" points="12,6 18,12 12,18" />
                 <polyline class="mission-group__chevron-path mission-group__chevron-path--open" points="6,10 12,16 18,10" />
               </svg>
             </span>
-            <span id="brief-heading" class="mission-detail__section-title text-mono">Mission Brief</span>
+            <h2 id="brief-heading" class="mission-panel__title">Mission Brief</h2>
           </summary>
           <!-- Production: server-side markdown -->
           <article class="mission-markdown markdown-body">

@@ -13,6 +13,12 @@
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
 }
 
+.mission-content-panel .mission-markdown.markdown-body {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
 .mission-detail .mission-markdown.markdown-body a {
   color: var(--color-accent);
   text-decoration: underline;
