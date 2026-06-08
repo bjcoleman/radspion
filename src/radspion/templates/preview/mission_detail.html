@@ -16,27 +16,15 @@
   <div class="mission-detail">
     <nav class="mock-preview" aria-label="Preview controls">
       <p class="mock-preview__label">Author preview</p>
-      <div class="mock-preview__controls">
-        <div class="mock-preview__actions">
-          <a
-            class="mock-preview__btn{% if preview_status == 'active' %} mock-preview__btn--current{% endif %}"
-            href="{{ url_for('preview.mission_detail', theme=markdown_theme.key) }}"
-          >Active</a>
-          <a
-            class="mock-preview__btn{% if preview_status == 'completed' %} mock-preview__btn--current{% endif %}"
-            href="{{ url_for('preview.mission_detail', status='completed', theme=markdown_theme.key) }}"
-          >Completed</a>
-        </div>
-        <label class="mock-preview__theme">
-          <span class="mock-preview__theme-label">Markdown theme</span>
-          <select class="mock-preview__theme-select" id="preview-theme-select" aria-label="Markdown theme">
-            {% for theme in markdown_themes.values() %}
-              <option value="{{ theme.key }}"{% if theme.key == markdown_theme.key %} selected{% endif %}>
-                {{ theme.label }}
-              </option>
-            {% endfor %}
-          </select>
-        </label>
+      <div class="mock-preview__actions">
+        <a
+          class="mock-preview__btn{% if preview_status == 'active' %} mock-preview__btn--current{% endif %}"
+          href="{{ url_for('preview.mission_detail') }}"
+        >Active</a>
+        <a
+          class="mock-preview__btn{% if preview_status == 'completed' %} mock-preview__btn--current{% endif %}"
+          href="{{ url_for('preview.mission_detail', status='completed') }}"
+        >Completed</a>
       </div>
     </nav>
 
@@ -50,17 +38,5 @@
     document.querySelectorAll(".page--preview .recovered-data-form__submit").forEach(function (btn) {
       btn.disabled = true;
     });
-
-    (function () {
-      var select = document.getElementById("preview-theme-select");
-      if (!select) {
-        return;
-      }
-      select.addEventListener("change", function () {
-        var url = new URL(window.location.href);
-        url.searchParams.set("theme", select.value);
-        window.location.href = url.toString();
-      });
-    })();
   </script>
 {% endblock %}

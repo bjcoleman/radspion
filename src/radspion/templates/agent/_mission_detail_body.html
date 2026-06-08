@@ -9,7 +9,7 @@
 {% if mission.status == 'active' %}
   <section class="mission-detail__section" aria-labelledby="brief-heading">
     <h2 id="brief-heading" class="mission-detail__section-title text-mono">Mission Brief</h2>
-    <article class="mission-markdown {{ markdown_theme.article_class }}">{{ mission.brief_html }}</article>
+    <article class="mission-markdown markdown-body">{{ mission.brief_html }}</article>
   </section>
 
   <section class="mission-detail__section recovered-data-panel" aria-labelledby="recovered-data-heading">
@@ -51,7 +51,7 @@
         {% include "agent/_mission_chevron.html" %}
         <span id="debrief-heading" class="mission-detail__section-title text-mono">Mission Debrief</span>
       </summary>
-      <article class="mission-markdown {{ markdown_theme.article_class }}">{{ mission.debrief_html }}</article>
+      <article class="mission-markdown markdown-body">{{ mission.debrief_html }}</article>
     </details>
   </section>
 
@@ -61,7 +61,7 @@
         {% include "agent/_mission_chevron.html" %}
         <span id="brief-heading" class="mission-detail__section-title text-mono">Mission Brief</span>
       </summary>
-      <article class="mission-markdown {{ markdown_theme.article_class }}">{{ mission.brief_html }}</article>
+      <article class="mission-markdown markdown-body">{{ mission.brief_html }}</article>
     </details>
   </section>
 {% endif %}

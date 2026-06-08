@@ -1,4 +1,3 @@
-{% for stylesheet in markdown_stylesheets %}
-  <link rel="stylesheet" href="{{ url_for('static', filename=stylesheet) }}">
-{% endfor %}
-<link rel="stylesheet" href="{{ url_for('static', filename=markdown_theme.pygments_css) }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/markdown/vendor/github-markdown-dark.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/markdown/radspion-overrides.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/markdown/pygments-native.css') }}">

@@ -26,7 +26,6 @@ class Config:
     base_url: str
     google_client_id: str
     google_client_secret: str
-    markdown_theme: str
     testing: bool = False
 
 
@@ -55,7 +54,6 @@ def load_config(*, testing: bool = False) -> Config:
             raise ConfigurationError("GOOGLE_CLIENT_SECRET is required.")
 
     database_path = Path(getenv("DATABASE_PATH", str(_DEFAULT_DATABASE)))
-    markdown_theme = getenv("RADSPION_MARKDOWN_THEME", "legacy").strip() or "legacy"
 
     return Config(
         database_path=database_path,
@@ -63,6 +61,5 @@ def load_config(*, testing: bool = False) -> Config:
         base_url=base_url,
         google_client_id=google_client_id,
         google_client_secret=google_client_secret,
-        markdown_theme=markdown_theme,
         testing=testing,
     )

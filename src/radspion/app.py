@@ -8,7 +8,6 @@ from flask import Flask, jsonify, render_template, request
 from radspion.config import Config, ConfigurationError, load_config
 from radspion.database import DatabaseError, DatabaseRadspionStorage
 from radspion.google_oauth import GoogleOAuth
-from radspion.markdown_themes import register_markdown_theme_context
 from radspion.radspion import Radspion
 from radspion.web.agent import agent_bp
 from radspion.web.api import api_bp
@@ -26,11 +25,8 @@ def create_app(*, config: Config, radspion: Radspion, oauth) -> Flask:
     # Lax allows the session cookie on the top-level redirect back from Google OAuth.
     app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
     app.config["SESSION_COOKIE_SECURE"] = config.base_url.startswith("https://")
-    app.config["MARKDOWN_THEME"] = config.markdown_theme
     app.extensions["radspion"] = radspion
     app.extensions["oauth"] = oauth
-
-    register_markdown_theme_context(app)
 
     app.register_blueprint(main_bp)
     app.register_blueprint(api_bp)

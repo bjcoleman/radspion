@@ -210,36 +210,10 @@ def test_preview_route_renders_active_brief(missions_env: Path):
     assert "Preview <strong>brief</strong> text." in body
     assert "Author preview" in body
     assert "status=completed" in body
-    assert "Markdown theme" in body
-    assert 'id="preview-theme-select"' in body
     assert "recovered-data-form--multiline" in body
     assert "mission-detail-copy-data.js" in body
     assert "preview.css" in body
-    assert "css/markdown/legacy.css" in body
-
-
-def test_preview_route_accepts_theme_query(missions_env: Path):
-    app = create_preview_app(storyline="test-pack", mission_slug="alpha")
-    client = app.test_client()
-
-    response = client.get("/?theme=github-light")
-    body = response.data.decode()
-
-    assert response.status_code == 200
-    assert "github-markdown-light.css" in body
-    assert "pygments-friendly.css" in body
-    assert 'value="github-light" selected' in body
-
-
-def test_preview_route_rejects_unknown_theme(missions_env: Path):
-    app = create_preview_app(storyline="test-pack", mission_slug="alpha")
-    client = app.test_client()
-
-    response = client.get("/?theme=unknown")
-    body = response.data.decode()
-
-    assert response.status_code == 400
-    assert "Unknown markdown theme" in body
+    assert 'class="mission-markdown markdown-body"' in body
 
 
 def test_preview_route_renders_completed_debrief(missions_env: Path):

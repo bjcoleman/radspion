@@ -32,7 +32,6 @@ Create `.env` in the project root. **Never commit** this file.
 | `SECRET_KEY` | Flask session signing (**required**; app exits at startup if unset). Generate with `python3 -c "import secrets; print(secrets.token_urlsafe(32))"` |
 | `DATABASE_PATH` | Optional; default `database/radspion.db` |
 | `RADSPION_MISSIONS_ROOT` | Path to **radspion-missions** repo — used by `./scripts/seed_storyline.sh` |
-| `RADSPION_MARKDOWN_THEME` | Optional; mission Brief/Debrief CSS theme (`legacy`, `github-light`, `github-dark`, `latex`). Default `legacy`. |
 | `DEV_EMAIL` | Optional; your Google sign-in email — used by `./scripts/bind_dev_email.sh` only |
 
 ## Local setup
@@ -116,15 +115,7 @@ preview_mission orientation basic-training
 
 Without activating the venv, use `.venv/bin/preview_mission` instead.
 
-Open `http://127.0.0.1:8001/` (Flask prints this on launch). Edit `brief.md` or `debrief.md` in the missions repo, then refresh the browser. Use the **Active** / **Completed** links at the top of the page to switch layouts. Use the **Markdown theme** dropdown to compare rendering styles (legacy, GitHub light/dark, LaTeX.css). Ctrl+C stops the server.
-
-Production and preview default to the **legacy** theme. Set a default in `.env`:
-
-```bash
-RADSPION_MARKDOWN_THEME=github-light
-```
-
-Preview also accepts `?theme=github-dark` (and preserves the parameter when switching Active / Completed).
+Open `http://127.0.0.1:8001/` (Flask prints this on launch). Edit `brief.md` or `debrief.md` in the missions repo, then refresh the browser. Use the **Active** / **Completed** links at the top of the page to switch layouts. Ctrl+C stops the server.
 
 ## Makefile
 

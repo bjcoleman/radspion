@@ -4,7 +4,7 @@ Static HTML/CSS prototypes for **Flask + Jinja SSR**. Each file is a fixed snaps
 
 **Design reference:** [06-agent-experience.md](../design/06-agent-experience.md) (clearance + data) · [use-cases.md](../design/use-cases.md) · [05-testing-storyline.md](../design/05-testing-storyline.md) · [COLOR_USAGE.md](COLOR_USAGE.md)
 
-**Assets:** styles in [`css/radspion.css`](css/radspion.css) are kept in sync with production [`src/radspion/static/css/radspion.css`](../../src/radspion/static/css/radspion.css) (mockup rules + app-only rules for flash, content pages, disabled controls). Logos in [`logos/`](../../logos/). Mission brief and debrief copy is **inlined in HTML** on mission detail mockups (production loads markdown from the database).
+**Assets:** [`css/radspion.css`](css/radspion.css) is kept in sync with production [`src/radspion/static/css/radspion.css`](../../src/radspion/static/css/radspion.css). Mission markdown styles in [`css/markdown/`](css/markdown/) mirror [`src/radspion/static/css/markdown/`](../../src/radspion/static/css/markdown/) (GitHub dark + Radspion overrides + Pygments). Logos in [`logos/`](../../logos/). Mission brief and debrief copy is **inlined in HTML** on mission detail mockups (production loads markdown from the database).
 
 **Target layout:** Sticky site header with **Clearance** field + **Request Access**; Mission Dashboard **without** a body clearance field; mission detail **Recovered Data** panel with **textarea** + **Submit data**; distinct clearance vs data transmission modals.
 
