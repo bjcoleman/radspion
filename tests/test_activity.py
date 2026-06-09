@@ -46,6 +46,7 @@ def test_activity_page_is_public(empty_db: Path):
     assert 'class="page page--activity"' in body
     assert "Field Activity" in body
     assert "site-header--public" in body
+    assert "← Mission Dashboard" not in body
     assert "No agents have completed missions yet." in body
     assert "No storylines configured yet." in body
     assert "No clearance grants recorded yet." in body
@@ -80,6 +81,7 @@ def test_activity_signed_in_uses_agent_header(storyline_db: Path):
     assert "site-header--public" not in body
     assert SAMPLE_AGENTS["alice"]["codename"] in body
     assert "clearance-redeem.js" in body
+    assert body.count("← Mission Dashboard") == 2
 
 
 def test_get_field_activity_orders_storylines_and_leaderboard(storyline_db: Path):

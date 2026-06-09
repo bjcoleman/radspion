@@ -1,5 +1,6 @@
 """Tests for Agent Personnel File."""
 
+import sqlite3
 from pathlib import Path
 
 import pytest
@@ -95,6 +96,37 @@ def test_get_personnel_file_counts_and_service_record(testing_storyline_db: Path
     assert "Enlisted" in verbs
     assert "Mission Completed" in verbs
     assert "Clearance Granted" in verbs
+
+
+def test_service_record_enlisted_is_last_when_timestamps_tie(testing_storyline_db: Path):
+    """Enlisted must be the oldest row even when listed_at matches created_at."""
+    tied = "2026-06-08 10:00:00"
+    with sqlite3.connect(testing_storyline_db) as conn:
+        conn.execute("PRAGMA foreign_keys = ON")
+        conn.execute(
+            "INSERT INTO users (id, email, google_subject_id, display_name, codename, created_at) "
+            "VALUES (99, 'new@moravian.edu', 'google-new', 'New Agent', 'AGENT0099', ?)",
+            (tied,),
+        )
+        conn.execute(
+            """
+            INSERT INTO agent_mission_status (
+                user_id, mission_id, status, listed_at, listed_via, completed_at
+            ) VALUES (99, 1, 'completed', ?, 'open', '2026-06-08 11:00:00')
+            """,
+            (tied,),
+        )
+        conn.commit()
+
+    storage = DatabaseRadspionStorage(testing_storyline_db)
+    personnel = storage.get_personnel_file(99)
+
+    assert personnel is not None
+    assert [entry.verb for entry in personnel.service_record] == [
+        "Mission Completed",
+        "Clearance Granted",
+        "Enlisted",
+    ]
 
 
 def test_format_personnel_date():
