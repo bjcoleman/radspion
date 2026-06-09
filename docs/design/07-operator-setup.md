@@ -12,7 +12,7 @@ Set `users.is_operator = 1` for your account (SQLite stores booleans as integers
 4. If `requires_complete` → rows in `mission_list_requires`  
 5. Trigger status **sync** for affected agents (app does this on login, clearance grant, and data submit when live; in SQL-only workflows, sign-in or a future CLI will reconcile)  
 
-Infrastructure: `schema.sql` in this repo. Storyline mission prose is authored in **radspion-missions** (`storyline.yaml` + markdown) and loaded with `seed_storyline` on first deploy. After agents exist, sync content with `update_storyline` (see `src/radspion/sql/README.md`).
+Infrastructure: `schema.sql` in this repo. Storyline mission prose is authored in **radspion-missions** (`storyline.yaml` + markdown) and loaded with `seed_storyline` on first deploy. After agents exist, sync content with `update_storyline` or remove an arc with `delete_storyline` (see `src/radspion/sql/README.md`).
 
 Authoring conventions: [missions/authoring-guide.md](../missions/authoring-guide.md) (clearance vs data, YAML multiline data, first-mission briefs).
 
