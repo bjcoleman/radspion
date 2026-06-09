@@ -108,7 +108,9 @@ def test_check_reports_no_changes(
         main([str(pack_root), "--check"])
     assert exc.value.code == 0
     captured = capsys.readouterr()
+    assert "alpha: unchanged" in captured.out
     assert "no content changes" in captured.out
+    assert "Group:" not in captured.out
 
 
 def test_apply_updates_brief_without_prompt(tmp_path: Path):
@@ -451,6 +453,14 @@ def test_diff_report_lists_sensitive_and_changed_fields(tmp_path: Path):
     diff = diff_pack_against_db(pack, db_state)
 
     report = format_diff_report(diff)
+    assert "alpha:" in report
+    assert "  title: changed" in report
+    assert "  debrief: changed" in report
+    assert "  completion_data: changed" in report
+    assert "bravo:" in report
+    assert "  clearance_code: 'CODE-ONE' → 'CODE-TWO'" in report
+    assert "  brief: changed" not in report
+    assert "  brief: unchanged" not in report
     assert "1 title" in report
     assert "1 debrief" in report
     assert "1 clearance_code" in report
@@ -459,6 +469,28 @@ def test_diff_report_lists_sensitive_and_changed_fields(tmp_path: Path):
     assert "CODE-ONE' → 'CODE-TWO'" in report
     assert diff.changed_mission_slugs() == ["alpha", "bravo"]
     assert diff.sensitive_mission_slugs() == ["alpha", "bravo"]
+
+
+def test_format_diff_report_marks_unchanged_missions(tmp_path: Path):
+    pack_root = tmp_path / "test-pack"
+    _write_clearance_pack(pack_root)
+    db_path = tmp_path / "radspion.db"
+    _seed_pack(db_path, pack_root)
+
+    storyline = (pack_root / "storyline.yaml").read_text(encoding="utf-8")
+    (pack_root / "storyline.yaml").write_text(
+        storyline.replace("CODE-ONE", "CODE-TWO"),
+        encoding="utf-8",
+    )
+
+    pack = load_pack(pack_root)
+    with sqlite3.connect(db_path) as conn:
+        conn.row_factory = sqlite3.Row
+        db_state = load_db_state(conn, pack.group)
+    report = format_diff_report(diff_pack_against_db(pack, db_state))
+
+    assert "alpha: unchanged" in report
+    assert "bravo:\n  clearance_code: 'CODE-ONE' → 'CODE-TWO'" in report
 
 
 def test_format_diff_report_counts_brief_only(tmp_path: Path):
@@ -478,6 +510,7 @@ def test_format_diff_report_counts_brief_only(tmp_path: Path):
     diff = diff_pack_against_db(pack, db_state)
 
     report = format_diff_report(diff)
+    assert "alpha:\n  brief: changed" in report
     assert "1 brief would change" in report
     assert "Sensitive changes" not in report
 

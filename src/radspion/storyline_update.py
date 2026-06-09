@@ -321,12 +321,31 @@ def apply_update_sql(connection: sqlite3.Connection, sql: str) -> None:
     connection.executescript(sql)
 
 
+def _format_mission_diff(mission_diff: MissionFieldDiff) -> list[str]:
+    if not mission_diff.has_changes:
+        return [f"{mission_diff.slug}: unchanged"]
+
+    lines = [f"{mission_diff.slug}:"]
+    if mission_diff.title_changed:
+        lines.append("  title: changed")
+    if mission_diff.brief_changed:
+        lines.append("  brief: changed")
+    if mission_diff.debrief_changed:
+        lines.append("  debrief: changed")
+    if mission_diff.clearance_code_changed:
+        lines.append(
+            "  clearance_code: "
+            f"{mission_diff.old_clearance_code!r} → {mission_diff.new_clearance_code!r}",
+        )
+    if mission_diff.completion_data_changed:
+        lines.append("  completion_data: changed")
+    return lines
+
+
 def format_diff_report(diff: PackUpdateDiff) -> str:
     """Return a human-readable report of pending content changes."""
     lines = [
         f"OK: pack matches group {diff.group_name!r} ({diff.mission_count} missions)",
-        "",
-        "Group: unchanged",
         "",
     ]
 
@@ -339,36 +358,17 @@ def format_diff_report(diff: PackUpdateDiff) -> str:
     }
 
     for mission_diff in diff.missions:
-        lines.append(f"{mission_diff.slug}:")
-        lines.append(
-            f"  title: {'changed' if mission_diff.title_changed else 'unchanged'}",
-        )
-        lines.append(
-            f"  brief: {'changed' if mission_diff.brief_changed else 'unchanged'}",
-        )
-        lines.append(
-            f"  debrief: {'changed' if mission_diff.debrief_changed else 'unchanged'}",
-        )
-        if mission_diff.clearance_code_changed:
-            lines.append(
-                "  clearance_code: "
-                f"{mission_diff.old_clearance_code!r} → {mission_diff.new_clearance_code!r}",
-            )
-            change_counts["clearance_code"] += 1
-        else:
-            lines.append("  clearance_code: unchanged")
-        lines.append(
-            "  completion_data: "
-            f"{'changed' if mission_diff.completion_data_changed else 'unchanged'}",
-        )
-        if mission_diff.completion_data_changed:
-            change_counts["completion_data"] += 1
+        lines.extend(_format_mission_diff(mission_diff))
         if mission_diff.title_changed:
             change_counts["title"] += 1
         if mission_diff.brief_changed:
             change_counts["brief"] += 1
         if mission_diff.debrief_changed:
             change_counts["debrief"] += 1
+        if mission_diff.clearance_code_changed:
+            change_counts["clearance_code"] += 1
+        if mission_diff.completion_data_changed:
+            change_counts["completion_data"] += 1
         lines.append("")
 
     if not diff.has_changes:
