@@ -29,6 +29,17 @@ update_storyline orientation --write-sql  # write {pack}/{pack}-update.sql only
 
 `update_storyline` does not add or remove missions and cannot change group names, slugs, or access structure.
 
+To remove a storyline entirely (all missions and agent progress on that arc), then re-seed after editing the pack:
+
+```bash
+delete_storyline "Orientation" --check
+delete_storyline "Orientation"              # type the storyline name to confirm
+delete_storyline "Orientation" -y           # hardcore — skips typed confirm; use only after --check
+delete_storyline "Orientation" --write-sql  # write ./{name}-delete.sql only
+```
+
+User accounts and other storylines are not deleted. To change immutable fields (group name, slugs, access structure), edit the pack, delete the old storyline, then run `seed_storyline`.
+
 ## Testing seed
 
 `seed_testing_storyline.sql` includes **inlined** `brief_markdown` and `debrief_markdown` for the test fixture. Do not edit those bodies by hand.
