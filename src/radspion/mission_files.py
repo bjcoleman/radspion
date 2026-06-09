@@ -7,7 +7,8 @@ from os import getenv
 from pathlib import Path
 
 import yaml
-from dotenv import load_dotenv
+
+from radspion.project_paths import load_tool_env, project_root
 
 STORYLINE_FILE = "storyline.yaml"
 BRIEF_FILE = "brief.md"
@@ -29,14 +30,10 @@ class LoadedMission:
     debrief_markdown: str
 
 
-def _radspion_root() -> Path:
-    return Path(__file__).resolve().parents[2]
-
-
 def load_missions_root() -> Path:
     """Resolve RADSPION_MISSIONS_ROOT from radspion .env."""
-    root = _radspion_root()
-    load_dotenv(root / ".env")
+    root = project_root()
+    load_tool_env()
 
     raw = getenv("RADSPION_MISSIONS_ROOT")
     if not raw or not raw.strip():

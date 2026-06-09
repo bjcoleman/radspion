@@ -10,8 +10,12 @@ readme = "README.md"
 requires-python = ">=3.12"
 
 [project.scripts]
-preview_mission = "radspion.preview_cli:main"
-generate_storyline = "radspion.storyline_cli:main"
+create_empty_db = "radspion.tools.create_empty_db:main"
+create_test_db = "radspion.tools.create_test_db:main"
+seed_storyline = "radspion.tools.seed_storyline:main"
+preview_mission = "radspion.tools.preview:main"
+make_radspion_qr = "radspion.tools.make_radspion_qr:main"
+make_radspion_clearance_logo = "radspion.tools.make_radspion_clearance_logo:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -20,7 +24,7 @@ where = ["src"]
 "" = "src"
 
 [tool.setuptools.package-data]
-radspion = ["templates/**/*", "static/**/*"]
+radspion = ["templates/**/*", "static/**/*", "tools/assets/**/*"]
 
 [tool.ruff]
 target-version = "py312"

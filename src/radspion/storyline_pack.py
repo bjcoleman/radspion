@@ -13,7 +13,7 @@ from radspion.markdown_collapsible import validate_collapsible_markdown
 STORYLINE_FILE = "storyline.yaml"
 BRIEF_FILE = "brief.md"
 DEBRIEF_FILE = "debrief.md"
-GENERATOR = "generate_storyline"
+GENERATOR = "seed_storyline"
 
 IMG_MARKDOWN = re.compile(r"!\[[^\]]*\]\(([^)]+)\)")
 IMG_HTML = re.compile(r"""<img[^>]+src=["']([^"']+)["']""", re.IGNORECASE)

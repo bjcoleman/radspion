@@ -4,8 +4,8 @@ default: test style
 	@echo "All checks passed!"
 
 test:
-	pytest
+	.venv/bin/pytest
 
 style:
-	ruff check src tests
-	ruff format --check src tests
+	.venv/bin/ruff check src tests
+	.venv/bin/ruff format --check src tests

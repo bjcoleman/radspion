@@ -21,4 +21,4 @@ Read in order:
 
 **Development:** [dev.md](dev.md) · **JSON API (OpenAPI):** [api.yaml](api.yaml)
 
-**Mission packs:** [radspion-missions](https://github.com/MoravianUniversity/radspion-missions) — `docs/authoring-guide.md` for pack authors
+**Mission packs:** [radspion-missions](https://github.com/MoravianUniversity/radspion-missions) (private data) · [missions/authoring-guide.md](missions/authoring-guide.md) for pack authors

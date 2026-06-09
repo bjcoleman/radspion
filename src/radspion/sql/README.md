@@ -7,16 +7,16 @@
 
 ## Production storyline packs
 
-Mission packs are authored in **radspion-missions** (`storyline.yaml` + per-mission `brief.md` / `debrief.md`). Generate SQL from **radspion**, then load into a database that already has `schema.sql` applied:
+Mission packs are authored in **radspion-missions** (`storyline.yaml` + per-mission `brief.md` / `debrief.md`). Load into a database that already has `schema.sql` applied:
 
 ```bash
 # In radspion (.env must set RADSPION_MISSIONS_ROOT)
-.venv/bin/generate_storyline orientation --check
-.venv/bin/generate_storyline orientation
-./scripts/seed_storyline.sh orientation
+seed_storyline orientation --check
+create_empty_db --force
+seed_storyline orientation
 ```
 
-`seed_storyline.sh` reads `{pack}/{pack}.sql` from the missions repo path in `.env`. Seeds are insert-only and not idempotent.
+`seed_storyline` validates the pack, generates SQL in memory, and inserts rows. Seeds are insert-only and not idempotent. Use `--write-sql` to write `{pack}/{pack}.sql` beside the pack for debugging.
 
 ## Testing seed
 
@@ -25,7 +25,7 @@ Mission packs are authored in **radspion-missions** (`storyline.yaml` + per-miss
 Recreate local test database after schema or seed changes:
 
 ```bash
-./scripts/create_test_db.sh
+create_test_db --force
 ```
 
-Pytest builds its own temporary databases from this seed; you do not need `create_test_db.sh` before running tests.
+Pytest builds its own temporary databases from this seed; you do not need `create_test_db` before running tests.
