@@ -1,20 +1,20 @@
 # Operator setup
 
-V1: you configure the system directly with **SQL** (schema + seed scripts). A read-only **operator progress** UI (story arcs → missions → agent status) is in V1; mission editing stays SQL until a later admin UI.
+V1: you configure the system directly with **SQL** (schema via `create_empty_db`, storyline packs via `seed_storyline`). A read-only **operator progress** UI (story arcs → missions → agent status) is in V1; mission editing stays SQL until a later admin UI.
 
 Set `users.is_operator = 1` for your account (SQLite stores booleans as integers).
 
 ## Configure a story arc (mission pack)
 
 1. Create a `groups` row (story-arc name)  
-2. Insert `missions` with `group_id`, `access_rule`, `completion_data`, `brief_markdown`, `debrief_markdown`, `title` (author in **radspion-missions**, then run `generate_storyline` from **radspion**)  
+2. Insert `missions` with `group_id`, `access_rule`, `completion_data`, `brief_markdown`, `debrief_markdown`, `title` (author in **radspion-missions**, then run `seed_storyline` from **radspion**)  
 3. If `clearance_code` → row in `mission_clearance_codes` (clearance code). The same string may appear on multiple missions so one **Request Access** lists several entries.  
 4. If `requires_complete` → rows in `mission_list_requires`  
 5. Trigger status **sync** for affected agents (app does this on login, clearance grant, and data submit when live; in SQL-only workflows, sign-in or a future CLI will reconcile)  
 
-Infrastructure: `schema.sql` in this repo. Storyline mission prose is authored in **radspion-missions** (`storyline.yaml` + markdown), generated to `{pack}/{pack}.sql`, and loaded with `./scripts/seed_storyline.sh`.
+Infrastructure: `schema.sql` in this repo. Storyline mission prose is authored in **radspion-missions** (`storyline.yaml` + markdown) and loaded with `seed_storyline`.
 
-Authoring conventions: **radspion-missions** `docs/authoring-guide.md` (clearance vs data, YAML multiline data, first-mission briefs).
+Authoring conventions: [missions/authoring-guide.md](../missions/authoring-guide.md) (clearance vs data, YAML multiline data, first-mission briefs).
 
 ## Access rules in practice
 
@@ -34,4 +34,4 @@ The **first mission** in a pack should have a clear title and a brief that expla
 
 ## Example
 
-See [04-example-data-walkthrough.md](04-example-data-walkthrough.md) for the **Testing Storyline** test graph. Production missions load from **radspion-missions** storyline packs via `./scripts/seed_storyline.sh` (set `RADSPION_MISSIONS_ROOT` in `.env`).
+See [04-example-data-walkthrough.md](04-example-data-walkthrough.md) for the **Testing Storyline** test graph. Production missions load from **radspion-missions** storyline packs via `seed_storyline` (set `RADSPION_MISSIONS_ROOT` in `.env`).

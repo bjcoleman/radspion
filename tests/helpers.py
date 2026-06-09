@@ -5,8 +5,8 @@ from __future__ import annotations
 import sqlite3
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-SQL_DIR = PROJECT_ROOT / "src" / "radspion" / "sql"
+from radspion.project_paths import schema_path, testing_seed_path
+from radspion.sql_utils import execute_sql_file as run_sql_file
 
 SAMPLE_AGENTS = {
     "alice": {
@@ -40,16 +40,11 @@ SAMPLE_AGENTS = {
 }
 
 
-def execute_sql_file(connection: sqlite3.Connection, sql_path: Path) -> None:
-    """Run a SQL file against an open connection."""
-    connection.executescript(sql_path.read_text(encoding="utf-8"))
-
-
 def load_schema_only(db_path: Path) -> None:
     """Apply schema.sql only."""
     with sqlite3.connect(db_path) as conn:
         conn.execute("PRAGMA foreign_keys = ON")
-        execute_sql_file(conn, SQL_DIR / "schema.sql")
+        run_sql_file(conn, schema_path())
         conn.commit()
 
 
@@ -57,8 +52,8 @@ def load_testing_storyline_database(db_path: Path) -> None:
     """Schema + Testing Storyline acceptance seed (includes Orientation fixture)."""
     with sqlite3.connect(db_path) as conn:
         conn.execute("PRAGMA foreign_keys = ON")
-        execute_sql_file(conn, SQL_DIR / "schema.sql")
-        execute_sql_file(conn, SQL_DIR / "seed_testing_storyline.sql")
+        run_sql_file(conn, schema_path())
+        run_sql_file(conn, testing_seed_path())
         conn.commit()
 
 

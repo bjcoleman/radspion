@@ -6,7 +6,7 @@ import pytest
 
 from radspion.mission_files import MissionFilesError, load_mission, load_missions_root
 from radspion.preview_app import create_preview_app, preview_port
-from radspion.preview_cli import (
+from radspion.tools.preview import (
     PreviewCliError,
     main,
     parse_preview_args,
@@ -40,7 +40,7 @@ missions:
     (mission_dir / "brief.md").write_text("# Brief\n\nPreview **brief** text.\n", encoding="utf-8")
     (mission_dir / "debrief.md").write_text("# Debrief\n\nPreview debrief.\n", encoding="utf-8")
 
-    monkeypatch.setattr("radspion.mission_files.load_dotenv", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr("radspion.mission_files.load_tool_env", lambda: None)
     monkeypatch.setenv("RADSPION_MISSIONS_ROOT", str(missions_root))
 
     return missions_root
@@ -114,8 +114,8 @@ def test_load_missions_root_resolves_relative_path(tmp_path: Path, monkeypatch: 
     missions_root.mkdir()
     radspion_root.mkdir()
 
-    monkeypatch.setattr("radspion.mission_files._radspion_root", lambda: radspion_root)
-    monkeypatch.setattr("radspion.mission_files.load_dotenv", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr("radspion.mission_files.project_root", lambda: radspion_root)
+    monkeypatch.setattr("radspion.mission_files.load_tool_env", lambda: None)
     monkeypatch.setenv("RADSPION_MISSIONS_ROOT", "../missions")
 
     assert load_missions_root() == missions_root.resolve()
@@ -127,8 +127,8 @@ def test_load_missions_root_rejects_non_directory(tmp_path: Path, monkeypatch: p
     not_a_dir = radspion_root / "nope.txt"
     not_a_dir.write_text("x", encoding="utf-8")
 
-    monkeypatch.setattr("radspion.mission_files._radspion_root", lambda: radspion_root)
-    monkeypatch.setattr("radspion.mission_files.load_dotenv", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr("radspion.mission_files.project_root", lambda: radspion_root)
+    monkeypatch.setattr("radspion.mission_files.load_tool_env", lambda: None)
     monkeypatch.setenv("RADSPION_MISSIONS_ROOT", "nope.txt")
 
     with pytest.raises(MissionFilesError, match="not a directory"):
@@ -136,7 +136,7 @@ def test_load_missions_root_rejects_non_directory(tmp_path: Path, monkeypatch: p
 
 
 def test_load_missions_root_requires_env(monkeypatch: pytest.MonkeyPatch):
-    monkeypatch.setattr("radspion.mission_files.load_dotenv", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr("radspion.mission_files.load_tool_env", lambda: None)
     monkeypatch.delenv("RADSPION_MISSIONS_ROOT", raising=False)
 
     with pytest.raises(MissionFilesError, match="RADSPION_MISSIONS_ROOT"):

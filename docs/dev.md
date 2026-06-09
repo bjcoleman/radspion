@@ -8,7 +8,6 @@ Radspion is a Flask + SQLite application for coursework. This document covers lo
 
 - Python 3.12 or later
 - `git`
-- `sqlite3` CLI
 - Moravian Google account (`@moravian.edu`) for OAuth setup
 
 ## Google OAuth setup
@@ -31,8 +30,8 @@ Create `.env` in the project root. **Never commit** this file.
 | `GOOGLE_CLIENT_SECRET` | OAuth client secret |
 | `SECRET_KEY` | Flask session signing (**required**; app exits at startup if unset). Generate with `python3 -c "import secrets; print(secrets.token_urlsafe(32))"` |
 | `DATABASE_PATH` | Optional; default `database/radspion.db` |
-| `RADSPION_MISSIONS_ROOT` | Path to **radspion-missions** repo — used by `./scripts/seed_storyline.sh` |
-| `DEV_EMAIL` | Optional; your Google sign-in email — used by `./scripts/bind_dev_email.sh` only |
+| `RADSPION_MISSIONS_ROOT` | Path to **radspion-missions** repo — used by `seed_storyline` and `preview_mission` |
+| `DEV_EMAIL` | Optional; your Google sign-in email — used by `create_test_db --bind-dev-email` only |
 
 ## Local setup
 
@@ -48,36 +47,53 @@ pip install -e .
 **Empty database** (schema only, no missions):
 
 ```bash
-./scripts/create_empty_db.sh
+create_empty_db --force
 ```
 
 **Load a storyline pack** (after setting `RADSPION_MISSIONS_ROOT` in `.env`):
 
 ```bash
-./scripts/seed_storyline.sh orientation
+seed_storyline orientation --check
+create_empty_db --force
+seed_storyline orientation
 ```
 
-Pack SQL is generated from **radspion** (`generate_storyline PACK`), which writes `{pack}/{pack}.sql` under `RADSPION_MISSIONS_ROOT`. Run generation before `./scripts/seed_storyline.sh` (the seed script does not generate SQL).
-
-```bash
-.venv/bin/pip install -e .
-.venv/bin/generate_storyline orientation --check
-.venv/bin/generate_storyline orientation
-```
+`seed_storyline` validates the pack, generates SQL in memory, and inserts into the database. Seeds are insert-only and not idempotent. Use `--write-sql` to write `{pack}/{pack}.sql` beside the pack for debugging.
 
 **Test fixture database** (schema + Testing Storyline seed with sample agents — dev/test only):
 
 ```bash
-./scripts/create_test_db.sh
+create_test_db --force
 ```
 
-Pytest creates temporary databases from the same seed; you do not need `create_test_db.sh` before running tests.
+Pytest creates temporary databases from the same seed; you do not need `create_test_db` before running tests.
 
-For a local test database with your Google account on the Alice fixture, set `DEV_EMAIL` in `.env` and run `./scripts/bind_dev_email.sh` (see [05-testing-storyline.md](design/05-testing-storyline.md)).
+For a local test database with your Google account on the Alice fixture, set `DEV_EMAIL` in `.env` and run:
+
+```bash
+create_test_db --force --bind-dev-email
+```
+
+See [05-testing-storyline.md](design/05-testing-storyline.md).
+
+### CLI tools
+
+Console commands are installed with `pip install -e .` (`.venv/bin/…` if the venv is not activated):
+
+| Command | Purpose |
+|---------|---------|
+| `create_empty_db` | Schema-only database |
+| `seed_storyline` | Validate and load a storyline pack |
+| `create_test_db` | Dev/test fixture database (`--bind-dev-email` optional) |
+| `preview_mission` | Local brief/debrief preview server |
+| `make_radspion_qr` | Branded QR PNG for clearance URLs |
+| `make_radspion_clearance_logo` | Logo + clearance code PNG for field assets |
+
+Authoring docs: [missions/README.md](missions/README.md).
 
 ### Application layout
 
-Flat modules under `src/radspion/` (similar to [cost_sharing](https://github.com/MoravianUniversity/cost_sharing)):
+Flat modules under `src/radspion/` (similar to [cost_sharing](https://github.com/MoravianUniversity/cost_sharing)). Operator CLIs live in `src/radspion/tools/` and install as console scripts:
 
 | Module | Role |
 |--------|------|
@@ -99,15 +115,7 @@ python -m radspion.app
 
 ### Mission preview (authors)
 
-Preview a mission **brief** or **debrief** as it will appear on the agent mission page, reading live markdown from **radspion-missions** (no database or OAuth). Requires `RADSPION_MISSIONS_ROOT` in `.env` (same variable as `seed_storyline.sh`).
-
-After pulling preview support, reinstall the editable package once so the CLI is on your PATH:
-
-```bash
-pip install -e .
-```
-
-Start the preview server (port **8001**, separate from the main app on 8000):
+Preview a mission **brief** or **debrief** as it will appear on the agent mission page, reading live markdown from **radspion-missions** (no database or OAuth). Requires `RADSPION_MISSIONS_ROOT` in `.env` (same variable as `seed_storyline`).
 
 ```bash
 preview_mission orientation basic-training
@@ -217,7 +225,8 @@ pip install -e .
 
 
 ```bash
-./scripts/create_empty_db.sh
+create_empty_db --force
+seed_storyline orientation
 ```
 
 

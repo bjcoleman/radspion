@@ -2,7 +2,7 @@
 
 **Engine:** SQLite 3  
 **DDL:** [`src/radspion/sql/schema.sql`](../../src/radspion/sql/schema.sql)  
-**Seed (infrastructure):** `schema.sql` only in this repo. Storyline packs load via `./scripts/seed_storyline.sh`.  
+**Seed (infrastructure):** `schema.sql` only in this repo. Storyline packs load via `seed_storyline`.
 
 
 Enable foreign keys on each connection: `PRAGMA foreign_keys = ON;` (included at the top of the SQL files).
