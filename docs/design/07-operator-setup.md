@@ -1,6 +1,6 @@
 # Operator setup
 
-V1: you configure the system directly with **SQL** (schema + seed scripts). A read-only **operator progress** UI (story arcs → missions → agent status) is in V1; mission editing stays SQL until a later admin UI.
+V1: you configure the system directly with **SQL** (schema via `create_empty_db`, storyline packs via `seed_storyline`). A read-only **operator progress** UI (story arcs → missions → agent status) is in V1; mission editing stays SQL until a later admin UI.
 
 Set `users.is_operator = 1` for your account (SQLite stores booleans as integers).
 

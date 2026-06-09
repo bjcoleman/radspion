@@ -24,7 +24,7 @@ Ordered by **dependency** — build from the top down. Each case lists **Require
 | Agent UI copy | Mockups in `docs/ui/`; header **Request Access**, active **Data** panel, completed **Recovered Data** archives |
 | Error copy (UC-020, UC-022) | Modal strings in [06-agent-experience.md](06-agent-experience.md); API `message` examples in [api.yaml](../api.yaml) |
 | Web framework | **Flask + Jinja** SSR; JSON API at `/api/clearance`, `/api/codename`, `/api/missions/<slug>/submit` |
-| Brief/Debrief bodies | `missions.brief_markdown` / `debrief_markdown` (seed SQL generated from **radspion-missions**) |
+| Brief/Debrief bodies | `missions.brief_markdown` / `debrief_markdown` (loaded from **radspion-missions** via `seed_storyline`) |
 | Operator config V1 | SQL/seed only — no in-app mission editor |
 | Operator progress V1 | Read-only UI: story arcs → missions → agent status |
 | `users.is_operator` | SQLite `INTEGER` `0`/`1`; gates operator routes |
@@ -113,7 +113,7 @@ Agent authenticates with Google (any Google account); app establishes a session 
 
 **Actor:** Operator  
 **Requires:** UC-002 (for example paths)  
-Operator-authored markdown in **radspion-missions**, generated into storyline seed SQL. UI mockups inline representative brief/debrief in HTML — not one mockup file per mission.
+Operator-authored markdown in **radspion-missions**, loaded into the database with `seed_storyline`. UI mockups inline representative brief/debrief in HTML — not one mockup file per mission.
 
 ---
 

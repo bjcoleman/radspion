@@ -8,9 +8,6 @@ from pathlib import Path
 from radspion.project_paths import schema_path, testing_seed_path
 from radspion.sql_utils import execute_sql_file as run_sql_file
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-SQL_DIR = PROJECT_ROOT / "src" / "radspion" / "sql"
-
 SAMPLE_AGENTS = {
     "alice": {
         "id": 1,
