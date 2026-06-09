@@ -15,6 +15,18 @@ class ServiceRecordEntry:
     detail: str
 
 
+_SERVICE_RECORD_VERB_RANK = {
+    "Enlisted": 0,
+    "Clearance Granted": 1,
+    "Mission Completed": 2,
+}
+
+
+def service_record_sort_key(entry: ServiceRecordEntry) -> tuple[str, int]:
+    """Sort newest first; Enlisted stays oldest when timestamps tie."""
+    return (entry.occurred_at, _SERVICE_RECORD_VERB_RANK.get(entry.verb, 1))
+
+
 @dataclass(frozen=True)
 class PersonnelFile:
     """Read model for the Agent Personnel File page."""

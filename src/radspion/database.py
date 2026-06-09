@@ -18,7 +18,7 @@ from radspion.missions import (
     MissionListResult,
     MissionSummary,
 )
-from radspion.personnel import PersonnelFile, ServiceRecordEntry
+from radspion.personnel import PersonnelFile, ServiceRecordEntry, service_record_sort_key
 from radspion.user import User
 
 
@@ -211,7 +211,7 @@ class DatabaseRadspionStorage:
             )
             for row in completion_rows
         )
-        events.sort(key=lambda entry: entry.occurred_at, reverse=True)
+        events.sort(key=service_record_sort_key, reverse=True)
 
         return PersonnelFile(
             display_name=user_row["display_name"],
