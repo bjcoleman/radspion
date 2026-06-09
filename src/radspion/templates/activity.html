@@ -15,6 +15,10 @@
 
 {% block content %}
   <div class="activity">
+    {% if user %}
+      {% include "agent/_mission_back_nav.html" %}
+    {% endif %}
+
     <header class="activity__intro">
       <h1 class="activity__heading">Field Activity</h1>
       <p class="activity__lede text-muted">
@@ -116,6 +120,12 @@
         </section>
       </div>
     </div>
+
+    {% if user %}
+      {% with bottom=true %}
+        {% include "agent/_mission_back_nav.html" %}
+      {% endwith %}
+    {% endif %}
   </div>
 {% endblock %}
 
