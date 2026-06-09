@@ -18,6 +18,17 @@ seed_storyline orientation
 
 `seed_storyline` validates the pack, generates SQL in memory, and inserts rows. Seeds are insert-only and not idempotent. Use `--write-sql` to write `{pack}/{pack}.sql` beside the pack for debugging.
 
+After the first seed, sync content changes (title, brief, debrief, clearance code, completion data) with:
+
+```bash
+update_storyline orientation --check
+update_storyline orientation              # prompts if clearance/completion_data change
+update_storyline orientation -y           # apply after review
+update_storyline orientation --write-sql  # write {pack}/{pack}-update.sql only
+```
+
+`update_storyline` does not add or remove missions and cannot change group names, slugs, or access structure.
+
 ## Testing seed
 
 `seed_testing_storyline.sql` includes **inlined** `brief_markdown` and `debrief_markdown` for the test fixture. Do not edit those bodies by hand.
