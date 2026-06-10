@@ -1,10 +1,13 @@
-.PHONY: test style default
+.PHONY: test style default acceptance
 
 default: test style
 	@echo "All checks passed!"
 
 test:
 	.venv/bin/pytest
+
+acceptance:
+	.venv/bin/pytest tests/acceptance --no-cov
 
 style:
 	.venv/bin/ruff check src tests
