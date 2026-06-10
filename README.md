@@ -23,7 +23,8 @@ src/radspion/sql/      Schema and seeds (mission markdown inlined in SQL)
 deploy/                nginx vhost, systemd unit (production)
 docs/                  Design docs, API outline, UI mockups, mission authoring
 database/              SQLite file (gitignored)
-tests/                 Unit tests
+tests/                 Unit and integration tests
+tests/acceptance/      Browser acceptance tests (Playwright; see docs/dev.md)
 ```
 
 ## Quick start (development)
@@ -37,10 +38,10 @@ make
 
 For an empty DB: `create_empty_db --force`, set `RADSPION_MISSIONS_ROOT` in `.env`, then `seed_storyline PACK`. For dev/test with sample agents and `es-*` missions: `create_test_db --force`. See [05-testing-storyline.md](docs/design/05-testing-storyline.md).
 
-See [docs/dev.md](docs/dev.md) for OAuth, CI, and deployment.
+**Acceptance tests** (browser, optional): after setup, run `.venv/bin/playwright install chromium` once, then `make acceptance`. See [docs/dev.md](docs/dev.md).
 
 ## Stack
 
 - Python 3.12+, Flask + Jinja, SQLite 3
 - Google OAuth, session-backed JSON for clearance and mission submit
-- Ruff (lint/format), pytest + 90% coverage gate
+- Ruff (lint/format), pytest + 90% coverage gate; Playwright acceptance tests (`make acceptance`)

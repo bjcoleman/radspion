@@ -42,6 +42,14 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
+**Acceptance tests (one-time per machine):** after the steps above, install the Chromium build Playwright uses:
+
+```bash
+.venv/bin/playwright install chromium
+```
+
+Re-run that command after upgrading `playwright` in `requirements.txt`.
+
 ### Database
 
 **Empty database** (schema only, no missions):
@@ -131,11 +139,24 @@ Run from the project root (not from `src/`).
 
 | Target | Action |
 |--------|--------|
-| `make` (default) | Unit tests, then Ruff lint and format check |
-| `make test` | `pytest` only |
+| `make` (default) | Unit/integration tests, then Ruff lint and format check |
+| `make test` | `pytest` only (excludes `tests/acceptance/`) |
 | `make style` | Ruff only |
+| `make acceptance` | Browser acceptance tests (`tests/acceptance/`, no coverage gate) |
 
 Before you push or open a PR, run **`make`** and fix anything that fails. CI runs the same checks.
+
+### Acceptance tests (browser)
+
+Acceptance tests drive a real browser against a live Flask server with the Testing Storyline seed. They are slower than unit tests and run separately. Requires the one-time Playwright browser install in [Local setup](#local-setup).
+
+```bash
+make acceptance
+```
+
+To watch a test locally: `.venv/bin/pytest tests/acceptance --headed -k diana`
+
+Playwright uses **headless** Chromium by default. Tests set `prefers-reduced-motion: reduce` so transmission modal animations do not add ~3s per submit.
 
 **Tests** must pass with **at least 90% line coverage** on the `radspion` package. Threshold and pytest options are in [`pytest.ini`](../pytest.ini). Use `# pragma: no cover` only sparingly and by team agreement.
 
@@ -144,6 +165,7 @@ Before you push or open a PR, run **`make`** and fix anything that fails. CI run
 ## CI/CD (GitHub Actions)
 
 - **Unit Tests** — `pytest` on every push/PR
+- **Acceptance Tests** — browser tests in `tests/acceptance/` (`playwright install --with-deps chromium`, then `pytest tests/acceptance --no-cov`)
 - **Static Analysis** — Ruff lint and format check (separate workflow for clearer failure reports)
 - **Redeploy** — manual `workflow_dispatch`; SSH to the department server and run `redeploy.sh`
 
