@@ -5,6 +5,7 @@ from __future__ import annotations
 import sqlite3
 from pathlib import Path
 
+from radspion.database import DatabaseRadspionStorage
 from radspion.project_paths import schema_path, testing_seed_path
 from radspion.sql_utils import execute_sql_file as run_sql_file
 
@@ -63,12 +64,13 @@ def load_orientation_database(db_path: Path) -> None:
 
 
 def assert_mission_status(
-    db_path: Path,
+    db: Path | DatabaseRadspionStorage,
     *,
     user_id: int,
     slug: str,
     expected_status: str,
 ) -> None:
+    db_path = db.database_path if isinstance(db, DatabaseRadspionStorage) else db
     with sqlite3.connect(db_path) as conn:
         row = conn.execute(
             """

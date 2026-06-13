@@ -96,7 +96,7 @@ Route: **`GET /activity`** (public, no sign-in required). Mockup: [`activity.htm
 
 **Layout** — two columns on desktop (Top Agents + Storylines · Recent Clearances + Recent Completions); single column on narrow viewports.
 
-**Header** — signed-out visitors see brand + **Sign in**. Signed-in agents see the standard agent header (codename, clearance, sign out). Entry points: landing page and Mission Dashboard **View Field Activity** link.
+**Header** — signed-out visitors see brand + **Sign in**. Signed-in agents see the standard agent header (codename, clearance, sign out). Entry points: landing page and site footer **Field Activity** link.
 
 **Privacy** — codenames and story arc names only; mission titles never appear. Operators (`is_operator = 1`) are excluded from all aggregates.
 
@@ -113,8 +113,8 @@ Route: **`GET /activity`** (public, no sign-in required). Mockup: [`activity.htm
 | Element | Copy |
 |---------|------|
 | Heading | **Mission Dashboard** |
-| Toggle | **Show completed missions** |
-| Lede | Missions are assigned by Command, or listed when you are granted clearance for a new assignment. |
+| Toggle | **Show completed missions** — only when the agent has at least one completed mission |
+| Welcome memo | Brief-style panel from `content/welcome.md` — only while the agent has **zero** completed missions on the dashboard |
 
 Missions are grouped by story arc (`groups.name`). Collapsible sections; completed missions may be hidden via the toggle.
 
@@ -147,7 +147,7 @@ Never expose `completion_data` to **active** missions in API or UI.
 
 ### Site footer (agent pages)
 
-Single row: **What is Radspion?** · **Moravian University · Educational Use** · **Privacy Policy**
+Link row: **What is Radspion?** · **Field Activity** · **Privacy Policy** — then **Moravian University · Educational Use** on the line below.
 
 ## Groups (story arcs)
 

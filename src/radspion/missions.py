@@ -101,3 +101,8 @@ class DashboardGroup:
             else:
                 parts.append(f"{self.completed_count} completed (hidden)")
         return " · ".join(parts)
+
+
+def dashboard_completed_total(groups: list[DashboardGroup]) -> int:
+    """Count completed missions across all storylines on the agent dashboard."""
+    return sum(group.completed_count for group in groups)

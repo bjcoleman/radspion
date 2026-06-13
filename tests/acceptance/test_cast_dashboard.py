@@ -21,12 +21,17 @@ def test_uc_025_diana_orientation_only(page: Page, live_app: LiveApp, login_as) 
     expect(page.get_by_text("Testing Storyline")).to_have_count(0)
     expect_mission_on_dashboard(page, "basic-training", "active")
     expect_storyline_missions_absent(page)
+    expect(page.locator(".dashboard__welcome")).to_be_visible()
+    expect(page.get_by_text("Stay Observant")).to_be_visible()
+    expect(page.get_by_label("Show completed missions")).to_have_count(0)
 
 
 def test_uc_026_alice_mid_progress_dashboard(page: Page, live_app: LiveApp, login_as) -> None:
     """Alice: es-alpha completed; es-beta and es-gamma active; es-delta hidden."""
     open_agent_dashboard(page, live_app.base_url, login_as, "alice")
 
+    expect(page.locator(".dashboard__welcome")).to_have_count(0)
+    expect(page.get_by_label("Show completed missions")).to_be_visible()
     expect_group_titles_in_order(page, ["Testing Storyline", "Orientation"])
     expect_mission_on_dashboard(page, "es-alpha", "completed")
     expect_mission_on_dashboard(page, "es-beta", "active")

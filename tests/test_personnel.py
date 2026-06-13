@@ -1,52 +1,26 @@
 """Tests for Agent Personnel File."""
 
 import sqlite3
-from pathlib import Path
 
-import pytest
-
-from radspion.app import create_app
-from radspion.config import load_config
 from radspion.database import DatabaseRadspionStorage
 from radspion.personnel import format_personnel_date
-from radspion.radspion import Radspion
 from radspion.web.session_keys import SESSION_USER_ID
-from tests.fakes.google_oauth import FakeGoogleOAuth
-from tests.helpers import SAMPLE_AGENTS, load_testing_storyline_database
+from tests.helpers import SAMPLE_AGENTS
 
 
-@pytest.fixture
-def testing_storyline_db(tmp_path: Path) -> Path:
-    db_path = tmp_path / "storyline.db"
-    load_testing_storyline_database(db_path)
-    return db_path
-
-
-def _client_for_db(db_path: Path):
-    config = load_config(testing=True)
-    storage = DatabaseRadspionStorage(db_path)
-    radspion = Radspion(storage)
-    oauth = FakeGoogleOAuth()
-    app = create_app(config=config, radspion=radspion, oauth=oauth)
-    return app.test_client()
-
-
-def test_personnel_requires_login(testing_storyline_db: Path):
-    client = _client_for_db(testing_storyline_db)
-
-    response = client.get("/agent/personnel")
+def test_personnel_requires_login(testing_storyline_client):
+    response = testing_storyline_client.get("/agent/personnel")
 
     assert response.status_code == 302
     assert response.location.endswith("/")
 
 
-def test_personnel_page_shows_agent_record(testing_storyline_db: Path):
-    client = _client_for_db(testing_storyline_db)
+def test_personnel_page_shows_agent_record(testing_storyline_client):
     alice = SAMPLE_AGENTS["alice"]
-    with client.session_transaction() as sess:
+    with testing_storyline_client.session_transaction() as sess:
         sess[SESSION_USER_ID] = alice["id"]
 
-    response = client.get("/agent/personnel")
+    response = testing_storyline_client.get("/agent/personnel")
     body = response.data.decode()
 
     assert response.status_code == 200
@@ -75,11 +49,12 @@ def test_personnel_page_shows_agent_record(testing_storyline_db: Path):
     assert ">Update</button>" in body
 
 
-def test_get_personnel_file_counts_and_service_record(testing_storyline_db: Path):
-    storage = DatabaseRadspionStorage(testing_storyline_db)
+def test_get_personnel_file_counts_and_service_record(
+    testing_storyline_storage: DatabaseRadspionStorage,
+):
     alice_id = SAMPLE_AGENTS["alice"]["id"]
 
-    personnel = storage.get_personnel_file(alice_id)
+    personnel = testing_storyline_storage.get_personnel_file(alice_id)
 
     assert personnel is not None
     assert personnel.display_name == SAMPLE_AGENTS["alice"]["display_name"]
@@ -98,10 +73,13 @@ def test_get_personnel_file_counts_and_service_record(testing_storyline_db: Path
     assert "Clearance Granted" in verbs
 
 
-def test_service_record_enlisted_is_last_when_timestamps_tie(testing_storyline_db: Path):
+def test_service_record_enlisted_is_last_when_timestamps_tie(
+    testing_storyline_db_path,
+    testing_storyline_storage: DatabaseRadspionStorage,
+):
     """Enlisted must be the oldest row even when listed_at matches created_at."""
     tied = "2026-06-08 10:00:00"
-    with sqlite3.connect(testing_storyline_db) as conn:
+    with sqlite3.connect(testing_storyline_db_path) as conn:
         conn.execute("PRAGMA foreign_keys = ON")
         conn.execute(
             "INSERT INTO users (id, email, google_subject_id, display_name, codename, created_at) "
@@ -118,8 +96,7 @@ def test_service_record_enlisted_is_last_when_timestamps_tie(testing_storyline_d
         )
         conn.commit()
 
-    storage = DatabaseRadspionStorage(testing_storyline_db)
-    personnel = storage.get_personnel_file(99)
+    personnel = testing_storyline_storage.get_personnel_file(99)
 
     assert personnel is not None
     assert [entry.verb for entry in personnel.service_record] == [

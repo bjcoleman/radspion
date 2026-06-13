@@ -1,38 +1,14 @@
 """Tests for agent mission detail pages (UC-016 / UC-017)."""
 
-from pathlib import Path
-
-import pytest
-
-from radspion.app import create_app
-from radspion.config import load_config
-from radspion.database import DatabaseRadspionStorage
-from radspion.radspion import Radspion
 from radspion.web.session_keys import SESSION_USER_ID
-from tests.fakes.google_oauth import FakeGoogleOAuth
-from tests.helpers import SAMPLE_AGENTS, load_testing_storyline_database
+from tests.helpers import SAMPLE_AGENTS
 
 
-@pytest.fixture
-def storyline_db(tmp_path: Path) -> Path:
-    db_path = tmp_path / "storyline.db"
-    load_testing_storyline_database(db_path)
-    return db_path
-
-
-def _client_for_db(db_path: Path):
-    config = load_config(testing=True)
-    radspion = Radspion(DatabaseRadspionStorage(db_path))
-    app = create_app(config=config, radspion=radspion, oauth=FakeGoogleOAuth())
-    return app.test_client()
-
-
-def test_active_mission_shows_brief_and_enabled_recovered_data_form(storyline_db: Path):
-    client = _client_for_db(storyline_db)
-    with client.session_transaction() as sess:
+def test_active_mission_shows_brief_and_enabled_recovered_data_form(testing_storyline_client):
+    with testing_storyline_client.session_transaction() as sess:
         sess[SESSION_USER_ID] = SAMPLE_AGENTS["alice"]["id"]
 
-    response = client.get("/agent/missions/es-beta")
+    response = testing_storyline_client.get("/agent/missions/es-beta")
     body = response.data.decode()
 
     assert response.status_code == 200
@@ -56,12 +32,11 @@ def test_active_mission_shows_brief_and_enabled_recovered_data_form(storyline_db
     assert "recovered-data__value" not in body
 
 
-def test_completed_mission_shows_recovered_data_debrief_and_brief(storyline_db: Path):
-    client = _client_for_db(storyline_db)
-    with client.session_transaction() as sess:
+def test_completed_mission_shows_recovered_data_debrief_and_brief(testing_storyline_client):
+    with testing_storyline_client.session_transaction() as sess:
         sess[SESSION_USER_ID] = SAMPLE_AGENTS["alice"]["id"]
 
-    response = client.get("/agent/missions/es-alpha")
+    response = testing_storyline_client.get("/agent/missions/es-alpha")
     body = response.data.decode()
 
     assert response.status_code == 200
@@ -88,11 +63,10 @@ def test_completed_mission_shows_recovered_data_debrief_and_brief(storyline_db: 
     assert "recovered-data-form" not in body
 
 
-def test_mission_detail_404_when_not_listed(storyline_db: Path):
-    client = _client_for_db(storyline_db)
-    with client.session_transaction() as sess:
+def test_mission_detail_404_when_not_listed(testing_storyline_client):
+    with testing_storyline_client.session_transaction() as sess:
         sess[SESSION_USER_ID] = SAMPLE_AGENTS["diana"]["id"]
 
-    response = client.get("/agent/missions/es-alpha")
+    response = testing_storyline_client.get("/agent/missions/es-alpha")
     assert response.status_code == 404
     assert "Transmission Terminated" in response.data.decode()

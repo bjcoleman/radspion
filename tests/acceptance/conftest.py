@@ -90,6 +90,7 @@ def live_app(testing_storyline_db: Path) -> LiveApp:
     yield LiveApp(base_url=base_url, oauth=oauth, database_path=testing_storyline_db)
 
     server.shutdown()
+    storage.close()
 
 
 @pytest.fixture

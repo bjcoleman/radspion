@@ -1,5 +1,7 @@
 """Shared pytest fixtures."""
 
+from __future__ import annotations
+
 import pytest
 
 from radspion.app import create_app
@@ -8,6 +10,26 @@ from radspion.radspion import Radspion
 from radspion.user import User
 from tests.fakes.google_oauth import FakeGoogleOAuth
 from tests.fakes.storage import InMemoryRadspionStorage
+
+pytest_plugins = ["tests.db_fixtures"]
+
+_MIN_OPEN_FILES = 1024
+
+
+def _raise_open_file_soft_limit(minimum: int = _MIN_OPEN_FILES) -> None:
+    """macOS often defaults to 256 open files; pytest-cov needs more near suite end."""
+    try:
+        import resource
+
+        soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
+        if soft < minimum:
+            resource.setrlimit(resource.RLIMIT_NOFILE, (min(minimum, hard), hard))
+    except (ImportError, OSError, ValueError):
+        pass
+
+
+def pytest_configure(config: pytest.Config) -> None:
+    _raise_open_file_soft_limit()
 
 
 @pytest.fixture

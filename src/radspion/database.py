@@ -2,6 +2,7 @@
 
 import sqlite3
 from pathlib import Path
+from typing import Self
 
 from radspion.activity import (
     ActivityFeedEntry,
@@ -30,12 +31,29 @@ class DatabaseRadspionStorage:
     """Persist and load data using a SQLite database file."""
 
     def __init__(self, database_path: Path) -> None:
+        self._database_path = database_path.resolve()
         try:
-            self._conn = sqlite3.connect(database_path, check_same_thread=False)
+            self._conn = sqlite3.connect(self._database_path, check_same_thread=False)
         except sqlite3.Error as exc:
             raise DatabaseError(f"Could not open database at {database_path}: {exc}") from exc
         self._conn.row_factory = sqlite3.Row
         self._conn.execute("PRAGMA foreign_keys = ON")
+
+    @property
+    def database_path(self) -> Path:
+        """Filesystem path to the SQLite database file."""
+        return self._database_path
+
+    def close(self) -> None:
+        """Close the underlying SQLite connection."""
+        if self._conn is not None:
+            self._conn.close()
+
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(self, *_exc: object) -> None:
+        self.close()
 
     def _row_to_user(self, row: sqlite3.Row) -> User:
         return User(

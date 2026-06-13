@@ -3,6 +3,9 @@
 {% block title %}Mission Dashboard — Radspion{% endblock %}
 
 {% block extra_head %}
+  {% if welcome_memo_html %}
+    {% include "_mission_markdown_styles.html" %}
+  {% endif %}
   <script src="{{ url_for('static', filename='js/dashboard.js') }}" defer></script>
 {% endblock %}
 
@@ -11,19 +14,23 @@
     <header class="dashboard__intro">
       <div class="dashboard__title-row">
         <h1 class="dashboard__heading">Mission Dashboard</h1>
-        <label class="dashboard__toggle">
-          <input type="checkbox" class="dashboard__toggle-input" checked data-show-completed>
-          <span class="dashboard__toggle-label">Show completed missions</span>
-        </label>
+        {% if completed_total > 0 %}
+          <label class="dashboard__toggle">
+            <input type="checkbox" class="dashboard__toggle-input" checked data-show-completed>
+            <span class="dashboard__toggle-label">Show completed missions</span>
+          </label>
+        {% endif %}
       </div>
-      <p class="dashboard__lede text-muted">
-        Missions are assigned by Command, or listed when you are granted clearance
-        for a new assignment.
-      </p>
-      <p class="dashboard__activity-link text-muted">
-        <a href="{{ url_for('main.activity') }}">View Field Activity</a> — agency-wide mission progress
-      </p>
     </header>
+
+    {% if welcome_memo_html %}
+      <section
+        class="dashboard__welcome mission-content-panel"
+        aria-label="Welcome memo from Radspion Command"
+      >
+        <article class="mission-markdown markdown-body">{{ welcome_memo_html }}</article>
+      </section>
+    {% endif %}
 
     {% for group in dashboard_groups %}
       <details

@@ -7,38 +7,32 @@ import pytest
 
 from radspion.database import DatabaseError, DatabaseRadspionStorage
 from radspion.radspion import Radspion
-from tests.helpers import load_orientation_database
 
 
-@pytest.fixture
-def orientation_database_path(tmp_path: Path) -> Path:
-    path = tmp_path / "orientation.db"
-    load_orientation_database(path)
-    return path
-
-
-def test_agent_has_listed_mission_true_when_on_dashboard(orientation_database_path: Path):
-    storage = DatabaseRadspionStorage(orientation_database_path)
-    user = storage.create_user(
+def test_agent_has_listed_mission_true_when_on_dashboard(
+    testing_storyline_storage: DatabaseRadspionStorage,
+):
+    user = testing_storyline_storage.create_user(
         email="agent@example.com",
         google_subject_id="sub-1",
         display_name="Agent",
     )
-    Radspion(storage).sync_mission_status(user.id)
+    Radspion(testing_storyline_storage).sync_mission_status(user.id)
 
-    assert storage.agent_has_listed_mission(user.id, "basic-training") is True
+    assert testing_storyline_storage.agent_has_listed_mission(user.id, "basic-training") is True
 
 
-def test_agent_has_listed_mission_false_when_not_listed(orientation_database_path: Path):
-    storage = DatabaseRadspionStorage(orientation_database_path)
-    user = storage.create_user(
+def test_agent_has_listed_mission_false_when_not_listed(
+    testing_storyline_storage: DatabaseRadspionStorage,
+):
+    user = testing_storyline_storage.create_user(
         email="agent@example.com",
         google_subject_id="sub-1",
         display_name="Agent",
     )
-    Radspion(storage).sync_mission_status(user.id)
+    Radspion(testing_storyline_storage).sync_mission_status(user.id)
 
-    assert storage.agent_has_listed_mission(user.id, "es-alpha") is False
+    assert testing_storyline_storage.agent_has_listed_mission(user.id, "es-alpha") is False
 
 
 @pytest.mark.parametrize(
@@ -77,9 +71,11 @@ def test_mission_queries_raise_database_error_when_tables_missing(
     path.touch()
 
     storage = DatabaseRadspionStorage(path)
-
-    with pytest.raises(DatabaseError, match=message_fragment):
-        operation(storage)
+    try:
+        with pytest.raises(DatabaseError, match=message_fragment):
+            operation(storage)
+    finally:
+        storage.close()
 
 
 def test_closed_connection_raises_database_error_for_all_queries(tmp_path: Path):
@@ -101,7 +97,7 @@ def test_closed_connection_raises_database_error_for_all_queries(tmp_path: Path)
         conn.commit()
 
     storage = DatabaseRadspionStorage(path)
-    storage._conn.close()
+    storage.close()
 
     operations = [
         (lambda: storage.find_user_by_google_subject_id("sub-1"), "loading user"),

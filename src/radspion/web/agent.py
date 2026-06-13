@@ -2,6 +2,9 @@
 
 from flask import Blueprint, abort, current_app, g, render_template, session
 
+from radspion.content_files import load_welcome_memo_markdown
+from radspion.markdown_render import render_mission_markdown
+from radspion.missions import dashboard_completed_total
 from radspion.web.clearance_flow import pop_post_login_clearance_result
 from radspion.web.guards import login_required
 
@@ -15,10 +18,18 @@ def dashboard():
     radspion = current_app.extensions["radspion"]
     radspion.sync_mission_status(g.user.id)
     dashboard_groups = radspion.get_agent_dashboard(g.user.id)
+    completed_total = dashboard_completed_total(dashboard_groups)
+    welcome_memo_html = None
+    if completed_total == 0:
+        source = load_welcome_memo_markdown()
+        if source is not None:
+            welcome_memo_html = render_mission_markdown(source)
     return render_template(
         "agent/dashboard.html",
         user=g.user,
         dashboard_groups=dashboard_groups,
+        completed_total=completed_total,
+        welcome_memo_html=welcome_memo_html,
         post_login_clearance_result=pop_post_login_clearance_result(session),
     )
 

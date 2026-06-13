@@ -1,6 +1,6 @@
 """Tests for mission dashboard view models."""
 
-from radspion.missions import DashboardGroup, DashboardMission
+from radspion.missions import DashboardGroup, DashboardMission, dashboard_completed_total
 
 
 def test_counts_label_includes_active_and_completed():
@@ -41,3 +41,39 @@ def test_counts_label_completed_only_hidden():
     )
 
     assert group.counts_label(show_completed=False) == "1 completed (hidden)"
+
+
+def test_dashboard_completed_total_sums_all_groups():
+    groups = [
+        DashboardGroup(
+            id=1,
+            name="Testing Storyline",
+            missions=[
+                DashboardMission("es-beta", "ES: Beta", "active"),
+                DashboardMission("es-alpha", "ES: Alpha", "completed"),
+            ],
+        ),
+        DashboardGroup(
+            id=2,
+            name="Orientation",
+            missions=[
+                DashboardMission("basic-training", "Basic Training", "active"),
+            ],
+        ),
+    ]
+
+    assert dashboard_completed_total(groups) == 1
+
+
+def test_dashboard_completed_total_zero_when_none_completed():
+    groups = [
+        DashboardGroup(
+            id=2,
+            name="Orientation",
+            missions=[
+                DashboardMission("basic-training", "Basic Training", "active"),
+            ],
+        ),
+    ]
+
+    assert dashboard_completed_total(groups) == 0

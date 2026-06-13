@@ -1,40 +1,26 @@
 """Tests for GET /clearance/<token> and OAuth-staged clearance redemption."""
 
-from pathlib import Path
-
-import pytest
-
+from radspion.app import create_app
+from radspion.config import load_config
+from radspion.database import DatabaseRadspionStorage
+from radspion.radspion import Radspion
 from radspion.web.session_keys import (
     SESSION_PENDING_CLEARANCE,
     SESSION_USER_ID,
 )
 from tests.conftest import complete_oauth_callback
 from tests.fakes.google_oauth import FakeGoogleOAuth
-from tests.helpers import SAMPLE_AGENTS, load_testing_storyline_database
+from tests.helpers import SAMPLE_AGENTS
 
 
-@pytest.fixture
-def storyline_db(tmp_path: Path) -> Path:
-    db_path = tmp_path / "storyline.db"
-    load_testing_storyline_database(db_path)
-    return db_path
-
-
-def _client_for_db(db_path: Path, *, oauth: FakeGoogleOAuth | None = None):
-    from radspion.app import create_app
-    from radspion.config import load_config
-    from radspion.database import DatabaseRadspionStorage
-    from radspion.radspion import Radspion
-
+def _oauth_client(testing_storyline_storage: DatabaseRadspionStorage, oauth: FakeGoogleOAuth):
     config = load_config(testing=True)
-    radspion = Radspion(DatabaseRadspionStorage(db_path))
-    if oauth is None:
-        oauth = FakeGoogleOAuth()
-    return create_app(config=config, radspion=radspion, oauth=oauth).test_client(), oauth
+    radspion = Radspion(testing_storyline_storage)
+    return create_app(config=config, radspion=radspion, oauth=oauth).test_client()
 
 
-def test_clearance_link_stages_pending_code(storyline_db: Path):
-    client, _oauth = _client_for_db(storyline_db)
+def test_clearance_link_stages_pending_code(testing_storyline_oauth_client):
+    client, _oauth = testing_storyline_oauth_client
     response = client.get("/clearance/EXAMPLE-CLEARANCE")
 
     assert response.status_code == 200
@@ -45,8 +31,8 @@ def test_clearance_link_stages_pending_code(storyline_db: Path):
         assert sess[SESSION_PENDING_CLEARANCE] == "EXAMPLE-CLEARANCE"
 
 
-def test_clearance_link_invalid_token_redirects_home(storyline_db: Path):
-    client, _oauth = _client_for_db(storyline_db)
+def test_clearance_link_invalid_token_redirects_home(testing_storyline_oauth_client):
+    client, _oauth = testing_storyline_oauth_client
     response = client.get("/clearance/%20%20")
 
     assert response.status_code == 302
@@ -55,8 +41,8 @@ def test_clearance_link_invalid_token_redirects_home(storyline_db: Path):
         assert SESSION_PENDING_CLEARANCE not in sess
 
 
-def test_clearance_signed_in_shows_confirm_form(storyline_db: Path):
-    client, _oauth = _client_for_db(storyline_db)
+def test_clearance_signed_in_shows_confirm_form(testing_storyline_oauth_client):
+    client, _oauth = testing_storyline_oauth_client
     diana_id = SAMPLE_AGENTS["diana"]["id"]
 
     with client.session_transaction() as sess:
@@ -70,8 +56,8 @@ def test_clearance_signed_in_shows_confirm_form(storyline_db: Path):
     assert b'value="HIDDEN-CLEARANCE"' in response.data
 
 
-def test_clearance_signed_in_redeem_via_api(storyline_db: Path):
-    client, _oauth = _client_for_db(storyline_db)
+def test_clearance_signed_in_redeem_via_api(testing_storyline_oauth_client):
+    client, _oauth = testing_storyline_oauth_client
     diana_id = SAMPLE_AGENTS["diana"]["id"]
 
     with client.session_transaction() as sess:
@@ -85,9 +71,11 @@ def test_clearance_signed_in_redeem_via_api(storyline_db: Path):
     assert len(clearance.get_json()["new_missions"]) == 2
 
 
-def test_oauth_returning_user_redeems_pending_clearance(storyline_db: Path):
+def test_oauth_returning_user_redeems_pending_clearance(
+    testing_storyline_storage: DatabaseRadspionStorage,
+):
     oauth = FakeGoogleOAuth()
-    client, _ = _client_for_db(storyline_db, oauth=oauth)
+    client = _oauth_client(testing_storyline_storage, oauth)
     diana = SAMPLE_AGENTS["diana"]
 
     client.get("/clearance/EXAMPLE-CLEARANCE")
@@ -114,9 +102,11 @@ def test_oauth_returning_user_redeems_pending_clearance(storyline_db: Path):
     assert b"RADSPION_POST_LOGIN_CLEARANCE" not in second_load.data
 
 
-def test_second_login_without_clearance_link_skips_modal(storyline_db: Path):
+def test_second_login_without_clearance_link_skips_modal(
+    testing_storyline_storage: DatabaseRadspionStorage,
+):
     oauth = FakeGoogleOAuth()
-    client, _ = _client_for_db(storyline_db, oauth=oauth)
+    client = _oauth_client(testing_storyline_storage, oauth)
     diana = SAMPLE_AGENTS["diana"]
 
     client.get("/clearance/EXAMPLE-CLEARANCE")
@@ -145,9 +135,11 @@ def test_second_login_without_clearance_link_skips_modal(storyline_db: Path):
     assert b"RADSPION_POST_LOGIN_CLEARANCE" not in second_dashboard.data
 
 
-def test_oauth_new_user_redeems_clearance_without_access_gate(storyline_db: Path):
+def test_oauth_new_user_redeems_clearance_without_access_gate(
+    testing_storyline_storage: DatabaseRadspionStorage,
+):
     oauth = FakeGoogleOAuth()
-    client, _ = _client_for_db(storyline_db, oauth=oauth)
+    client = _oauth_client(testing_storyline_storage, oauth)
 
     client.get("/clearance/HIDDEN-CLEARANCE")
     client.get("/auth/google")

@@ -1,6 +1,7 @@
 """Tests for user persistence in DatabaseRadspionStorage."""
 
 import sqlite3
+from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
@@ -33,10 +34,17 @@ def database_path(tmp_path: Path) -> Path:
     return path
 
 
-def test_create_and_find_user(database_path: Path):
+@pytest.fixture
+def users_storage(database_path: Path) -> Iterator[DatabaseRadspionStorage]:
     storage = DatabaseRadspionStorage(database_path)
+    try:
+        yield storage
+    finally:
+        storage.close()
 
-    created = storage.create_user(
+
+def test_create_and_find_user(users_storage: DatabaseRadspionStorage):
+    created = users_storage.create_user(
         email="agent@example.com",
         google_subject_id="sub-1",
         display_name="Agent One",
@@ -44,20 +52,18 @@ def test_create_and_find_user(database_path: Path):
 
     assert created.id == 1
     assert created.codename == "AGENT0001"
-    assert storage.find_user_by_google_subject_id("sub-1") == created
-    assert storage.find_user_by_email("agent@example.com") == created
-    assert storage.find_user_by_id(1) == created
+    assert users_storage.find_user_by_google_subject_id("sub-1") == created
+    assert users_storage.find_user_by_email("agent@example.com") == created
+    assert users_storage.find_user_by_id(1) == created
 
 
-def test_create_user_assigns_sequential_default_codenames(database_path: Path):
-    storage = DatabaseRadspionStorage(database_path)
-
-    first = storage.create_user(
+def test_create_user_assigns_sequential_default_codenames(users_storage: DatabaseRadspionStorage):
+    first = users_storage.create_user(
         email="one@example.com",
         google_subject_id="sub-1",
         display_name="One",
     )
-    second = storage.create_user(
+    second = users_storage.create_user(
         email="two@example.com",
         google_subject_id="sub-2",
         display_name="Two",

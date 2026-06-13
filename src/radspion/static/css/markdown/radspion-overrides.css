@@ -19,6 +19,20 @@
   box-shadow: none;
 }
 
+.dashboard__welcome .mission-markdown.markdown-body {
+  padding: var(--space-lg);
+}
+
+.dashboard__welcome .mission-markdown.markdown-body a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.dashboard__welcome .mission-markdown.markdown-body a:hover {
+  color: var(--color-text);
+}
+
 .mission-detail .mission-markdown.markdown-body a {
   color: var(--color-accent);
   text-decoration: underline;
