@@ -1,6 +1,8 @@
 """Tests for agent dashboard and mission detail stub."""
 
+from radspion.content_files import load_welcome_memo_markdown
 from radspion.database import DatabaseRadspionStorage
+from radspion.markdown_render import render_mission_markdown
 from radspion.radspion import Radspion
 from radspion.web.session_keys import SESSION_USER_ID
 from tests.helpers import SAMPLE_AGENTS, group_titles_in_order
@@ -25,7 +27,7 @@ def test_dashboard_lists_basic_training_after_sync(
 
     assert response.status_code == 200
     assert "Mission Dashboard" in body
-    assert "Welcome to Radspion" in body
+    assert "dashboard__welcome" in body
     assert "basic-training" in body
     assert "Orientation" in body
 
@@ -58,13 +60,18 @@ def test_dashboard_includes_clearance_form_and_transmission_modal(testing_storyl
 
 
 def test_dashboard_shows_welcome_memo_when_no_missions_completed(testing_storyline_client):
+    source = load_welcome_memo_markdown()
+    assert source is not None
+    welcome_html = render_mission_markdown(source)
+
     with testing_storyline_client.session_transaction() as sess:
         sess[SESSION_USER_ID] = SAMPLE_AGENTS["diana"]["id"]
 
     body = testing_storyline_client.get("/agent/dashboard").data.decode()
 
     assert "dashboard__welcome" in body
-    assert "Stay Observant" in body
+    assert 'aria-label="Welcome memo from Radspion Command"' in body
+    assert welcome_html in body
     assert "Show completed missions" not in body
 
 

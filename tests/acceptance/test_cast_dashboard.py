@@ -21,8 +21,9 @@ def test_uc_025_diana_orientation_only(page: Page, live_app: LiveApp, login_as) 
     expect(page.get_by_text("Testing Storyline")).to_have_count(0)
     expect_mission_on_dashboard(page, "basic-training", "active")
     expect_storyline_missions_absent(page)
-    expect(page.locator(".dashboard__welcome")).to_be_visible()
-    expect(page.get_by_text("Stay Observant")).to_be_visible()
+    welcome = page.locator(".dashboard__welcome")
+    expect(welcome).to_be_visible()
+    expect(welcome.locator(".mission-markdown.markdown-body")).not_to_be_empty()
     expect(page.get_by_label("Show completed missions")).to_have_count(0)
 
 

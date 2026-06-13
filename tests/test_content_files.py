@@ -9,8 +9,10 @@ def test_welcome_memo_path_is_under_repo_content():
 
 
 def test_load_welcome_memo_markdown_reads_repo_file():
+    path = welcome_memo_path()
     source = load_welcome_memo_markdown()
 
+    assert path.is_file()
     assert source is not None
-    assert "Director of Agent Development" in source
-    assert "Stay Observant" in source
+    assert source == path.read_text(encoding="utf-8")
+    assert source.strip()
